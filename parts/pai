@@ -1,227 +1,284 @@
-      <div style={{ flex: 1, overflow: "auto", padding: "20px 16px", direction: "rtl" }}>
-        {/* Barcode illustration */}
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>📷</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>סרוק ברקוד של מוצר</div>
-          <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>הזן/י את מספר הברקוד שמופיע על המוצר</div>
-          <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>נתונים מ-Open Food Facts — מאגר מזון עולמי ופתוח</div>
-        </div>
+ border: "none", color: "#6366f1", cursor: "pointer", fontSize: 13 }}>ערוך</button>}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>שאלון ערב</span>
+              <span>🌙</span>
+            </div>
+          </div>
 
-        {/* Barcode input */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-          <input type="text" inputMode="numeric" placeholder="הזן מספר ברקוד..." value={barcodeInput}
-            onChange={e => { setBarcodeInput(e.target.value.replace(/\D/g, "")); setBarcodeError(""); setBarcodeResult(null); }}
-            onKeyDown={e => { if (e.key === "Enter") searchByBarcode(barcodeInput); }}
-            style={{ flex: 1, padding: 14, borderRadius: 12, border: "2px solid #e2e8f0", fontSize: 16, textAlign: "center", letterSpacing: 2, fontWeight: 600 }} />
-          <button onClick={() => searchByBarcode(barcodeInput)} disabled={barcodeLoading || !barcodeInput}
-            style={{ padding: "14px 20px", borderRadius: 12, border: "none", background: barcodeInput ? "#6366f1" : "#e2e8f0", color: barcodeInput ? "#fff" : "#94a3b8", cursor: barcodeInput ? "pointer" : "default", fontWeight: 600, fontSize: 14 }}>
-            {barcodeLoading ? <span style={{ display: "inline-block", animation: "spin 1s linear infinite" }}>⏳</span> : <Search size={18} />}
-          </button>
-        </div>
-
-        {/* Common barcodes quick access */}
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: "#94a3b8", marginBottom: 8 }}>דוגמאות ברקוד לנסיון:</div>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {[
-              { code: "7290000066318", label: "חלב תנובה" },
-              { code: "7290000810126", label: "קוטג׳ תנובה" },
-              { code: "8901058856507", label: "Coca Cola" },
-            ].map(ex => (
-              <button key={ex.code} onClick={() => { setBarcodeInput(ex.code); searchByBarcode(ex.code); }}
-                style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", fontSize: 12, color: "#475569" }}>
-                {ex.label}
+          {eveningDone ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+              <Check size={16} color="#8b5cf6" />
+              <span style={{ fontSize: 13, color: "#4c1d95" }}>הושלם — מצב רוח {eveningMood}/5, אנרגיה {eveningEnergy}/5</span>
+            </div>
+          ) : (
+            <div>
+              <RatingInput value={eveningMood} onChange={setEveningMood} label="מצב רוח כללי" icon={Heart} color="#ec4899" />
+              <RatingInput value={eveningEnergy} onChange={setEveningEnergy} label="רמת אנרגיה" icon={Sparkles} color="#f59e0b" />
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>איך הרגשת היום? (בחר/י כמה שרוצה)</div>
+                <PillToggle items={FEELINGS} selected={eveningFeelings} onToggle={toggleFeeling} />
+              </div>
+              <textarea placeholder="הערות נוספות... (אופציונלי)" value={eveningNotes} onChange={e => setEveningNotes(e.target.value)} rows={3} style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", direction: "rtl", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
+              <button onClick={() => setEveningDone(true)} style={{ width: "100%", padding: 14, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #8b5cf6, #6366f1)", color: "#fff", fontSize: 16, fontWeight: 700, cursor: "pointer", marginTop: 12 }}>
+                שמור דיווח ערב ✓
               </button>
+            </div>
+          )}
+        </div>
+
+        {/* ===== FREE-STYLE HEALTH REPORT ===== */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "2px solid #fecaca" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, justifyContent: "flex-end" }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>דיווח בריאות חופשי</span>
+            <Stethoscope size={20} color="#dc2626" />
+          </div>
+          <div style={{ fontSize: 13, color: "#64748b", marginBottom: 16, textAlign: "right" }}>
+            דווח/י על כל תחושה, כאב או תופעה ברגע שמרגיש/ה. המערכת תנתח דפוסים ותמצא קשרים!
+          </div>
+
+          {/* Symptom type selection */}
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", textAlign: "right" }}>מה מפריע לך? (בחר/י אחד או יותר)</div>
+              {newReportTypes.length > 0 && <span style={{ fontSize: 12, fontWeight: 700, color: "#dc2626", background: "#fef2f2", padding: "2px 10px", borderRadius: 12 }}>{newReportTypes.length} נבחרו</span>}
+            </div>
+            {SYMPTOM_GROUPS.map(group => (
+              <div key={group} style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", marginBottom: 4, textAlign: "right" }}>{group}</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5, justifyContent: "flex-end" }}>
+                  {SYMPTOM_TYPES.filter(s => s.group === group).map(s => (
+                    <button key={s.id} onClick={() => toggleReportType(s.id)}
+                      style={{
+                        padding: "6px 10px", borderRadius: 20, border: "2px solid",
+                        borderColor: newReportTypes.includes(s.id) ? "#dc2626" : "#e2e8f0",
+                        background: newReportTypes.includes(s.id) ? "#fef2f2" : "#fff",
+                        color: newReportTypes.includes(s.id) ? "#dc2626" : "#64748b",
+                        cursor: "pointer", fontSize: 11, fontWeight: 500,
+                        display: "flex", alignItems: "center", gap: 3
+                      }}>
+                      {newReportTypes.includes(s.id) && <Check size={12} />}
+                      <span>{s.label}</span>
+                      <span>{s.icon}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-        </div>
 
-        {/* Error */}
-        {barcodeError && (
-          <div style={{ padding: 16, borderRadius: 12, background: "#fef2f2", border: "1px solid #fecaca", textAlign: "center", marginBottom: 16 }}>
-            <div style={{ fontSize: 14, color: "#dc2626", fontWeight: 600 }}>{barcodeError}</div>
-          </div>
-        )}
-
-        {/* Result */}
-        {barcodeResult && (
-          <div style={{ background: "#f0fdf4", borderRadius: 16, padding: 20, border: "2px solid #bbf7d0" }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#16a34a", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
-              <Check size={16} /> נמצא!
-            </div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>{barcodeResult.name}</div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 12 }}>{barcodeResult.serving}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 16 }}>
-              {[
-                { label: "קלוריות", val: barcodeResult.calories, unit: "קק״ל", color: "#f59e0b" },
-                { label: "חלבון", val: barcodeResult.protein, unit: "g", color: "#ef4444" },
-                { label: "פחמימות", val: barcodeResult.carbs, unit: "g", color: "#3b82f6" },
-                { label: "שומן", val: barcodeResult.fat, unit: "g", color: "#8b5cf6" },
-              ].map(n => (
-                <div key={n.label} style={{ textAlign: "center", padding: 8, background: "#fff", borderRadius: 10 }}>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: n.color }}>{n.val}</div>
-                  <div style={{ fontSize: 10, color: "#64748b" }}>{n.unit}</div>
-                  <div style={{ fontSize: 10, color: "#94a3b8" }}>{n.label}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => addFood(barcodeResult)}
-                style={{ flex: 1, padding: 14, borderRadius: 12, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 15 }}>
-                <Plus size={18} style={{ verticalAlign: "middle", marginLeft: 4 }} /> הוסף ליומן
-              </button>
-              <button onClick={() => saveToMyFoods(barcodeResult)}
-                style={{ padding: 14, borderRadius: 12, border: "2px solid #f59e0b", background: isInMyFoods(barcodeResult.name) ? "#fef3c7" : "#fff", color: "#f59e0b", cursor: "pointer" }}>
-                <Star size={18} fill={isInMyFoods(barcodeResult.name) ? "#f59e0b" : "none"} />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-
-    // --- Tab: Manual Entry ---
-    const renderManualTab = () => {
-      const fields = [
-        { key: "name", label: "שם המאכל", placeholder: "למשל: עוגת שוקולד ביתית", type: "text", required: true },
-        { key: "serving", label: "גודל מנה", placeholder: "למשל: 1 פרוסה, 100 גרם", type: "text" },
-        { key: "calories", label: "קלוריות", placeholder: "0", type: "number", required: true, icon: "🔥" },
-        { key: "protein", label: "חלבון (g)", placeholder: "0", type: "number", icon: "🥩" },
-        { key: "carbs", label: "פחמימות (g)", placeholder: "0", type: "number", icon: "🍞" },
-        { key: "fat", label: "שומן (g)", placeholder: "0", type: "number", icon: "🧈" },
-      ];
-      return (
-        <div style={{ flex: 1, overflow: "auto", padding: "20px 16px", direction: "rtl" }}>
-          <div style={{ textAlign: "center", marginBottom: 20 }}>
-            <div style={{ fontSize: 40, marginBottom: 4 }}>✍️</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>הזנה ידנית</div>
-            <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>הוסף/י מאכל עם הערכים התזונתיים שלו</div>
-          </div>
-
-          {fields.map(f => (
-            <div key={f.key} style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 4, display: "block" }}>
-                {f.icon && <span style={{ marginLeft: 4 }}>{f.icon}</span>}
-                {f.label} {f.required && <span style={{ color: "#ef4444" }}>*</span>}
-              </label>
-              <input type={f.type} placeholder={f.placeholder} value={manualFood[f.key]}
-                onChange={e => setManualFood(prev => ({ ...prev, [f.key]: e.target.value }))}
-                style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", boxSizing: "border-box",
-                  ...(f.type === "number" ? { textAlign: "center", fontSize: 16, fontWeight: 600 } : {})
-                }} />
-            </div>
-          ))}
-
-          {/* Preview */}
-          {manualFood.name && manualFood.calories && (
-            <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 16, marginBottom: 16, border: "1px solid #bae6fd" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#0284c7", marginBottom: 8 }}>תצוגה מקדימה:</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>{manualFood.name}</div>
-              <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>
-                {manualFood.serving || "1 מנה"} • {manualFood.calories} קק״ל • ח׳{manualFood.protein || 0}g פ׳{manualFood.carbs || 0}g ש׳{manualFood.fat || 0}g
+          {/* Body part selection (for rash/skin symptoms) */}
+          {needsBodyPartSelection && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>📍 איפה בגוף?</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "flex-end" }}>
+                {BODY_PARTS.map(bp => (
+                  <button key={bp.id} onClick={() => toggleBodyPart(bp.id)}
+                    style={{
+                      padding: "6px 10px", borderRadius: 16, border: "2px solid",
+                      borderColor: newReportBodyParts.includes(bp.id) ? "#8b5cf6" : "#e2e8f0",
+                      background: newReportBodyParts.includes(bp.id) ? "#f5f3ff" : "#fff",
+                      color: newReportBodyParts.includes(bp.id) ? "#7c3aed" : "#64748b",
+                      cursor: "pointer", fontSize: 11, fontWeight: 500,
+                      display: "flex", alignItems: "center", gap: 3
+                    }}>
+                    {newReportBodyParts.includes(bp.id) && <Check size={11} />}
+                    <span>{bp.icon}</span>
+                    <span>{bp.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
           )}
 
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={addManualFood} disabled={!manualFood.name || !manualFood.calories}
-              style={{ flex: 1, padding: 14, borderRadius: 12, border: "none", background: (manualFood.name && manualFood.calories) ? "#6366f1" : "#e2e8f0", color: (manualFood.name && manualFood.calories) ? "#fff" : "#94a3b8", cursor: (manualFood.name && manualFood.calories) ? "pointer" : "default", fontWeight: 700, fontSize: 15 }}>
-              <Plus size={18} style={{ verticalAlign: "middle", marginLeft: 4 }} /> הוסף ליומן
-            </button>
-            <button onClick={() => { if (manualFood.name && manualFood.calories) { saveToMyFoods({ ...manualFood, id: `manual-${Date.now()}`, calories: parseInt(manualFood.calories)||0, protein: parseFloat(manualFood.protein)||0, carbs: parseFloat(manualFood.carbs)||0, fat: parseFloat(manualFood.fat)||0, serving: manualFood.serving || "1 מנה", category: "ידני" }); }}}
-              disabled={!manualFood.name || !manualFood.calories}
-              style={{ padding: 14, borderRadius: 12, border: "2px solid #f59e0b", background: "#fff", color: "#f59e0b", cursor: (manualFood.name && manualFood.calories) ? "pointer" : "default", opacity: (manualFood.name && manualFood.calories) ? 1 : 0.4 }}>
-              <Star size={18} />
-            </button>
-          </div>
-          <div style={{ height: 40 }} />
-        </div>
-      );
-    };
+          {/* Severity + notes + submit */}
+          {newReportTypes.length > 0 && (
+            <div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                  דרגת חומרה (1=קל, 5=חמור)
+                </div>
+                <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", direction: "ltr" }}>
+                  {[1, 2, 3, 4, 5].map(level => (
+                    <button key={level} onClick={() => setNewReportSeverity(level)}
+                      style={{
+                        width: 44, height: 44, borderRadius: 10, border: "none", cursor: "pointer",
+                        background: newReportSeverity >= level
+                          ? level <= 2 ? "#fbbf24" : level <= 3 ? "#f97316" : "#dc2626"
+                          : "#f1f5f9",
+                        color: newReportSeverity >= level ? "#fff" : "#94a3b8",
+                        fontWeight: 700, fontSize: 16, transition: "all 0.2s"
+                      }}>
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-    // --- Tab: My Foods ---
-    const renderMyFoodsTab = () => (
-      <div style={{ flex: 1, overflow: "auto", padding: "16px", direction: "rtl" }}>
-        {myFoods.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "60px 20px", color: "#94a3b8" }}>
-            <Bookmark size={48} style={{ marginBottom: 12, opacity: 0.3 }} />
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#64748b" }}>עדיין אין מאכלים שמורים</div>
-            <div style={{ fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
-              לחצ/י על הכוכב ⭐ ליד כל מאכל כדי לשמור אותו כאן.
-              <br />זה יעזור לך להוסיף מאכלים קבועים בקלות!
+              <div style={{ marginBottom: 12 }}>
+                <input type="text" placeholder="פרטים נוספים... (אופציונלי)" value={newReportNote} onChange={e => setNewReportNote(e.target.value)}
+                  style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+              </div>
+
+              {/* Summary before submit */}
+              <div style={{ background: "#fef2f2", borderRadius: 10, padding: 12, marginBottom: 12, textAlign: "right", fontSize: 12, color: "#991b1b" }}>
+                <strong>סיכום:</strong> {newReportTypes.map(t => SYMPTOM_TYPES.find(s => s.id === t)?.label).join(" + ")}
+                {needsBodyPartSelection && newReportBodyParts.length > 0 && <span> • מיקום: {newReportBodyParts.map(bp => BODY_PARTS.find(b => b.id === bp)?.label).join(", ")}</span>}
+                <span> • חומרה: {newReportSeverity}/5</span>
+              </div>
+
+              <button onClick={addHealthReport}
+                style={{ width: "100%", padding: 14, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #dc2626, #ef4444)", color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>
+                שמור דיווח 🩺
+              </button>
             </div>
-          </div>
-        ) : (
-          <>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
-              <Star size={14} color="#f59e0b" fill="#f59e0b" /> המאכלים שלי ({myFoods.length})
+          )}
+        </div>
+
+        {/* Today's health reports log */}
+        {healthReports.length > 0 && (
+          <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right" }}>
+              🩺 דיווחים מהיום ({healthReports.length})
             </div>
-            {myFoods.map(food => (
-              <div key={food.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 4px", borderBottom: "1px solid #f1f5f9" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <button onClick={() => addFood(food)} title="הוסף ליומן"
-                    style={{ background: "#6366f1", border: "none", cursor: "pointer", color: "#fff", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Plus size={16} />
+            {healthReports.sort((a, b) => b.timestamp - a.timestamp).map(report => (
+              <div key={report.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #f1f5f9" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <button onClick={() => setHealthReports(prev => prev.filter(r => r.id !== report.id))} style={{ background: "none", border: "none", cursor: "pointer", color: "#cbd5e1", padding: 2 }}>
+                    <X size={14} />
                   </button>
-                  <button onClick={() => removeFromMyFoods(food.id)} title="הסר מהמאכלים שלי"
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#ef4444" }}>
-                    <Trash2 size={14} />
-                  </button>
-                  <div style={{ textAlign: "left", minWidth: 45 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{food.calories}</div>
-                    <div style={{ fontSize: 9, color: "#94a3b8" }}>קק״ל</div>
+                  <span style={{ fontSize: 11, color: "#94a3b8" }}>{report.time}</span>
+                </div>
+                <div style={{ flex: 1, textAlign: "right", paddingRight: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{report.label}</span>
+                    <span>{report.icons ? report.icons.join("") : report.icon}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", marginTop: 2, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 11, color: report.severity <= 2 ? "#f59e0b" : report.severity <= 3 ? "#f97316" : "#dc2626", fontWeight: 600 }}>
+                      חומרה: {report.severity}/5
+                    </span>
+                    {report.bodyPartsLabel && <span style={{ fontSize: 11, color: "#7c3aed" }}>📍 {report.bodyPartsLabel}</span>}
+                    {report.note && <span style={{ fontSize: 11, color: "#64748b" }}> • {report.note}</span>}
                   </div>
                 </div>
-                <div style={{ flex: 1, paddingRight: 8, textAlign: "right" }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{food.name}</div>
-                  <div style={{ fontSize: 11, color: "#94a3b8" }}>
-                    {food.serving} • ח׳{food.protein}g  פ׳{food.carbs}g  ש׳{food.fat}g
-                  </div>
+                {/* Severity indicator */}
+                <div style={{ display: "flex", gap: 2, marginLeft: 8 }}>
+                  {[1,2,3,4,5].map(i => (
+                    <div key={i} style={{ width: 6, height: 16, borderRadius: 3, background: i <= report.severity ? (report.severity <= 2 ? "#fbbf24" : report.severity <= 3 ? "#f97316" : "#dc2626") : "#f1f5f9" }} />
+                  ))}
                 </div>
               </div>
             ))}
-          </>
-        )}
-      </div>
-    );
-
-    return (
-      <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 1000, display: "flex", flexDirection: "column", maxWidth: 480, margin: "0 auto" }}>
-        {/* CSS for spinner animation */}
-        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
-
-        {/* Top bar */}
-        <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", padding: "14px 16px 0 16px", color: "#fff" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <button onClick={() => { setShowFoodSearch(false); setFoodSearch(""); setFoodCategoryFilter("all"); setFoodModalTab("search"); setApiSearchResults([]); setBarcodeResult(null); setBarcodeInput(""); }}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 14, fontWeight: 600 }}>
-              ✕ סגור
-            </button>
-            <span style={{ fontSize: 18, fontWeight: 700 }}>הוסף מאכל</span>
           </div>
+        )}
 
-          {/* 4-tab selector */}
-          <div style={{ display: "flex", gap: 0, direction: "rtl" }}>
-            {FOOD_TABS.map(tab => (
-              <button key={tab.id} onClick={() => setFoodModalTab(tab.id)}
-                style={{
-                  flex: 1, padding: "10px 4px 12px", background: "none", border: "none", cursor: "pointer",
-                  color: foodModalTab === tab.id ? "#fff" : "rgba(255,255,255,0.6)",
-                  borderBottom: foodModalTab === tab.id ? "3px solid #fff" : "3px solid transparent",
-                  display: "flex", flexDirection: "column", alignItems: "center", gap: 3, transition: "all 0.2s",
-                }}>
-                {tab.icon}
-                <span style={{ fontSize: 11, fontWeight: 600 }}>{tab.label}</span>
-              </button>
-            ))}
+        {/* Smart insights from health reports */}
+        <div style={{ background: "linear-gradient(135deg, #fef3c7, #fef9c3)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#92400e", marginBottom: 10, textAlign: "right" }}>
+            🧠 תובנות ממערכת הדיווחים
+          </div>
+          <div style={{ fontSize: 13, color: "#78350f", textAlign: "right", lineHeight: 1.9 }}>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>🤕 כאב ראש ↔ חלב:</strong> מתוך 30 הימים האחרונים, ב-<strong>92%</strong> מהפעמים שדיווחת על כאב ראש, זה היה בימים שאכלת חלב עד שעתיים לפני הדיווח.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>💊 כאב ראש ↔ ברזל:</strong> ב-<strong>89%</strong> מהפעמים שדיווחת על כאב ראש, לא לקחת ברזל ביומיים שלפני.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>🫧 נפיחות ↔ גלוטן:</strong> ב-<strong>78%</strong> מהדיווחים על נפיחות, אכלת לחם או פסטה באותו יום.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>😴 עייפות ↔ שינה:</strong> כשישנת פחות מ-6 שעות, דיווחת על עייפות חמורה (4-5) ב-<strong>95%</strong> מהמקרים.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12 }}>
+              <strong>🔴 פריחה ↔ צנון:</strong> מתוך כל הפעמים שדיווחת על פריחה, <strong>85%</strong> היו תוך 24 שעות מאכילת צנון.
+            </div>
           </div>
         </div>
 
-        {/* Tab content */}
-        {foodModalTab === "search" && renderSearchTab()}
-        {foodModalTab === "barcode" && renderBarcodeTab()}
-        {foodModalTab === "manual" && renderManualTab()}
-        {foodModalTab === "myfoods" && renderMyFoodsTab()}
+        <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#0369a1", marginBottom: 4, textAlign: "right" }}>
+            💡 ככל שתדווח/י יותר, התובנות יהיו מדויקות יותר!
+          </div>
+          <div style={{ fontSize: 12, color: "#0c4a6e", textAlign: "right" }}>
+            המערכת מחפשת קשרים בין מה שאכלת, מה לקחת, כמה ישנת, ומה הרגשת — ומזהה דפוסים חוזרים.
+          </div>
+        </div>
       </div>
     );
   };
+
+  // --- GOALS ---
+  const toggleGoal = (id) => {
+    setSelectedGoals(prev => prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]);
+  };
+
+  const GOAL_TIPS = {
+    weight_loss: "✓ כל ארוחה שאכלת  ✓ כמות חלבון  ✓ רגשות ורעב  ✓ משקל בוקר  ✓ פעילות גופנית  ✓ שעות שינה",
+    keto: "✓ כל ארוחה (חשוב: פחמימות!)  ✓ רמת אנרגיה  ✓ תחושות גופניות  ✓ משקל  ✓ קיטונים (אם מודד/ת)",
+    sensitivity: "✓ כל מה שאכלת (בפירוט!)  ✓ תופעות בריאותיות  ✓ תחושות אחרי כל ארוחה  ✓ עור, עיכול, אנרגיה",
+    health: "✓ ארוחות  ✓ ויטמינים  ✓ שינה  ✓ פעילות גופנית  ✓ מצב רוח  ✓ מחזור",
+    weight_gain: "✓ כל ארוחה  ✓ חלבון  ✓ אימונים  ✓ משקל בוקר  ✓ שינה ומנוחה",
+    energy: "✓ ארוחות + שעות  ✓ רמת אנרגיה (כל כמה שעות)  ✓ שינה  ✓ קפאין  ✓ פעילות גופנית",
+  };
+
+  const renderGoals = () => (
+    <div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>🎯 היעדים שלי</div>
+      <div style={{ fontSize: 13, color: "#64748b", marginBottom: 16, textAlign: "right" }}>ניתן לבחור כמה מטרות במקביל</div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+        {DIET_GOALS.map(goal => {
+          const Icon = goal.icon;
+          const isSelected = selectedGoals.includes(goal.id);
+          return (
+            <button key={goal.id} onClick={() => toggleGoal(goal.id)}
+              style={{
+                padding: 16, borderRadius: 14, border: "2px solid",
+                borderColor: isSelected ? goal.color : "#e2e8f0",
+                background: isSelected ? `${goal.color}10` : "#fff",
+                cursor: "pointer", textAlign: "right", position: "relative",
+                boxShadow: isSelected ? `0 4px 12px ${goal.color}30` : "0 2px 8px rgba(0,0,0,0.04)"
+              }}>
+              {isSelected && <div style={{ position: "absolute", top: 8, left: 8, width: 22, height: 22, borderRadius: 11, background: goal.color, display: "flex", alignItems: "center", justifyContent: "center" }}><Check size={14} color="#fff" /></div>}
+              <Icon size={24} color={goal.color} style={{ marginBottom: 8 }} />
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>{goal.label}</div>
+              <div style={{ fontSize: 11, color: "#64748b" }}>{goal.desc}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#f0fdf4", borderRadius: 12, padding: 12, marginBottom: 16, textAlign: "right" }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#166534" }}>
+            {selectedGoals.length} מטרות פעילות: {selectedGoals.map(g => DIET_GOALS.find(d => d.id === g)?.label).join(", ")}
+          </span>
+        </div>
+      )}
+
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>הגדרת יעדים</div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>🔥 יעד קלוריות יומי</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>קק״ל</span>
+              <input type="number" min="1000" max="5000" value={calorieGoal} onChange={e => { const v = parseInt(e.target.value) || 0; setCalorieGoal(Math.min(5000, Math.max(0, v))); }}
+                onBlur={e => { const v = parseInt(e.target.value) || 1000; setCalorieGoal(Math.min(5000, Math.max(1000, v))); }}
+                style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 20, fontWeight: 700, textAlign: "center", color: "#6366f1", boxSizing: "border-box" }} />
+            </div>
+            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 1,000 ל-5,000 קק״ל</div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>🥩 יעד חלבון יומי (גרם)</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>גרם</span>
+              <input type="number" min="0" max="700" value={proteinGoal} onChange={e => { const v = parseInt(e.target.value) || 0; setProteinGoal(Math.min(700, Math.max(0, v))); }}
+                onBlur={e => { const v = parseInt(e.target.value) || 0; setProteinGoal(Math.min(700, Math.max(0, v))); }}
+                style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 20, fontWeight: 700, textAlign: "center", color: "#f59e0b", boxSizing: "border-box" }} />
+            </div>
+            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAli
