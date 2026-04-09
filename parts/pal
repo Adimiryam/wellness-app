@@ -1,11 +1,4 @@
-dietProject.name}
-              </div>
-            </div>
-            {/* Progress bar */}
-            {dpProgress && (
-              <div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#64748b", marginBottom: 4, direction: "rtl" }}>
-                  <span>התחלה: {dietProject.startWeight} ק"ג</span>
+   <span>התחלה: {dietProject.startWeight} ק"ג</span>
                   <span>יעד: {dietProject.targetWeight} ק"ג</span>
                 </div>
                 <div style={{ background: "#e5e7eb", borderRadius: 8, height: 14, overflow: "hidden", marginBottom: 8 }}>
@@ -313,4 +306,7 @@ dietProject.name}
           {latestData.periodDay && latestData.periodDay <= 3 && (
             <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 14, marginBottom: 10 }}>
               <div style={{ fontWeight: 700, marginBottom: 4 }}>🩸 מחזור — יום {latestData.periodDay}</div>
-              <div style={{ fontSize: 13, opacity: 0.9 }}
+              <div style={{ fontSize: 13, opacity: 0.9 }}>את בימי המחזור. סטטיסטית בימים האלה את עייפה יותר ונפוחה. כדאי: ברזל, הליכה קלה, מזונות עשירים בברזל.</div>
+            </div>
+          )}
+          <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, paddi
