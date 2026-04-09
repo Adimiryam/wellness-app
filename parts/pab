@@ -1,0 +1,311 @@
+  { id: "fainting", label: "התעלפות/כמעט התעלפות", icon: "😵", group: "עייפות ואנרגיה" },
+  { id: "low_energy", label: "חוסר אנרגיה", icon: "🔋", group: "עייפות ואנרגיה" },
+  { id: "drowsiness", label: "ישנוניות", icon: "😪", group: "עייפות ואנרגיה" },
+  // חום וחיסון
+  { id: "fever", label: "חום", icon: "🌡️", group: "חום וחיסון" },
+  { id: "low_fever", label: "חום נמוך (סאבפברילי)", icon: "🤒", group: "חום וחיסון" },
+  { id: "chills", label: "צמרמורת", icon: "🥶", group: "חום וחיסון" },
+  { id: "night_sweats", label: "הזעת לילה", icon: "🌙", group: "חום וחיסון" },
+  { id: "sweating", label: "הזעה מוגברת", icon: "💧", group: "חום וחיסון" },
+  { id: "swollen_lymph", label: "בלוטות נפוחות", icon: "🔵", group: "חום וחיסון" },
+  // עור
+  { id: "rash", label: "פריחה", icon: "🔴", group: "עור", needsBodyPart: true },
+  { id: "itching", label: "גירוד", icon: "🫳", group: "עור", needsBodyPart: true },
+  { id: "hives", label: "סרפדת/אורטיקריה", icon: "🟥", group: "עור", needsBodyPart: true },
+  { id: "dry_skin", label: "עור יבש", icon: "🏜️", group: "עור", needsBodyPart: true },
+  { id: "acne", label: "פצעונים/אקנה", icon: "😖", group: "עור", needsBodyPart: true },
+  { id: "swelling", label: "נפיחות מקומית", icon: "🎈", group: "עור", needsBodyPart: true },
+  { id: "bruising", label: "חבורות", icon: "🟣", group: "עור", needsBodyPart: true },
+  { id: "redness", label: "אדמומיות", icon: "🔴", group: "עור", needsBodyPart: true },
+  { id: "hair_loss", label: "נשירת שיער", icon: "💇", group: "עור" },
+  { id: "brittle_nails", label: "ציפורניים שבירות", icon: "💅", group: "עור" },
+  // נפשי
+  { id: "anxiety", label: "חרדה", icon: "😰", group: "נפשי" },
+  { id: "panic_attack", label: "התקפי חרדה", icon: "😱", group: "נפשי" },
+  { id: "depression", label: "מצב רוח ירוד", icon: "😞", group: "נפשי" },
+  { id: "insomnia", label: "נדודי שינה", icon: "🌙", group: "נפשי" },
+  { id: "oversleeping", label: "שינה מוגזמת", icon: "😴", group: "נפשי" },
+  { id: "mood_swings", label: "שינויי מצב רוח", icon: "🎭", group: "נפשי" },
+  { id: "brain_fog", label: "ערפול מוחי", icon: "🌫️", group: "נפשי" },
+  { id: "irritability", label: "עצבנות", icon: "😤", group: "נפשי" },
+  { id: "concentration", label: "קושי בריכוז", icon: "🎯", group: "נפשי" },
+  { id: "memory_issues", label: "בעיות זיכרון", icon: "🧠", group: "נפשי" },
+  { id: "restlessness", label: "אי-שקט", icon: "🔄", group: "נפשי" },
+  { id: "crying", label: "בכי/רגשיות יתר", icon: "😢", group: "נפשי" },
+  // נשימה
+  { id: "shortness_breath", label: "קוצר נשימה", icon: "🫁", group: "נשימה" },
+  { id: "cough", label: "שיעול", icon: "😷", group: "נשימה" },
+  { id: "dry_cough", label: "שיעול יבש", icon: "🗣️", group: "נשימה" },
+  { id: "wheezing", label: "צפצופים בנשימה", icon: "💨", group: "נשימה" },
+  { id: "runny_nose", label: "נזלת", icon: "🤧", group: "נשימה" },
+  { id: "stuffy_nose", label: "גודש באף", icon: "👃", group: "נשימה" },
+  { id: "sore_throat", label: "כאב גרון", icon: "🗣️", group: "נשימה" },
+  { id: "sneezing", label: "עיטוש", icon: "🤧", group: "נשימה" },
+  { id: "hoarseness", label: "צרידות", icon: "🎤", group: "נשימה" },
+  // עיניים ואוזניים
+  { id: "eye_strain", label: "עייפות עיניים", icon: "👁️", group: "עיניים ואוזניים" },
+  { id: "blurry_vision", label: "טשטוש ראייה", icon: "🔍", group: "עיניים ואוזניים" },
+  { id: "dry_eyes", label: "עיניים יבשות", icon: "💧", group: "עיניים ואוזניים" },
+  { id: "watery_eyes", label: "דמעת עיניים", icon: "😿", group: "עיניים ואוזניים" },
+  { id: "eye_redness", label: "אדמומיות בעיניים", icon: "🔴", group: "עיניים ואוזניים" },
+  { id: "tinnitus", label: "צפצופים באוזניים", icon: "🔔", group: "עיניים ואוזניים" },
+  { id: "hearing_changes", label: "שינויים בשמיעה", icon: "👂", group: "עיניים ואוזניים" },
+  { id: "sensitivity_light", label: "רגישות לאור", icon: "☀️", group: "עיניים ואוזניים" },
+  { id: "sensitivity_noise", label: "רגישות לרעש", icon: "🔊", group: "עיניים ואוזניים" },
+  // לב וכלי דם
+  { id: "palpitations", label: "דפיקות לב", icon: "💓", group: "לב וכלי דם" },
+  { id: "rapid_heartbeat", label: "דופק מהיר", icon: "💗", group: "לב וכלי דם" },
+  { id: "high_bp_symptoms", label: "תסמיני לחץ דם גבוה", icon: "📈", group: "לב וכלי דם" },
+  { id: "low_bp_symptoms", label: "תסמיני לחץ דם נמוך", icon: "📉", group: "לב וכלי דם" },
+  { id: "cold_hands_feet", label: "ידיים/רגליים קרות", icon: "🥶", group: "לב וכלי דם" },
+  { id: "swollen_legs", label: "רגליים נפוחות", icon: "🦶", group: "לב וכלי דם" },
+  { id: "numbness", label: "נימול/חוסר תחושה", icon: "🫠", group: "לב וכלי דם", needsBodyPart: true },
+  { id: "tingling", label: "עקצוץ/נמלול", icon: "⚡", group: "לב וכלי דם", needsBodyPart: true },
+  // הורמונלי ומטבולי
+  { id: "hot_flashes", label: "גלי חום", icon: "🥵", group: "הורמונלי" },
+  { id: "water_retention", label: "אגירת מים", icon: "💧", group: "הורמונלי" },
+  { id: "weight_gain", label: "עלייה במשקל", icon: "⬆️", group: "הורמונלי" },
+  { id: "weight_loss_symptom", label: "ירידה במשקל", icon: "⬇️", group: "הורמונלי" },
+  { id: "thirst", label: "צמא מוגבר", icon: "🥤", group: "הורמונלי" },
+  { id: "frequent_urination", label: "הטלת שתן תכופה", icon: "🚻", group: "הורמונלי" },
+  { id: "pms", label: "תסמונת קדם-וסתית (PMS)", icon: "📅", group: "הורמונלי" },
+  { id: "breast_tenderness", label: "רגישות בחזה", icon: "💗", group: "הורמונלי" },
+  { id: "libido_changes", label: "שינויים בחשק", icon: "💕", group: "הורמונלי" },
+  // אלרגיה
+  { id: "allergy_eyes", label: "אלרגיה בעיניים", icon: "👁️", group: "אלרגיה" },
+  { id: "allergy_skin", label: "אלרגיה בעור", icon: "🔴", group: "אלרגיה", needsBodyPart: true },
+  { id: "food_reaction", label: "תגובה למזון", icon: "🍽️", group: "אלרגיה" },
+  { id: "allergy_respiratory", label: "אלרגיה נשימתית", icon: "🫁", group: "אלרגיה" },
+  { id: "swollen_lips_tongue", label: "נפיחות שפתיים/לשון", icon: "👅", group: "אלרגיה" },
+  // אחר
+  { id: "vertigo", label: "ורטיגו", icon: "🌀", group: "אחר" },
+  { id: "tremor", label: "רעד", icon: "🫨", group: "אחר" },
+  { id: "stiffness", label: "נוקשות/קשיחות", icon: "🧊", group: "אחר" },
+  { id: "balance_issues", label: "בעיות שיווי משקל", icon: "🤸", group: "אחר" },
+  { id: "snoring", label: "נחירות", icon: "😴", group: "אחר" },
+  { id: "teeth_grinding", label: "חריקת שיניים", icon: "😬", group: "אחר" },
+  { id: "bleeding_gums", label: "דימום חניכיים", icon: "🩸", group: "אחר" },
+  { id: "nosebleed", label: "דימום מהאף", icon: "👃", group: "אחר" },
+  { id: "other", label: "אחר", icon: "📝", group: "אחר" },
+];
+
+const BODY_PARTS = [
+  { id: "face", label: "פנים", icon: "😊" },
+  { id: "scalp", label: "קרקפת", icon: "🧑" },
+  { id: "forehead", label: "מצח", icon: "🙂" },
+  { id: "neck", label: "צוואר", icon: "🦒" },
+  { id: "shoulders", label: "כתפיים", icon: "🤷" },
+  { id: "upper_back", label: "גב עליון", icon: "🔙" },
+  { id: "lower_back", label: "גב תחתון", icon: "⬇️" },
+  { id: "chest", label: "חזה", icon: "🫁" },
+  { id: "stomach_area", label: "בטן", icon: "🤰" },
+  { id: "ribs", label: "צלעות", icon: "🩻" },
+  { id: "arms_upper", label: "זרועות", icon: "💪" },
+  { id: "elbows", label: "מרפקים", icon: "🦾" },
+  { id: "forearms", label: "אמות", icon: "🤲" },
+  { id: "hands", label: "כפות ידיים", icon: "✋" },
+  { id: "fingers", label: "אצבעות ידיים", icon: "🖐️" },
+  { id: "hips", label: "ירכיים/אגן", icon: "🦿" },
+  { id: "thighs", label: "ירכיים", icon: "🦵" },
+  { id: "knees", label: "ברכיים", icon: "🦵" },
+  { id: "calves", label: "שוקיים", icon: "🦿" },
+  { id: "ankles", label: "קרסוליים", icon: "🦶" },
+  { id: "feet", label: "כפות רגליים", icon: "🦶" },
+  { id: "toes", label: "אצבעות רגליים", icon: "🦶" },
+  { id: "groin", label: "מפשעה", icon: "🩲" },
+  { id: "joints_general", label: "מפרקים (כללי)", icon: "🦴" },
+  { id: "left_side", label: "צד שמאל", icon: "⬅️" },
+  { id: "right_side", label: "צד ימין", icon: "➡️" },
+  { id: "all_over", label: "כל הגוף", icon: "🧍" },
+];
+
+const SYMPTOM_GROUPS = [...new Set(SYMPTOM_TYPES.map(s => s.group))];
+
+const DIET_TYPES = [
+  { id: "regular", label: "רגילה", icon: "🍽️", color: "#6366f1" },
+  { id: "vegetarian", label: "צמחונית", icon: "🥬", color: "#22c55e" },
+  { id: "vegan", label: "טבעונית", icon: "🌱", color: "#16a34a" },
+  { id: "keto", label: "קיטו", icon: "🥑", color: "#f59e0b" },
+  { id: "paleo", label: "פליאו", icon: "🥩", color: "#dc2626" },
+  { id: "mediterranean", label: "ים תיכונית", icon: "🫒", color: "#0ea5e9" },
+  { id: "gluten_free", label: "ללא גלוטן", icon: "🚫", color: "#a855f7" },
+  { id: "lactose_free", label: "ללא לקטוז", icon: "🥛", color: "#ec4899" },
+  { id: "other", label: "אחר", icon: "✨", color: "#64748b" },
+];
+
+const TRACKING_OPTIONS = [
+  { id: "calories", label: "קלוריות", icon: "🔥", color: "#ef4444" },
+  { id: "protein", label: "חלבון", icon: "🍗", color: "#f59e0b" },
+  { id: "carbs", label: "פחמימות", icon: "🍞", color: "#8b5cf6" },
+  { id: "fat", label: "שומן", icon: "🥑", color: "#22c55e" },
+  { id: "water", label: "מים", icon: "💧", color: "#3b82f6" },
+  { id: "iron", label: "ברזל", icon: "💊", color: "#dc2626" },
+  { id: "steps", label: "צעדים", icon: "👣", color: "#06b6d4" },
+  { id: "sleep", label: "שינה", icon: "😴", color: "#6366f1" },
+  { id: "weight", label: "משקל", icon: "⚖️", color: "#ec4899" },
+  { id: "mood", label: "מצב רוח", icon: "😊", color: "#f97316" },
+  { id: "period", label: "מחזור חודשי", icon: "🩸", color: "#e11d48" },
+  { id: "symptoms", label: "תופעות בריאותיות", icon: "🏥", color: "#7c3aed" },
+];
+
+const HEALTH_CONDITIONS = [
+  { id: "none", label: "אין", icon: "✅" },
+  { id: "diabetes", label: "סוכרת", icon: "💉" },
+  { id: "celiac", label: "צליאק", icon: "🌾" },
+  { id: "ibs", label: "מעי רגיז (IBS)", icon: "🫄" },
+  { id: "thyroid", label: "בלוטת התריס", icon: "🦋" },
+  { id: "anemia", label: "אנמיה", icon: "🩸" },
+  { id: "pcos", label: "PCOS", icon: "♀️" },
+  { id: "allergies", label: "אלרגיות", icon: "🤧" },
+  { id: "migraines", label: "מיגרנות", icon: "🤕" },
+  { id: "skin", label: "בעיות עור", icon: "🔴" },
+  { id: "digestive", label: "בעיות עיכול", icon: "🫃" },
+  { id: "chronic_pain", label: "כאבים כרוניים", icon: "💢" },
+  { id: "other", label: "אחר", icon: "📝" },
+];
+
+// ==================== SAMPLE DATA FOR DEMO ====================
+const generateSampleData = () => {
+  const days = [];
+  const today = new Date();
+  for (let i = 90; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split("T")[0];
+    // Cycle: period starts every 28 days at offsets 2, 30, 58, 86
+    const cycleDay = i % 28;
+    const isPeriodDay = cycleDay < 5;
+    const isPmsWindow = cycleDay >= 25; // 3 days before period
+    // Seed recurring migraines and bloating in PMS window for demo
+    const daySymptoms = [];
+    if (isPmsWindow && Math.random() > 0.2) daySymptoms.push({ typeId: "headache", text: "מיגרנה", icon: "🤕" });
+    if (isPmsWindow && Math.random() > 0.35) daySymptoms.push({ typeId: "bloating", text: "נפיחות", icon: "🫧" });
+    if (isPmsWindow && Math.random() > 0.5) daySymptoms.push({ typeId: "anxiety", text: "חרדה/מתח", icon: "😰" });
+    const protein = 40 + Math.floor(Math.random() * 80);
+    const hadRadish = Math.random() > 0.7;
+    const hadRash = hadRadish ? Math.random() > 0.2 : Math.random() > 0.85;
+    days.push({
+      date: dateStr,
+      totalCalories: 1400 + Math.floor(Math.random() * 800),
+      totalProtein: protein,
+      totalCarbs: 100 + Math.floor(Math.random() * 150),
+      totalFat: 30 + Math.floor(Math.random() * 50),
+      weight: 68 - (i * 0.05) + (Math.random() * 0.5 - 0.25),
+      steps: 3000 + Math.floor(Math.random() * 10000),
+      sleepHours: 5 + Math.random() * 4,
+      sleepQuality: Math.floor(Math.random() * 5) + 1,
+      energy: Math.floor(Math.random() * 5) + 1,
+      mood: Math.floor(Math.random() * 5) + 1,
+      bloated: Math.random() > 0.6,
+      hadRadish,
+      hadRash,
+      feelings: FEELINGS.filter(() => Math.random() > 0.7).map(f => f.id),
+      tookIron: Math.random() > 0.3,
+      exercise: Math.random() > 0.4 ? EXERCISE_TYPES[Math.floor(Math.random() * EXERCISE_TYPES.length)].id : null,
+      periodDay: isPeriodDay ? cycleDay + 1 : null,
+      isPeriodStart: cycleDay === 0,
+      pmsWindow: isPmsWindow,
+      symptomsReported: daySymptoms,
+      waterCups: Math.floor(Math.random() * 10) + 2,
+    });
+  }
+  return days;
+};
+
+// ==================== REUSABLE COMPONENTS ====================
+
+const RatingInput = ({ value, onChange, label, icon: Icon, color = "#f59e0b" }) => (
+  <div style={{ marginBottom: 16 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, justifyContent: "flex-end" }}>
+      {Icon && <Icon size={18} color={color} />}
+      <span style={{ fontWeight: 600, fontSize: 14, color: "#1e293b" }}>{label}</span>
+    </div>
+    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", direction: "ltr" }}>
+      {[1, 2, 3, 4, 5].map(star => (
+        <button key={star} onClick={() => onChange(star)}
+          style={{
+            width: 40, height: 40, borderRadius: 10, border: "none", cursor: "pointer",
+            background: value >= star ? color : "#f1f5f9",
+            color: value >= star ? "#fff" : "#94a3b8",
+            fontWeight: 700, fontSize: 16, transition: "all 0.2s"
+          }}>
+          {star}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+const PillToggle = ({ items, selected, onToggle, multi = true }) => (
+  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" }}>
+    {items.map(item => {
+      const isSelected = multi ? selected.includes(item.id) : selected === item.id;
+      return (
+        <button key={item.id} onClick={() => onToggle(item.id)}
+          style={{
+            padding: "8px 14px", borderRadius: 20, border: "2px solid",
+            borderColor: isSelected ? (item.color || "#6366f1") : "#e2e8f0",
+            background: isSelected ? `${item.color || "#6366f1"}15` : "#fff",
+            color: isSelected ? (item.color || "#6366f1") : "#64748b",
+            cursor: "pointer", fontSize: 14, fontWeight: 500,
+            display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s"
+          }}>
+          <span>{item.label}</span>
+          {item.icon && typeof item.icon === "string" && <span>{item.icon}</span>}
+        </button>
+      );
+    })}
+  </div>
+);
+
+const ProgressBar = ({ value, max, color, label, unit = "" }) => {
+  const pct = Math.min((value / max) * 100, 100);
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 13 }}>
+        <span style={{ color: "#64748b" }}>{Math.round(value)}{unit} / {max}{unit}</span>
+        <span style={{ fontWeight: 600, color: "#1e293b" }}>{label}</span>
+      </div>
+      <div style={{ height: 8, borderRadius: 4, background: "#f1f5f9", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${pct}%`, borderRadius: 4, background: color, transition: "width 0.5s" }} />
+      </div>
+    </div>
+  );
+};
+
+const BmiCard = ({ profile, morningWeight }) => {
+  if (!profile?.height || (!profile?.currentWeight && !morningWeight)) return null;
+  const h = parseFloat(profile.height) / 100;
+  const w = parseFloat(morningWeight || profile.currentWeight);
+  if (!h || !w || h <= 0) return null;
+  const bmiVal = w / (h * h);
+  const bmi = bmiVal.toFixed(1);
+  const info = bmiVal < 18.5 ? { label: "תת משקל", color: "#3b82f6", bg: "#eff6ff", emoji: "⚠️" }
+    : bmiVal < 25 ? { label: "משקל תקין", color: "#22c55e", bg: "#f0fdf4", emoji: "✅" }
+    : bmiVal < 30 ? { label: "עודף משקל", color: "#f59e0b", bg: "#fffbeb", emoji: "⚡" }
+    : { label: "השמנה", color: "#ef4444", bg: "#fef2f2", emoji: "⚠️" };
+  const pct = Math.min(100, Math.max(0, ((bmiVal - 15) / 25) * 100));
+  return (
+    <div style={{ background: info.bg, borderRadius: 16, padding: 16, marginBottom: 16, border: "2px solid " + info.color + "22", direction: "rtl" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: info.color }}>{info.emoji} {info.label}</span>
+        </div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>BMI מדד</div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ height: 8, borderRadius: 4, background: "#e2e8f0", overflow: "hidden", position: "relative" }}>
+            <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: "27.5%", background: "#3b82f6", borderRadius: "4px 0 0 4px" }} />
+            <div style={{ position: "absolute", left: "27.5%", top: 0, height: "100%", width: "32.5%", background: "#22c55e" }} />
+            <div style={{ position: "absolute", left: "60%", top: 0, height: "100%", width: "20%", background: "#f59e0b" }} />
+            <div style={{ position: "absolute", left: "80%", top: 0, height: "100%", width: "20%", background: "#ef4444", borderRadius: "0 4px 4px 0" }} />
+            <div style={{ position: "absolute", top: -3, width: 14, height: 14, borderRadius: "50%", background: "#fff", border: "3px solid " + info.color, left: pct + "%", transform: "translateX(-50%)" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4, fontSize: 9, color: "#94a3b8" }}>
+            <span>15</span><span>18.5</span><span>25</span><span>30</span><span>40</span>
+          </div>
+        </div>
+        <div style={{ textAlign: "center", minWidth: 50 }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: info.color }}>{bmi}</div>
+          <div style={{ fontSize: 10,
