@@ -1,0 +1,302 @@
+ight", boxSizing: "border-box" }} />
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={() => setShowDietProjectForm(false)} style={{
+                    flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", background: "#f8fafc", fontSize: 14, cursor: "pointer", color: "#64748b",
+                  }}>ביטול</button>
+                  <button onClick={createDietProject} style={{
+                    flex: 1, padding: 10, borderRadius: 10, border: "none", background: "#6366f1", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer",
+                  }}>צור פרויקט</button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => setShowDietProjectForm(true)} style={{
+                width: "100%", padding: 12, borderRadius: 12, border: "2px dashed #c7d2fe", background: "#eef2ff", color: "#6366f1",
+                fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+              }}>
+                <Plus size={16} /> צור פרויקט דיאטה חדש
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Add Weight Entry */}
+        {showAddWeightForm ? (
+          <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+              הזנת שקילה
+            </div>
+            <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+              <input value={newWeightDate} onChange={e => setNewWeightDate(e.target.value)}
+                type="date" style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 14, boxSizing: "border-box" }} />
+              <input value={newWeightValue} onChange={e => setNewWeightValue(e.target.value)}
+                type="number" step="0.1" placeholder="משקל (ק״ג)"
+                style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 14, textAlign: "right", boxSizing: "border-box" }} />
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => setShowAddWeightForm(false)} style={{
+                flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", background: "#f8fafc", fontSize: 14, cursor: "pointer", color: "#64748b",
+              }}>ביטול</button>
+              <button onClick={addWeight} style={{
+                flex: 1, padding: 10, borderRadius: 10, border: "none", background: "#6366f1", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer",
+              }}>שמור</button>
+            </div>
+          </div>
+        ) : (
+          <button onClick={() => setShowAddWeightForm(true)} style={{
+            width: "100%", padding: 12, borderRadius: 12, border: "none", background: "#6366f1", color: "#fff",
+            fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          }}>
+            <Plus size={16} /> הזן שקילה חדשה
+          </button>
+        )}
+
+        {/* Recent Entries */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>שקילות אחרונות</div>
+          {allSorted.slice(-10).reverse().map((entry, i) => (
+            <div key={i} style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "8px 0", borderBottom: i < 9 ? "1px solid #f1f5f9" : "none", direction: "rtl",
+            }}>
+              <span style={{ fontSize: 13, color: "#64748b" }}>{entry.date}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: "#1e293b" }}>{entry.weight} ק"ג</span>
+                {i < allSorted.slice(-10).reverse().length - 1 && (() => {
+                  const prev = allSorted.slice(-10).reverse()[i + 1];
+                  const diff = entry.weight - prev.weight;
+                  if (Math.abs(diff) < 0.05) return null;
+                  return (
+                    <span style={{ fontSize: 11, color: diff < 0 ? "#16a34a" : "#dc2626" }}>
+                      {diff < 0 ? <TrendingDown size={12} /> : <TrendingUp size={12} />}
+                      {Math.abs(diff).toFixed(1)}
+                    </span>
+                  );
+                })()}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // --- PREDICTIONS ---
+  const renderPredictions = () => {
+    const latestData = sampleData[sampleData.length - 1];
+    return (
+      <div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 6, textAlign: "right" }}>🔮 תחזיות והמלצות</div>
+        <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>מבוסס על הנתונים שצברת עד כה</div>
+
+        {/* PMS / CYCLE PATTERN DETECTION */}
+        {(() => {
+          // Combine reported period dates + sample data period starts
+          const periodStarts = [];
+          sampleData.forEach(d => { if (d.isPeriodStart) periodStarts.push(d.date); });
+          periodLog.forEach(d => { if (!periodStarts.includes(d)) periodStarts.push(d); });
+          if (periodStarts.length < 2) return null;
+
+          // For each period start, look at the 3 days before it and collect symptoms
+          const PMS_WINDOW_DAYS = 3;
+          const symptomsByTypeInPms = {}; // typeId -> { count, text, icon, cycles: [date] }
+          periodStarts.forEach(pStart => {
+            const pDate = new Date(pStart);
+            for (let back = 1; back <= PMS_WINDOW_DAYS; back++) {
+              const d = new Date(pDate);
+              d.setDate(d.getDate() - back);
+              const dStr = d.toISOString().split("T")[0];
+              const dayData = sampleData.find(sd => sd.date === dStr);
+              const daySymptoms = dayData?.symptomsReported || [];
+              // Also include current symptoms if they match today in PMS window
+              const todayStr = new Date().toISOString().split("T")[0];
+              if (dStr === todayStr) {
+                symptoms.forEach(s => daySymptoms.push({ typeId: s.typeId, text: s.text, icon: s.icon }));
+              }
+              daySymptoms.forEach(s => {
+                if (!s.typeId) return;
+                if (!symptomsByTypeInPms[s.typeId]) {
+                  symptomsByTypeInPms[s.typeId] = { count: 0, text: s.text, icon: s.icon, cycles: new Set() };
+                }
+                symptomsByTypeInPms[s.typeId].cycles.add(pStart);
+                symptomsByTypeInPms[s.typeId].count++;
+              });
+            }
+          });
+
+          // Recurring = appeared in >= 2 cycles
+          const recurring = Object.entries(symptomsByTypeInPms)
+            .filter(([_, v]) => v.cycles.size >= 2)
+            .map(([typeId, v]) => ({ typeId, ...v, cycleCount: v.cycles.size }))
+            .sort((a, b) => b.cycleCount - a.cycleCount);
+
+          // Check if we're currently in PMS window
+          const now = new Date();
+          const lastPeriod = periodStarts.map(d => new Date(d)).sort((a, b) => b - a)[0];
+          const cycleLen = 28;
+          let daysUntilNext = null;
+          if (lastPeriod) {
+            const nextEst = new Date(lastPeriod);
+            nextEst.setDate(nextEst.getDate() + cycleLen);
+            daysUntilNext = Math.round((nextEst - now) / 86400000);
+          }
+          const inPmsNow = daysUntilNext !== null && daysUntilNext > 0 && daysUntilNext <= PMS_WINDOW_DAYS;
+
+          return (
+            <div style={{ background: "#fff", borderRadius: 16, padding: 16, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "2px solid #ec489933" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", marginBottom: 10, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
+                <span>תסמונת קדם וסתית (PMS)</span>
+                <span>🩸</span>
+              </div>
+              <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "right", marginBottom: 10 }}>
+                ניתוח על פני {periodStarts.length} מחזורים אחרונים • חלון PMS: {PMS_WINDOW_DAYS} ימים לפני הווסת
+              </div>
+
+              {inPmsNow && (
+                <div style={{ background: "linear-gradient(135deg, #ec4899, #db2777)", borderRadius: 12, padding: 12, marginBottom: 10, color: "#fff" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, textAlign: "right" }}>
+                    ⚠️ את כרגע בחלון PMS
+                  </div>
+                  <div style={{ fontSize: 11, opacity: 0.9, textAlign: "right", marginTop: 4 }}>
+                    הווסת צפויה בעוד {daysUntilNext} ימים. מיחושים שתדווחי עליהם היום ייחשבו סטטיסטית כחלק מ-PMS.
+                  </div>
+                </div>
+              )}
+
+              {recurring.length > 0 ? (
+                <div>
+                  <div style={{ fontSize: 12, color: "#64748b", textAlign: "right", marginBottom: 8, fontWeight: 600 }}>
+                    תסמינים חוזרים שזוהו:
+                  </div>
+                  {recurring.map((r, i) => (
+                    <div key={i} style={{ background: "#fdf2f8", borderRadius: 10, padding: 10, marginBottom: 6 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", direction: "rtl" }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: "#9f1239" }}>
+                          {r.icon} {r.text}
+                        </div>
+                        <div style={{ fontSize: 11, color: "#ec4899", fontWeight: 600 }}>
+                          {r.cycleCount} מתוך {periodStarts.length} מחזורים
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 11, color: "#be185d", textAlign: "right", marginTop: 4, lineHeight: 1.5 }}>
+                        דווח ב-{r.cycleCount} מחזורים שונים בימים שלפני הווסת — סביר שזה חלק מ-PMS שלך ולא קשור לגורם חיצוני.
+                      </div>
+                    </div>
+                  ))}
+                  <div style={{ fontSize: 11, color: "#6366f1", textAlign: "right", marginTop: 8, fontWeight: 600 }}>
+                    💡 בפעם הבאה שתדווחי על אחד מהתסמינים האלה בימים שלפני הווסת, המערכת תסמן אותו אוטומטית כ-PMS.
+                  </div>
+                </div>
+              ) : (
+                <div style={{ fontSize: 12, color: "#94a3b8", textAlign: "right", padding: 10 }}>
+                  עדיין אין מספיק נתונים לזיהוי דפוסי PMS חוזרים. המשיכי להזין תסמינים ותאריכי מחזור.
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* LIVE CORRELATION ANALYSIS - based on actual timestamped data */}
+        {symptoms.length > 0 && (todayFoods.length > 0 || supplementLog.length > 0) && (() => {
+          const WINDOW_MS = 3 * 60 * 60 * 1000; // 3 hours before symptom
+          const correlations = [];
+          symptoms.forEach(sym => {
+            if (!sym.timestamp) return;
+            const precedingFoods = todayFoods.filter(f => f.timestamp && sym.timestamp - f.timestamp > 0 && sym.timestamp - f.timestamp <= WINDOW_MS);
+            const precedingSupps = supplementLog.filter(s => s.timestamp && sym.timestamp - s.timestamp > 0 && sym.timestamp - s.timestamp <= WINDOW_MS);
+            if (precedingFoods.length > 0 || precedingSupps.length > 0) {
+              correlations.push({ sym, precedingFoods, precedingSupps });
+            }
+          });
+          if (correlations.length === 0) return null;
+          return (
+            <div style={{ background: "#fff", borderRadius: 16, padding: 16, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "2px solid #fbbf2433" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", marginBottom: 10, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
+                <span>קורלציות מהיום</span>
+                <span>⏱️</span>
+              </div>
+              <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "right", marginBottom: 10 }}>מה צרכת עד 3 שעות לפני כל מיחוש</div>
+              {correlations.map((c, i) => (
+                <div key={i} style={{ background: "#fffbeb", borderRadius: 10, padding: 10, marginBottom: 8 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#92400e", textAlign: "right", marginBottom: 6 }}>
+                    {c.sym.icon} {c.sym.text} <span style={{ fontSize: 11, color: "#d97706" }}>ב-{c.sym.time}</span>
+                  </div>
+                  {c.precedingFoods.length > 0 && (
+                    <div style={{ fontSize: 11, color: "#78350f", textAlign: "right", marginBottom: 4 }}>
+                      🍽️ {c.precedingFoods.map(f => {
+                        const mins = Math.round((c.sym.timestamp - f.timestamp) / 60000);
+                        const timeAgo = mins >= 60 ? Math.floor(mins / 60) + "ש' " + (mins % 60) + "ד'" : mins + " דקות";
+                        return f.food.name + " (" + timeAgo + " לפני)";
+                      }).join(" • ")}
+                    </div>
+                  )}
+                  {c.precedingSupps.length > 0 && (
+                    <div style={{ fontSize: 11, color: "#78350f", textAlign: "right" }}>
+                      💊 {c.precedingSupps.map(s => {
+                        const mins = Math.round((c.sym.timestamp - s.timestamp) / 60000);
+                        const timeAgo = mins >= 60 ? Math.floor(mins / 60) + "ש' " + (mins % 60) + "ד'" : mins + " דקות";
+                        return s.name + " (" + timeAgo + " לפני)";
+                      }).join(" • ")}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div style={{ fontSize: 11, color: "#6366f1", textAlign: "right", marginTop: 8, fontWeight: 600 }}>
+                💡 ככל שתזין/י יותר נתונים עם הזמן, נוכל לזהות דפוסים חוזרים ולהציע לך תובנות מדויקות יותר
+              </div>
+            </div>
+          );
+        })()}
+
+        <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", borderRadius: 16, padding: 20, color: "#fff", marginBottom: 16 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>📋 הצהרות להיום</div>
+          {latestData.hadRadish && (
+            <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>⚠️ שים/י לב!</div>
+              <div style={{ fontSize: 13, opacity: 0.9 }}>אתמול אכלת צנון. לפי הנתונים שלך, בסיכוי של <strong>~82%</strong> ייתכן שתראה/י פריחה היום.</div>
+            </div>
+          )}
+          {!latestData.tookIron && (
+            <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>💊 תזכורת ברזל</div>
+              <div style={{ fontSize: 13, opacity: 0.9 }}>לא לקחת אתמול ברזל. בימים בלי ברזל האנרגיה שלך נמוכה יותר. קח/י היום!</div>
+            </div>
+          )}
+          {latestData.periodDay && latestData.periodDay <= 3 && (
+            <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>🩸 מחזור — יום {latestData.periodDay}</div>
+              <div style={{ fontSize: 13, opacity: 0.9 }}>את בימי המחזור. סטטיסטית בימים האלה את עייפה יותר ונפוחה. כדאי: ברזל, הליכה קלה, מזונות עשירים בברזל.</div>
+            </div>
+          )}
+          <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 14 }}>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>🎯 יעד להיום</div>
+            <div style={{ fontSize: 13, opacity: 0.9 }}>
+              נשאר לך {Math.max(0, calorieGoal - todayTotals.calories)} קק״ל ו-{Math.max(0, Math.round(proteinGoal - todayTotals.protein))}g חלבון.
+              {todayTotals.protein < proteinGoal * 0.5 && " מומלץ להתמקד בחלבון בארוחות הבאות."}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>🌟 המלצות אישיות להיום</div>
+          {[
+            { icon: "🚶", text: "עשה/י הליכה של 30 דקות — בימים עם הליכה הדיווחים שלך מראים מצב רוח טוב יותר ב-40%", bg: "#f0fdf4", color: "#166534" },
+            { icon: "🥚", text: "נסה/י להוסיף ביצים או יוגורט — אלה מזונות שסטטיסטית נותנים לך אנרגיה טובה", bg: "#eff6ff", color: "#1e40af" },
+            { icon: "💧", text: "שתה/י לפחות 8 כוסות מים — בימים עם נפיחות, שתייה עוזרת", bg: "#f0f9ff", color: "#0c4a6e" },
+            { icon: "😴", text: "השתדל/י לישון לפני 23:00 — ב-7 ימים אחרונים ישנת ממוצע של " + (sampleData.slice(-7).reduce((s,d) => s + d.sleepHours, 0) / 7).toFixed(1) + " שעות", bg: "#f5f3ff", color: "#4c1d95" },
+          ].map((rec, i) => (
+            <div key={i} style={{ background: rec.bg, borderRadius: 12, padding: 14, marginBottom: 10, display: "flex", gap: 10, alignItems: "flex-start", direction: "rtl" }}>
+              <span style={{ fontSize: 20 }}>{rec.icon}</span>
+              <span style={{ fontSize: 13, color: rec.color, lineHeight: 1.6 }}>{rec.text}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right" }}>📅 תחזית שבועית</div>
+          <div style={{ fontSize: 13, color: "#475569", textAlign: "right", lineHeight: 1.8 }}>
+            <p>אם תמשיך/י בקצב הנוכחי:</p>
+            <p>⚖️ עוד שבוע המשקל הצפוי: <strong>{(sampleData[sampleData.length-1].weight - 0.4).toFixed(1)} ק״ג</strong></p>
+            <p>⚖️ עוד חודש: <strong>{(sampleData[sampleData.length-1].weight - 1.6).toFixed(1)} ק״ג</strong></p>
+            {weightGoal && <p>🎯 תגיע/י ליעד {weightGoal} ק״ג בעוד כ-{Math.ceil((sampleData[sampleData.length-1].weight - parseFloat(weightGoal)) / 0.4)} שבועות</p>}
+          </div>
+        </div>
