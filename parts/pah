@@ -1,208 +1,107 @@
-style={{ fontSize: 13, color: "#64748b", marginBottom: 12 }}>{barcodeResult.serving}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 16 }}>
-              {[
-                { label: "קלוריות", val: barcodeResult.calories, unit: "קק״ל", color: "#f59e0b" },
-                { label: "חלבון", val: barcodeResult.protein, unit: "g", color: "#ef4444" },
-                { label: "פחמימות", val: barcodeResult.carbs, unit: "g", color: "#3b82f6" },
-                { label: "שומן", val: barcodeResult.fat, unit: "g", color: "#8b5cf6" },
-              ].map(n => (
-                <div key={n.label} style={{ textAlign: "center", padding: 8, background: "#fff", borderRadius: 10 }}>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: n.color }}>{n.val}</div>
-                  <div style={{ fontSize: 10, color: "#64748b" }}>{n.unit}</div>
-                  <div style={{ fontSize: 10, color: "#94a3b8" }}>{n.label}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => addFood(barcodeResult)}
-                style={{ flex: 1, padding: 14, borderRadius: 12, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 15 }}>
-                <Plus size={18} style={{ verticalAlign: "middle", marginLeft: 4 }} /> הוסף ליומן
-              </button>
-              <button onClick={() => saveToMyFoods(barcodeResult)}
-                style={{ padding: 14, borderRadius: 12, border: "2px solid #f59e0b", background: isInMyFoods(barcodeResult.name) ? "#fef3c7" : "#fff", color: "#f59e0b", cursor: "pointer" }}>
-                <Star size={18} fill={isInMyFoods(barcodeResult.name) ? "#f59e0b" : "none"} />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
+// ==================== REUSABLE COMPONENTS ====================
 
-    // --- Tab: Manual Entry ---
-    const renderManualTab = () => {
-      const fields = [
-        { key: "name", label: "שם המאכל", placeholder: "למשל: עוגת שוקולד ביתית", type: "text", required: true },
-        { key: "serving", label: "גודל מנה", placeholder: "למשל: 1 פרוסה, 100 גרם", type: "text" },
-        { key: "calories", label: "קלוריות", placeholder: "0", type: "number", required: true, icon: "🔥" },
-        { key: "protein", label: "חלבון (g)", placeholder: "0", type: "number", icon: "🥩" },
-        { key: "carbs", label: "פחמימות (g)", placeholder: "0", type: "number", icon: "🍞" },
-        { key: "fat", label: "שומן (g)", placeholder: "0", type: "number", icon: "🧈" },
-      ];
+const RatingInput = ({ value, onChange, label, icon: Icon, color = "#f59e0b" }) => (
+  <div style={{ marginBottom: 16 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, justifyContent: "flex-end" }}>
+      {Icon && <Icon size={18} color={color} />}
+      <span style={{ fontWeight: 600, fontSize: 14, color: "#1e293b" }}>{label}</span>
+    </div>
+    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", direction: "ltr" }}>
+      {[1, 2, 3, 4, 5].map(star => (
+        <button key={star} onClick={() => onChange(star)}
+          style={{
+            width: 40, height: 40, borderRadius: 10, border: "none", cursor: "pointer",
+            background: value >= star ? color : "#f1f5f9",
+            color: value >= star ? "#fff" : "#94a3b8",
+            fontWeight: 700, fontSize: 16, transition: "all 0.2s"
+          }}>
+          {star}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+const PillToggle = ({ items, selected, onToggle, multi = true }) => (
+  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" }}>
+    {items.map(item => {
+      const isSelected = multi ? selected.includes(item.id) : selected === item.id;
       return (
-        <div style={{ flex: 1, overflow: "auto", padding: "20px 16px", direction: "rtl" }}>
-          <div style={{ textAlign: "center", marginBottom: 20 }}>
-            <div style={{ fontSize: 40, marginBottom: 4 }}>✍️</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>הזנה ידנית</div>
-            <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>הוסף/י מאכל עם הערכים התזונתיים שלו</div>
-          </div>
-
-          {fields.map(f => (
-            <div key={f.key} style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 4, display: "block" }}>
-                {f.icon && <span style={{ marginLeft: 4 }}>{f.icon}</span>}
-                {f.label} {f.required && <span style={{ color: "#ef4444" }}>*</span>}
-              </label>
-              <input type={f.type} placeholder={f.placeholder} value={manualFood[f.key]}
-                onChange={e => setManualFood(prev => ({ ...prev, [f.key]: e.target.value }))}
-                style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", boxSizing: "border-box",
-                  ...(f.type === "number" ? { textAlign: "center", fontSize: 16, fontWeight: 600 } : {})
-                }} />
-            </div>
-          ))}
-
-          {/* Preview */}
-          {manualFood.name && manualFood.calories && (
-            <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 16, marginBottom: 16, border: "1px solid #bae6fd" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#0284c7", marginBottom: 8 }}>תצוגה מקדימה:</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>{manualFood.name}</div>
-              <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>
-                {manualFood.serving || "1 מנה"} • {manualFood.calories} קק״ל • ח׳{manualFood.protein || 0}g פ׳{manualFood.carbs || 0}g ש׳{manualFood.fat || 0}g
-              </div>
-            </div>
-          )}
-
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={addManualFood} disabled={!manualFood.name || !manualFood.calories}
-              style={{ flex: 1, padding: 14, borderRadius: 12, border: "none", background: (manualFood.name && manualFood.calories) ? "#6366f1" : "#e2e8f0", color: (manualFood.name && manualFood.calories) ? "#fff" : "#94a3b8", cursor: (manualFood.name && manualFood.calories) ? "pointer" : "default", fontWeight: 700, fontSize: 15 }}>
-              <Plus size={18} style={{ verticalAlign: "middle", marginLeft: 4 }} /> הוסף ליומן
-            </button>
-            <button onClick={() => { if (manualFood.name && manualFood.calories) { saveToMyFoods({ ...manualFood, id: `manual-${Date.now()}`, calories: parseInt(manualFood.calories)||0, protein: parseFloat(manualFood.protein)||0, carbs: parseFloat(manualFood.carbs)||0, fat: parseFloat(manualFood.fat)||0, serving: manualFood.serving || "1 מנה", category: "ידני" }); }}}
-              disabled={!manualFood.name || !manualFood.calories}
-              style={{ padding: 14, borderRadius: 12, border: "2px solid #f59e0b", background: "#fff", color: "#f59e0b", cursor: (manualFood.name && manualFood.calories) ? "pointer" : "default", opacity: (manualFood.name && manualFood.calories) ? 1 : 0.4 }}>
-              <Star size={18} />
-            </button>
-          </div>
-          <div style={{ height: 40 }} />
-        </div>
+        <button key={item.id} onClick={() => onToggle(item.id)}
+          style={{
+            padding: "8px 14px", borderRadius: 20, border: "2px solid",
+            borderColor: isSelected ? (item.color || "#6366f1") : "#e2e8f0",
+            background: isSelected ? `${item.color || "#6366f1"}15` : "#fff",
+            color: isSelected ? (item.color || "#6366f1") : "#64748b",
+            cursor: "pointer", fontSize: 14, fontWeight: 500,
+            display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s"
+          }}>
+          <span>{item.label}</span>
+          {item.icon && typeof item.icon === "string" && <span>{item.icon}</span>}
+        </button>
       );
-    };
+    })}
+  </div>
+);
 
-    // --- Tab: My Foods ---
-    const renderMyFoodsTab = () => (
-      <div style={{ flex: 1, overflow: "auto", padding: "16px", direction: "rtl" }}>
-        {myFoods.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "60px 20px", color: "#94a3b8" }}>
-            <Bookmark size={48} style={{ marginBottom: 12, opacity: 0.3 }} />
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#64748b" }}>עדיין אין מאכלים שמורים</div>
-            <div style={{ fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
-              לחצ/י על הכוכב ⭐ ליד כל מאכל כדי לשמור אותו כאן.
-              <br />זה יעזור לך להוסיף מאכלים קבועים בקלות!
-            </div>
-          </div>
-        ) : (
-          <>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
-              <Star size={14} color="#f59e0b" fill="#f59e0b" /> המאכלים שלי ({myFoods.length})
-            </div>
-            {myFoods.map(food => (
-              <div key={food.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 4px", borderBottom: "1px solid #f1f5f9" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <button onClick={() => addFood(food)} title="הוסף ליומן"
-                    style={{ background: "#6366f1", border: "none", cursor: "pointer", color: "#fff", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Plus size={16} />
-                  </button>
-                  <button onClick={() => removeFromMyFoods(food.id)} title="הסר מהמאכלים שלי"
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#ef4444" }}>
-                    <Trash2 size={14} />
-                  </button>
-                  <div style={{ textAlign: "left", minWidth: 45 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{food.calories}</div>
-                    <div style={{ fontSize: 9, color: "#94a3b8" }}>קק״ל</div>
-                  </div>
-                </div>
-                <div style={{ flex: 1, paddingRight: 8, textAlign: "right" }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{food.name}</div>
-                  <div style={{ fontSize: 11, color: "#94a3b8" }}>
-                    {food.serving} • ח׳{food.protein}g  פ׳{food.carbs}g  ש׳{food.fat}g
-                  </div>
-                </div>
-              </div>
-            ))}
-          </>
-        )}
+const ProgressBar = ({ value, max, color, label, unit = "" }) => {
+  const pct = Math.min((value / max) * 100, 100);
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 13 }}>
+        <span style={{ color: "#64748b" }}>{Math.round(value)}{unit} / {max}{unit}</span>
+        <span style={{ fontWeight: 600, color: "#1e293b" }}>{label}</span>
       </div>
-    );
+      <div style={{ height: 8, borderRadius: 4, background: "#f1f5f9", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${pct}%`, borderRadius: 4, background: color, transition: "width 0.5s" }} />
+      </div>
+    </div>
+  );
+};
 
-    return (
-      <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 1000, display: "flex", flexDirection: "column", maxWidth: 480, margin: "0 auto" }}>
-        {/* CSS for spinner animation */}
-        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
-
-        {/* Top bar */}
-        <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", padding: "14px 16px 0 16px", color: "#fff" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <button onClick={() => { setShowFoodSearch(false); setFoodSearch(""); setFoodCategoryFilter("all"); setFoodModalTab("search"); setApiSearchResults([]); setBarcodeResult(null); setBarcodeInput(""); }}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 14, fontWeight: 600 }}>
-              ✕ סגור
-            </button>
-            <span style={{ fontSize: 18, fontWeight: 700 }}>הוסף מאכל</span>
+const BmiCard = ({ profile, morningWeight }) => {
+  if (!profile?.height || (!profile?.currentWeight && !morningWeight)) return null;
+  const h = parseFloat(profile.height) / 100;
+  const w = parseFloat(morningWeight || profile.currentWeight);
+  if (!h || !w || h <= 0) return null;
+  const bmiVal = w / (h * h);
+  const bmi = bmiVal.toFixed(1);
+  const info = bmiVal < 18.5 ? { label: "תת משקל", color: "#3b82f6", bg: "#eff6ff", emoji: "⚠️" }
+    : bmiVal < 25 ? { label: "משקל תקין", color: "#22c55e", bg: "#f0fdf4", emoji: "✅" }
+    : bmiVal < 30 ? { label: "עודף משקל", color: "#f59e0b", bg: "#fffbeb", emoji: "⚡" }
+    : { label: "השמנה", color: "#ef4444", bg: "#fef2f2", emoji: "⚠️" };
+  const pct = Math.min(100, Math.max(0, ((bmiVal - 15) / 25) * 100));
+  return (
+    <div style={{ background: info.bg, borderRadius: 16, padding: 16, marginBottom: 16, border: "2px solid " + info.color + "22", direction: "rtl" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: info.color }}>{info.emoji} {info.label}</span>
+        </div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>BMI מדד</div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ height: 8, borderRadius: 4, background: "#e2e8f0", overflow: "hidden", position: "relative" }}>
+            <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: "27.5%", background: "#3b82f6", borderRadius: "4px 0 0 4px" }} />
+            <div style={{ position: "absolute", left: "27.5%", top: 0, height: "100%", width: "32.5%", background: "#22c55e" }} />
+            <div style={{ position: "absolute", left: "60%", top: 0, height: "100%", width: "20%", background: "#f59e0b" }} />
+            <div style={{ position: "absolute", left: "80%", top: 0, height: "100%", width: "20%", background: "#ef4444", borderRadius: "0 4px 4px 0" }} />
+            <div style={{ position: "absolute", top: -3, width: 14, height: 14, borderRadius: "50%", background: "#fff", border: "3px solid " + info.color, left: pct + "%", transform: "translateX(-50%)" }} />
           </div>
-
-          {/* 4-tab selector */}
-          <div style={{ display: "flex", gap: 0, direction: "rtl" }}>
-            {FOOD_TABS.map(tab => (
-              <button key={tab.id} onClick={() => setFoodModalTab(tab.id)}
-                style={{
-                  flex: 1, padding: "10px 4px 12px", background: "none", border: "none", cursor: "pointer",
-                  color: foodModalTab === tab.id ? "#fff" : "rgba(255,255,255,0.6)",
-                  borderBottom: foodModalTab === tab.id ? "3px solid #fff" : "3px solid transparent",
-                  display: "flex", flexDirection: "column", alignItems: "center", gap: 3, transition: "all 0.2s",
-                }}>
-                {tab.icon}
-                <span style={{ fontSize: 11, fontWeight: 600 }}>{tab.label}</span>
-              </button>
-            ))}
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4, fontSize: 9, color: "#94a3b8" }}>
+            <span>15</span><span>18.5</span><span>25</span><span>30</span><span>40</span>
           </div>
         </div>
-
-        {/* Tab content */}
-        {foodModalTab === "search" && renderSearchTab()}
-        {foodModalTab === "barcode" && renderBarcodeTab()}
-        {foodModalTab === "manual" && renderManualTab()}
-        {foodModalTab === "myfoods" && renderMyFoodsTab()}
+        <div style={{ textAlign: "center", minWidth: 50 }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: info.color }}>{bmi}</div>
+          <div style={{ fontSize: 10, color: "#64748b" }}>BMI</div>
+        </div>
       </div>
-    );
-  };
-
-  // --- QUESTIONNAIRES TAB ---
-  const renderQuestionnaires = () => {
-    const toggleReportType = (id) => {
-      setNewReportTypes(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
-    };
-    const toggleBodyPart = (id) => {
-      setNewReportBodyParts(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
-    };
-
-    const needsBodyPartSelection = newReportTypes.some(t => SYMPTOM_TYPES.find(s => s.id === t)?.needsBodyPart);
-
-    const addHealthReport = () => {
-      if (newReportTypes.length === 0) return;
-      const labels = newReportTypes.map(t => SYMPTOM_TYPES.find(s => s.id === t)).filter(Boolean);
-      setHealthReports(prev => [...prev, {
-        id: Date.now(),
-        types: newReportTypes,
-        label: labels.map(l => l.label).join(", "),
-        icon: labels[0]?.icon || "📝",
-        icons: labels.map(l => l.icon),
-        severity: newReportSeverity,
-        note: newReportNote,
-        bodyParts: needsBodyPartSelection ? newReportBodyParts : [],
-        bodyPartsLabel: needsBodyPartSelection ? newReportBodyParts.map(bp => BODY_PARTS.find(b => b.id === bp)?.label).filter(Boolean).join(", ") : "",
-        time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }),
-        timestamp: Date.now(),
-      }]);
-      setNewReportTypes([]);
-      setNewReportSeverity(3);
-      setNewReportNote("");
-      setNewReportBodyParts([]);
-    };
+      <div style={{ fontSize: 11, color: "#64748b", display: "flex", gap: 12 }}>
+        <span>{"גובה: " + profile.height + " ס״מ"}</span>
+        <span>{"משקל: " + w + " ק״ג"}</span>
+        {morningWeight && <span style={{ color: info.color, fontWeight: 600 }}>(משקל בוקר)</span>}
+      </div>
+    </div>
+  );
+};

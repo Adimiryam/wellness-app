@@ -1,293 +1,87 @@
-   <span>התחלה: {dietProject.startWeight} ק"ג</span>
-                  <span>יעד: {dietProject.targetWeight} ק"ג</span>
-                </div>
-                <div style={{ background: "#e5e7eb", borderRadius: 8, height: 14, overflow: "hidden", marginBottom: 8 }}>
-                  <div style={{
-                    width: dpProgress.pct + "%", height: "100%", borderRadius: 8,
-                    background: "linear-gradient(90deg, #6366f1, #8b5cf6)",
-                    transition: "width 0.5s ease",
-                  }} />
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, textAlign: "center" }}>
-                  <div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: "#6366f1" }}>{dpProgress.pct}%</div>
-                    <div style={{ fontSize: 10, color: "#64748b" }}>הושלם</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: "#16a34a" }}>{dpProgress.lost} ק"ג</div>
-                    <div style={{ fontSize: 10, color: "#64748b" }}>ירד עד כה</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: "#f59e0b" }}>{dpProgress.daysLeft !== null ? dpProgress.daysLeft : "--"}</div>
-                    <div style={{ fontSize: 10, color: "#64748b" }}>ימים נותרו</div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
+        {/* Step 2: Goals */}
+        {step === 2 && (
           <div>
-            {showDietProjectForm ? (
-              <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
-                  יצירת פרויקט דיאטה חדש
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              🎯 מה המטרה שלך?
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              מה את/ה רוצה לקבל מהאפליקציה? (ניתן לבחור כמה מטרות)
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+              {DIET_GOALS.map(goal => {
+                const Icon = goal.icon;
+                const isSelected = goalTypes.includes(goal.id);
+                return (
+                  <button key={goal.id} onClick={() => setGoalTypes(prev => prev.includes(goal.id) ? prev.filter(g => g !== goal.id) : [...prev, goal.id])}
+                    style={{
+                      padding: 16, borderRadius: 14, border: "2px solid",
+                      borderColor: isSelected ? goal.color : "#e2e8f0",
+                      background: isSelected ? `${goal.color}10` : "#fff",
+                      cursor: "pointer", textAlign: "right",
+                      boxShadow: isSelected ? `0 4px 12px ${goal.color}30` : "none",
+                      transition: "all 0.2s", position: "relative"
+                    }}>
+                    {isSelected && <div style={{ position: "absolute", top: 8, left: 8, width: 20, height: 20, borderRadius: 10, background: goal.color, display: "flex", alignItems: "center", justifyContent: "center" }}><Check size={12} color="#fff" /></div>}
+                    <Icon size={24} color={goal.color} style={{ marginBottom: 8 }} />
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>{goal.label}</div>
+                    <div style={{ fontSize: 11, color: "#64748b" }}>{goal.desc}</div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {goalTypes.length > 0 && (
+              <div style={{ background: "#f0fdf4", borderRadius: 12, padding: 12, marginBottom: 16, textAlign: "right" }}>
+                <span style={{ fontSize: 13, color: "#166534", fontWeight: 600 }}>נבחרו {goalTypes.length} מטרות: </span>
+                <span style={{ fontSize: 13, color: "#166534" }}>{goalTypes.map(g => DIET_GOALS.find(d => d.id === g)?.label).join(", ")}</span>
+              </div>
+            )}
+
+            {(goalTypes.includes("weight_loss") || goalTypes.includes("weight_gain")) && (
+              <div style={cardStyle}>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                    משקל יעד (ק״ג)
+                  </label>
+                  <input type="number" placeholder="למשל: 65" value={weightGoalValue} onChange={e => setWeightGoalValue(e.target.value)} style={inputStyle} />
                 </div>
-                <input value={dietProjectName} onChange={e => setDietProjectName(e.target.value)}
-                  placeholder="שם הפרויקט (למשל: דיאטת קיץ)"
-                  style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", marginBottom: 8, fontSize: 14, textAlign: "right", boxSizing: "border-box" }} />
-                <input value={dietProjectTarget} onChange={e => setDietProjectTarget(e.target.value)}
-                  placeholder="משקל יעד (ק״ג)" type="number" step="0.1"
-                  style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", marginBottom: 8, fontSize: 14, textAlign: "right", boxSizing: "border-box" }} />
-                <input value={dietProjectDeadline} onChange={e => setDietProjectDeadline(e.target.value)}
-                  type="date" placeholder="תאריך יעד (אופציונלי)"
-                  style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", marginBottom: 10, fontSize: 14, textAlign: "right", boxSizing: "border-box" }} />
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button onClick={() => setShowDietProjectForm(false)} style={{
-                    flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", background: "#f8fafc", fontSize: 14, cursor: "pointer", color: "#64748b",
-                  }}>ביטול</button>
-                  <button onClick={createDietProject} style={{
-                    flex: 1, padding: 10, borderRadius: 10, border: "none", background: "#6366f1", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer",
-                  }}>צור פרויקט</button>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                    🔥 יעד קלוריות יומי
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>קק״ל</span>
+                    <input type="number" min="1000" max="5000" value={calorieGoalValue === 0 ? "" : calorieGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setCalorieGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setCalorieGoalValue(Math.min(5000, Math.max(0, v))); }}
+                      onBlur={e => { const v = parseInt(e.target.value) || 1800; setCalorieGoalValue(Math.min(5000, Math.max(1000, v))); }}
+                      style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#6366f1", boxSizing: "border-box" }} />
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 1,000 ל-5,000 קק״ל</div>
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                    🥩 יעד חלבון יומי (גרם)
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>גרם</span>
+                    <input type="number" min="0" max="700" value={proteinGoalValue === 0 ? "" : proteinGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setProteinGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
+                      onBlur={e => { const v = parseInt(e.target.value) || 80; setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
+                      style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#f59e0b", boxSizing: "border-box" }} />
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
                 </div>
               </div>
-            ) : (
-              <button onClick={() => setShowDietProjectForm(true)} style={{
-                width: "100%", padding: 12, borderRadius: 12, border: "2px dashed #c7d2fe", background: "#eef2ff", color: "#6366f1",
-                fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-              }}>
-                <Plus size={16} /> צור פרויקט דיאטה חדש
-              </button>
+            )}
+
+            {trackingChoices.includes("steps") && (
+              <div style={cardStyle}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                  👟 יעד צעדים יומי
+                </label>
+                <input type="number" min="1000" max="50000" placeholder="למשל: 8000" value={stepsGoalValue === 0 ? "" : stepsGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setStepsGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setStepsGoalValue(Math.min(50000, Math.max(1000, v))); }}
+                  style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#22c55e", boxSizing: "border-box" }} />
+                <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 1,000 ל-50,000 צעדים</div>
+              </div>
             )}
           </div>
         )}
-
-        {/* Add Weight Entry */}
-        {showAddWeightForm ? (
-          <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
-              הזנת שקילה
-            </div>
-            <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-              <input value={newWeightDate} onChange={e => setNewWeightDate(e.target.value)}
-                type="date" style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 14, boxSizing: "border-box" }} />
-              <input value={newWeightValue} onChange={e => setNewWeightValue(e.target.value)}
-                type="number" step="0.1" placeholder="משקל (ק״ג)"
-                style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 14, textAlign: "right", boxSizing: "border-box" }} />
-            </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => setShowAddWeightForm(false)} style={{
-                flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", background: "#f8fafc", fontSize: 14, cursor: "pointer", color: "#64748b",
-              }}>ביטול</button>
-              <button onClick={addWeight} style={{
-                flex: 1, padding: 10, borderRadius: 10, border: "none", background: "#6366f1", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer",
-              }}>שמור</button>
-            </div>
-          </div>
-        ) : (
-          <button onClick={() => setShowAddWeightForm(true)} style={{
-            width: "100%", padding: 12, borderRadius: 12, border: "none", background: "#6366f1", color: "#fff",
-            fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-          }}>
-            <Plus size={16} /> הזן שקילה חדשה
-          </button>
-        )}
-
-        {/* Recent Entries */}
-        <div style={{ background: "#fff", borderRadius: 16, padding: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>שקילות אחרונות</div>
-          {allSorted.slice(-10).reverse().map((entry, i) => (
-            <div key={i} style={{
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "8px 0", borderBottom: i < 9 ? "1px solid #f1f5f9" : "none", direction: "rtl",
-            }}>
-              <span style={{ fontSize: 13, color: "#64748b" }}>{entry.date}</span>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 15, fontWeight: 600, color: "#1e293b" }}>{entry.weight} ק"ג</span>
-                {i < allSorted.slice(-10).reverse().length - 1 && (() => {
-                  const prev = allSorted.slice(-10).reverse()[i + 1];
-                  const diff = entry.weight - prev.weight;
-                  if (Math.abs(diff) < 0.05) return null;
-                  return (
-                    <span style={{ fontSize: 11, color: diff < 0 ? "#16a34a" : "#dc2626" }}>
-                      {diff < 0 ? <TrendingDown size={12} /> : <TrendingUp size={12} />}
-                      {Math.abs(diff).toFixed(1)}
-                    </span>
-                  );
-                })()}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  // --- PREDICTIONS ---
-  const renderPredictions = () => {
-    const latestData = sampleData[sampleData.length - 1];
-    return (
-      <div>
-        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 6, textAlign: "right" }}>🔮 תחזיות והמלצות</div>
-        <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>מבוסס על הנתונים שצברת עד כה</div>
-
-        {/* PMS / CYCLE PATTERN DETECTION */}
-        {(() => {
-          // Combine reported period dates + sample data period starts
-          const periodStarts = [];
-          sampleData.forEach(d => { if (d.isPeriodStart) periodStarts.push(d.date); });
-          periodLog.forEach(d => { if (!periodStarts.includes(d)) periodStarts.push(d); });
-          if (periodStarts.length < 2) return null;
-
-          // For each period start, look at the 3 days before it and collect symptoms
-          const PMS_WINDOW_DAYS = 3;
-          const symptomsByTypeInPms = {}; // typeId -> { count, text, icon, cycles: [date] }
-          periodStarts.forEach(pStart => {
-            const pDate = new Date(pStart);
-            for (let back = 1; back <= PMS_WINDOW_DAYS; back++) {
-              const d = new Date(pDate);
-              d.setDate(d.getDate() - back);
-              const dStr = d.toISOString().split("T")[0];
-              const dayData = sampleData.find(sd => sd.date === dStr);
-              const daySymptoms = dayData?.symptomsReported || [];
-              // Also include current symptoms if they match today in PMS window
-              const todayStr = new Date().toISOString().split("T")[0];
-              if (dStr === todayStr) {
-                symptoms.forEach(s => daySymptoms.push({ typeId: s.typeId, text: s.text, icon: s.icon }));
-              }
-              daySymptoms.forEach(s => {
-                if (!s.typeId) return;
-                if (!symptomsByTypeInPms[s.typeId]) {
-                  symptomsByTypeInPms[s.typeId] = { count: 0, text: s.text, icon: s.icon, cycles: new Set() };
-                }
-                symptomsByTypeInPms[s.typeId].cycles.add(pStart);
-                symptomsByTypeInPms[s.typeId].count++;
-              });
-            }
-          });
-
-          // Recurring = appeared in >= 2 cycles
-          const recurring = Object.entries(symptomsByTypeInPms)
-            .filter(([_, v]) => v.cycles.size >= 2)
-            .map(([typeId, v]) => ({ typeId, ...v, cycleCount: v.cycles.size }))
-            .sort((a, b) => b.cycleCount - a.cycleCount);
-
-          // Check if we're currently in PMS window
-          const now = new Date();
-          const lastPeriod = periodStarts.map(d => new Date(d)).sort((a, b) => b - a)[0];
-          const cycleLen = 28;
-          let daysUntilNext = null;
-          if (lastPeriod) {
-            const nextEst = new Date(lastPeriod);
-            nextEst.setDate(nextEst.getDate() + cycleLen);
-            daysUntilNext = Math.round((nextEst - now) / 86400000);
-          }
-          const inPmsNow = daysUntilNext !== null && daysUntilNext > 0 && daysUntilNext <= PMS_WINDOW_DAYS;
-
-          return (
-            <div style={{ background: "#fff", borderRadius: 16, padding: 16, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "2px solid #ec489933" }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", marginBottom: 10, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
-                <span>תסמונת קדם וסתית (PMS)</span>
-                <span>🩸</span>
-              </div>
-              <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "right", marginBottom: 10 }}>
-                ניתוח על פני {periodStarts.length} מחזורים אחרונים • חלון PMS: {PMS_WINDOW_DAYS} ימים לפני הווסת
-              </div>
-
-              {inPmsNow && (
-                <div style={{ background: "linear-gradient(135deg, #ec4899, #db2777)", borderRadius: 12, padding: 12, marginBottom: 10, color: "#fff" }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, textAlign: "right" }}>
-                    ⚠️ את כרגע בחלון PMS
-                  </div>
-                  <div style={{ fontSize: 11, opacity: 0.9, textAlign: "right", marginTop: 4 }}>
-                    הווסת צפויה בעוד {daysUntilNext} ימים. מיחושים שתדווחי עליהם היום ייחשבו סטטיסטית כחלק מ-PMS.
-                  </div>
-                </div>
-              )}
-
-              {recurring.length > 0 ? (
-                <div>
-                  <div style={{ fontSize: 12, color: "#64748b", textAlign: "right", marginBottom: 8, fontWeight: 600 }}>
-                    תסמינים חוזרים שזוהו:
-                  </div>
-                  {recurring.map((r, i) => (
-                    <div key={i} style={{ background: "#fdf2f8", borderRadius: 10, padding: 10, marginBottom: 6 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", direction: "rtl" }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: "#9f1239" }}>
-                          {r.icon} {r.text}
-                        </div>
-                        <div style={{ fontSize: 11, color: "#ec4899", fontWeight: 600 }}>
-                          {r.cycleCount} מתוך {periodStarts.length} מחזורים
-                        </div>
-                      </div>
-                      <div style={{ fontSize: 11, color: "#be185d", textAlign: "right", marginTop: 4, lineHeight: 1.5 }}>
-                        דווח ב-{r.cycleCount} מחזורים שונים בימים שלפני הווסת — סביר שזה חלק מ-PMS שלך ולא קשור לגורם חיצוני.
-                      </div>
-                    </div>
-                  ))}
-                  <div style={{ fontSize: 11, color: "#6366f1", textAlign: "right", marginTop: 8, fontWeight: 600 }}>
-                    💡 בפעם הבאה שתדווחי על אחד מהתסמינים האלה בימים שלפני הווסת, המערכת תסמן אותו אוטומטית כ-PMS.
-                  </div>
-                </div>
-              ) : (
-                <div style={{ fontSize: 12, color: "#94a3b8", textAlign: "right", padding: 10 }}>
-                  עדיין אין מספיק נתונים לזיהוי דפוסי PMS חוזרים. המשיכי להזין תסמינים ותאריכי מחזור.
-                </div>
-              )}
-            </div>
-          );
-        })()}
-
-        {/* LIVE CORRELATION ANALYSIS - based on actual timestamped data */}
-        {symptoms.length > 0 && (todayFoods.length > 0 || supplementLog.length > 0) && (() => {
-          const WINDOW_MS = 3 * 60 * 60 * 1000; // 3 hours before symptom
-          const correlations = [];
-          symptoms.forEach(sym => {
-            if (!sym.timestamp) return;
-            const precedingFoods = todayFoods.filter(f => f.timestamp && sym.timestamp - f.timestamp > 0 && sym.timestamp - f.timestamp <= WINDOW_MS);
-            const precedingSupps = supplementLog.filter(s => s.timestamp && sym.timestamp - s.timestamp > 0 && sym.timestamp - s.timestamp <= WINDOW_MS);
-            if (precedingFoods.length > 0 || precedingSupps.length > 0) {
-              correlations.push({ sym, precedingFoods, precedingSupps });
-            }
-          });
-          if (correlations.length === 0) return null;
-          return (
-            <div style={{ background: "#fff", borderRadius: 16, padding: 16, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "2px solid #fbbf2433" }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", marginBottom: 10, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
-                <span>קורלציות מהיום</span>
-                <span>⏱️</span>
-              </div>
-              <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "right", marginBottom: 10 }}>מה צרכת עד 3 שעות לפני כל מיחוש</div>
-              {correlations.map((c, i) => (
-                <div key={i} style={{ background: "#fffbeb", borderRadius: 10, padding: 10, marginBottom: 8 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#92400e", textAlign: "right", marginBottom: 6 }}>
-                    {c.sym.icon} {c.sym.text} <span style={{ fontSize: 11, color: "#d97706" }}>ב-{c.sym.time}</span>
-                  </div>
-                  {c.precedingFoods.length > 0 && (
-                    <div style={{ fontSize: 11, color: "#78350f", textAlign: "right", marginBottom: 4 }}>
-                      🍽️ {c.precedingFoods.map(f => {
-                        const mins = Math.round((c.sym.timestamp - f.timestamp) / 60000);
-                        const timeAgo = mins >= 60 ? Math.floor(mins / 60) + "ש' " + (mins % 60) + "ד'" : mins + " דקות";
-                        return f.food.name + " (" + timeAgo + " לפני)";
-                      }).join(" • ")}
-                    </div>
-                  )}
-                  {c.precedingSupps.length > 0 && (
-                    <div style={{ fontSize: 11, color: "#78350f", textAlign: "right" }}>
-                      💊 {c.precedingSupps.map(s => {
-                        const mins = Math.round((c.sym.timestamp - s.timestamp) / 60000);
-                        const timeAgo = mins >= 60 ? Math.floor(mins / 60) + "ש' " + (mins % 60) + "ד'" : mins + " דקות";
-                        return s.name + " (" + timeAgo + " לפני)";
-                      }).join(" • ")}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <div style={{ fontSize: 11, color: "#6366f1", textAlign: "right", marginTop: 8, fontWeight: 600 }}>
-                💡 ככל שתזין/י יותר נתונים עם הזמן, נוכל לזהות דפוסים חוזרים ולהציע לך תובנות מדויקות יותר
-              </div>
-            </div>
-          );
-        })()}
-
-        <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", borderRadius: 16, padding: 20, color: "#fff", marginBottom: 16 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>📋 הצהרות להיום</div>

@@ -1,189 +1,361 @@
-            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
-          </div>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>משקל יעד (ק״ג)</label>
-            <input type="number" placeholder="למשל: 65" value={weightGoal} onChange={e => setWeightGoal(e.target.value)}
-              style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", boxSizing: "border-box" }} />
-          </div>
-        </div>
-      )}
+        {/* Step 3: Health Conditions */}
+        {step === 3 && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              🏥 מצב בריאותי
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              יש לך מחלות, מיחושים או כאבים כרוניים? (ניתן לבחור כמה)
+            </div>
 
-      {/* Per-goal tips */}
-      {selectedGoals.length > 0 && (
-        <div style={{ background: "#f0f9ff", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#0369a1", marginBottom: 12, textAlign: "right" }}>💡 מה כדאי לך להזין כל יום לפי המטרות שלך:</div>
-          {selectedGoals.map(goalId => {
-            const goal = DIET_GOALS.find(g => g.id === goalId);
-            const Icon = goal?.icon;
-            return (
-              <div key={goalId} style={{ background: "#fff", borderRadius: 12, padding: 14, marginBottom: 8 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginBottom: 6 }}>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: goal?.color }}>{goal?.label}</span>
-                  {Icon && <Icon size={18} color={goal?.color} />}
-                </div>
-                <div style={{ fontSize: 12, color: "#0c4a6e", textAlign: "right", lineHeight: 1.7 }}>
-                  {GOAL_TIPS[goalId] || ""}
-                </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16, justifyContent: "flex-end" }}>
+              {HEALTH_CONDITIONS.map(c => {
+                const isSelected = conditions.includes(c.id);
+                return (
+                  <button key={c.id} onClick={() => toggleCondition(c.id)}
+                    style={{
+                      padding: "10px 14px", borderRadius: 20, border: "2px solid",
+                      borderColor: isSelected ? "#6366f1" : "#e2e8f0",
+                      background: isSelected ? "#eef2ff" : "#fff",
+                      color: isSelected ? "#6366f1" : "#64748b",
+                      cursor: "pointer", fontSize: 13, fontWeight: 500,
+                      display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s"
+                    }}>
+                    <span>{c.label}</span>
+                    <span>{c.icon}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {!conditions.includes("none") && conditions.length > 0 && (
+              <div style={cardStyle}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                  פרטים נוספים על המצב הבריאותי (אופציונלי)
+                </label>
+                <textarea placeholder="למשל: יש לי מיגרנות פעם בשבוע, כאבי גב תחתון כרוניים..."
+                  value={conditionNotes} onChange={e => setConditionNotes(e.target.value)}
+                  rows={3} style={{ ...inputStyle, resize: "vertical" }} />
               </div>
-            );
-          })}
-        </div>
-      )}
+            )}
+
+            <div style={cardStyle}>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                אלרגיות ורגישויות למזון (אופציונלי)
+              </label>
+              <input type="text" placeholder="למשל: בוטנים, סויה, גלוטן..."
+                value={allergies} onChange={e => setAllergies(e.target.value)} style={inputStyle} />
+            </div>
+
+            <div style={cardStyle}>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                כאבים או מיחושים שחוזרים (אופציונלי)
+              </label>
+              <input type="text" placeholder="למשל: כאבי בטן, פריחה, כאב ראש..."
+                value={painAreas} onChange={e => setPainAreas(e.target.value)} style={inputStyle} />
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Medications & Supplements */}
+        {step === 4 && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              💊 תרופות ותוספים
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              איזה תרופות ותוספי תזונה את/ה לוקח/ת?
+            </div>
+
+            <div style={cardStyle}>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                תרופות קבועות (אופציונלי)
+              </label>
+              <textarea placeholder="למשל: אלטרוקסין, ונטולין..."
+                value={currentMeds} onChange={e => setCurrentMeds(e.target.value)}
+                rows={2} style={{ ...inputStyle, resize: "vertical" }} />
+            </div>
+
+            <div style={cardStyle}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 12, textAlign: "right" }}>
+                ויטמינים ותוספי תזונה שאת/ה לוקח/ת:
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12, justifyContent: "flex-end" }}>
+                {SUPPLEMENTS.map(sup => {
+                  const taken = currentSupplements.includes(sup);
+                  return (
+                    <button key={sup} onClick={() => toggleSupplement(sup)}
+                      style={{
+                        padding: "8px 14px", borderRadius: 20, border: "2px solid",
+                        borderColor: taken ? "#22c55e" : "#e2e8f0",
+                        background: taken ? "#f0fdf4" : "#fff",
+                        color: taken ? "#166534" : "#64748b",
+                        cursor: "pointer", fontSize: 13, fontWeight: 500,
+                        display: "flex", alignItems: "center", gap: 4
+                      }}>
+                      <span>{sup}</span>
+                      {taken && <Check size={14} />}
+                    </button>
+                  );
+                })}
+              </div>
+              <div style={{ display: "flex", gap: 8, direction: "rtl" }}>
+                <input type="text" placeholder="תוסף אחר..." value={customSupplement} onChange={e => setCustomSupplement(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter" && customSupplement.trim()) { toggleSupplement(customSupplement.trim()); setCustomSupplement(""); }}}
+                  style={{ ...inputStyle, flex: 1 }} />
+                <button onClick={() => { if (customSupplement.trim()) { toggleSupplement(customSupplement.trim()); setCustomSupplement(""); }}}
+                  style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontWeight: 600 }}>
+                  <Plus size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 5: What to Track */}
+        {step === 5 && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              📊 מה תרצה/י לעקוב?
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              בחר/י את הנתונים שחשוב לך לעקוב אחריהם כל יום
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+              {TRACKING_OPTIONS.map(opt => {
+                const isSelected = trackingChoices.includes(opt.id);
+                return (
+                  <button key={opt.id} onClick={() => toggleTracking(opt.id)}
+                    style={{
+                      padding: 14, borderRadius: 14, border: "2px solid",
+                      borderColor: isSelected ? opt.color : "#e2e8f0",
+                      background: isSelected ? `${opt.color}10` : "#fff",
+                      cursor: "pointer", textAlign: "center",
+                      boxShadow: isSelected ? `0 3px 10px ${opt.color}20` : "none",
+                      transition: "all 0.2s"
+                    }}>
+                    <div style={{ fontSize: 24, marginBottom: 4 }}>{opt.icon}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: isSelected ? opt.color : "#475569" }}>{opt.label}</div>
+                    {isSelected && <Check size={16} color={opt.color} style={{ marginTop: 4 }} />}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#0369a1", marginBottom: 6, textAlign: "right" }}>
+                💡 אפשר לשנות בכל עת
+              </div>
+              <div style={{ fontSize: 13, color: "#0c4a6e", textAlign: "right" }}>
+                תמיד אפשר להוסיף או להסיר נתונים למעקב מההגדרות. ככל שתזין/י יותר נתונים, התובנות יהיו מדויקות יותר!
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, background: "#fff", borderTop: "1px solid #e2e8f0", padding: "12px 16px", display: "flex", gap: 10, boxSizing: "border-box", zIndex: 100 }}>
+        {step > 0 && (
+          <button onClick={() => setStep(step - 1)}
+            style={{ flex: 1, padding: 14, borderRadius: 12, border: "2px solid #e2e8f0", background: "#fff", color: "#64748b", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+            → חזרה
+          </button>
+        )}
+        <button onClick={() => { if (step < totalSteps - 1) setStep(step + 1); else handleComplete(); }}
+          disabled={!canProceed()}
+          style={{
+            flex: 2, padding: 14, borderRadius: 12, border: "none",
+            background: canProceed() ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "#e2e8f0",
+            color: canProceed() ? "#fff" : "#94a3b8",
+            fontSize: 16, fontWeight: 700, cursor: canProceed() ? "pointer" : "not-allowed",
+            transition: "all 0.2s"
+          }}>
+          {step < totalSteps - 1 ? "← המשך" : "🚀 בואו נתחיל!"}
+        </button>
+      </div>
     </div>
   );
+};
 
-  // --- STATISTICS ---
-  const renderStats = () => {
-    const last14 = sampleData.slice(-14);
-    const last7 = sampleData.slice(-7);
-    const avgCalories7 = Math.round(last7.reduce((s, d) => s + d.totalCalories, 0) / 7);
-    const avgProtein7 = Math.round(last7.reduce((s, d) => s + d.totalProtein, 0) / 7);
-    const avgSleep7 = (last7.reduce((s, d) => s + d.sleepHours, 0) / 7).toFixed(1);
-    const avgSteps7 = Math.round(last7.reduce((s, d) => s + d.steps, 0) / 7);
-    const lowProteinDays = sampleData.filter(d => d.totalProtein <= 50);
-    const highProteinDays = sampleData.filter(d => d.totalProtein > 50);
-    const lowProteinHunger = lowProteinDays.filter(d => d.feelings.includes("hungry")).length;
-    const highProteinHunger = highProteinDays.filter(d => d.feelings.includes("hungry")).length;
-    const radishDays = sampleData.filter(d => d.hadRadish);
-    const radishRash = radishDays.filter(d => d.hadRash).length;
-    const noRadishDays = sampleData.filter(d => !d.hadRadish);
-    const noRadishRash = noRadishDays.filter(d => d.hadRash).length;
-    const ironDays = sampleData.filter(d => d.tookIron);
-    const noIronDays = sampleData.filter(d => !d.tookIron);
-    const ironEnergy = ironDays.length > 0 ? (ironDays.reduce((s, d) => s + d.energy, 0) / ironDays.length).toFixed(1) : 0;
-    const noIronEnergy = noIronDays.length > 0 ? (noIronDays.reduce((s, d) => s + d.energy, 0) / noIronDays.length).toFixed(1) : 0;
+// ==================== MAIN APP ====================
+export default function NutriTrackApp() {
+  const [onboardingDone, setOnboardingDone] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
+  const [activeTab, setActiveTab] = useState("home");
+  const [sampleData] = useState(generateSampleData);
 
-    return (
-      <div>
-        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>📊 סטטיסטיקות ותובנות</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-          {[
-            { label: "קלוריות (ממוצע 7 ימים)", value: avgCalories7, unit: "קק״ל", color: "#6366f1" },
-            { label: "חלבון (ממוצע 7 ימים)", value: avgProtein7, unit: "g", color: "#f59e0b" },
-            { label: "שינה (ממוצע 7 ימים)", value: avgSleep7, unit: "שעות", color: "#8b5cf6" },
-            { label: "צעדים (ממוצע 7 ימים)", value: avgSteps7.toLocaleString(), unit: "", color: "#22c55e" },
-          ].map((stat, i) => (
-            <div key={i} style={{ background: "#fff", borderRadius: 14, padding: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", textAlign: "center" }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: stat.color }}>{stat.value}</div>
-              <div style={{ fontSize: 11, color: "#94a3b8" }}>{stat.unit}</div>
-              <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{stat.label}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-          <MiniChart data={last14.map(d => ({ value: d.totalCalories, label: new Date(d.date).getDate() }))} color="#6366f1" label="קלוריות - 14 ימים אחרונים" height={100} />
-          <MiniChart data={last14.map(d => ({ value: d.totalProtein, label: new Date(d.date).getDate() }))} color="#f59e0b" label="חלבון - 14 ימים אחרונים" height={80} />
-          <MiniChart data={last14.map(d => ({ value: d.weight, label: new Date(d.date).getDate() }))} color="#ec4899" label="משקל - 14 ימים אחרונים" height={80} />
-        </div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right" }}>🧠 תובנות חכמות</div>
-        <div style={{ background: "linear-gradient(135deg, #fef3c7, #fef9c3)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#92400e", marginBottom: 8, textAlign: "right" }}>🍗 קשר חלבון ↔ רעב</div>
-          <div style={{ fontSize: 13, color: "#78350f", textAlign: "right", lineHeight: 1.8 }}>
-            בימים שאכלת <strong>עד 50g חלבון</strong> — הרגשת רעב ב-{lowProteinDays.length > 0 ? Math.round((lowProteinHunger / lowProteinDays.length) * 100) : 0}% מהמקרים.<br />
-            בימים שאכלת <strong>מעל 50g חלבון</strong> — הרגשת רעב רק ב-{highProteinDays.length > 0 ? Math.round((highProteinHunger / highProteinDays.length) * 100) : 0}% מהמקרים.<br />
-            <strong>💡 המלצה: </strong>נסה/י לשמור על לפחות 50g חלבון ביום כדי להרגיש שובע.
-          </div>
-        </div>
-        <div style={{ background: "linear-gradient(135deg, #fce7f3, #fdf2f8)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#9d174d", marginBottom: 8, textAlign: "right" }}>🔍 קשר צנון ↔ פריחה</div>
-          <div style={{ fontSize: 13, color: "#831843", textAlign: "right", lineHeight: 1.8 }}>
-            מתוך {radishDays.length} ימים שאכלת צנון — הופיעה פריחה ב-{radishDays.length > 0 ? Math.round((radishRash / radishDays.length) * 100) : 0}% מהמקרים.<br />
-            מתוך {noRadishDays.length} ימים בלי צנון — הופיעה פריחה רק ב-{noRadishDays.length > 0 ? Math.round((noRadishRash / noRadishDays.length) * 100) : 0}% מהמקרים.<br />
-            <strong>⚠️ שים/י לב: </strong>ייתכן שיש לך רגישות לצנון! שווה לבדוק עם רופא/ה.
-          </div>
-        </div>
-        <div style={{ background: "linear-gradient(135deg, #dbeafe, #eff6ff)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#1e40af", marginBottom: 8, textAlign: "right" }}>💊 קשר ברזל ↔ אנרגיה</div>
-          <div style={{ fontSize: 13, color: "#1e3a5f", textAlign: "right", lineHeight: 1.8 }}>
-            בימים שלקחת ברזל — ציון אנרגיה ממוצע: <strong>{ironEnergy}/5</strong><br />
-            בימים שלא לקחת — ציון אנרגיה ממוצע: <strong>{noIronEnergy}/5</strong><br />
-            <strong>💡 המלצה: </strong>ברזל עושה לך הבדל! אל תשכח/י לקחת כל יום.
-          </div>
-        </div>
-        <div style={{ background: "linear-gradient(135deg, #d1fae5, #ecfdf5)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#065f46", marginBottom: 8, textAlign: "right" }}>⚖️ מגמת משקל</div>
-          <div style={{ fontSize: 13, color: "#064e3b", textAlign: "right", lineHeight: 1.8 }}>
-            משקל התחלתי: <strong>{sampleData[0].weight.toFixed(1)} ק״ג</strong><br />
-            משקל נוכחי: <strong>{sampleData[sampleData.length - 1].weight.toFixed(1)} ק״ג</strong><br />
-            שינוי: <strong>{(sampleData[sampleData.length - 1].weight - sampleData[0].weight).toFixed(1)} ק״ג</strong> ב-30 ימים<br />
-            <strong>📈 קצב: </strong>{Math.abs((sampleData[sampleData.length - 1].weight - sampleData[0].weight) / 4).toFixed(2)} ק״ג בשבוע
-          </div>
-        </div>
-      </div>
-    );
-  };
+  // Today's data — MFP style food log
+  const [todayFoods, setTodayFoods] = useState([]);
+  const [showFoodSearch, setShowFoodSearch] = useState(false);
+  const [foodSearch, setFoodSearch] = useState("");
+  const [foodCategoryFilter, setFoodCategoryFilter] = useState("all");
+  const [recentFoods, setRecentFoods] = useState([3, 1, 11, 29, 53, 65, 15, 19]); // IDs of recent foods
+  const [editingFood, setEditingFood] = useState(null); // for editing servings
+  const [quickAddCals, setQuickAddCals] = useState("");
+  const [foodModalTab, setFoodModalTab] = useState("search"); // search | barcode | manual | myfoods
+  const [myFoods, setMyFoods] = useState([]); // personal food database
+  const [barcodeInput, setBarcodeInput] = useState("");
+  const [barcodeLoading, setBarcodeLoading] = useState(false);
+  const [barcodeResult, setBarcodeResult] = useState(null);
+  const [barcodeError, setBarcodeError] = useState("");
+  const [apiSearchResults, setApiSearchResults] = useState([]);
+  const [apiSearchLoading, setApiSearchLoading] = useState(false);
+  const [apiSearchQuery, setApiSearchQuery] = useState("");
+  const [manualFood, setManualFood] = useState({ name: "", serving: "", calories: "", protein: "", carbs: "", fat: "" });
 
-  // --- WEIGHT TRACKING ---
-  // --- CYCLE / PERIOD TRACKING ---
-  const renderCycle = () => {
-    const CYCLE_LEN = 28;
-    const PERIOD_LEN = 5;
-    const PMS_DAYS = 3;
+  // Daily questionnaire — Morning
+  const [morningDone, setMorningDone] = useState(false);
+  const [sleepHours, setSleepHours] = useState(7);
+  const [sleepQuality, setSleepQuality] = useState(0);
+  const [wokeUpFeeling, setWokeUpFeeling] = useState(0);
+  const [morningBloated, setMorningBloated] = useState(false);
+  const [morningPain, setMorningPain] = useState("");
+  const [morningMood, setMorningMood] = useState(0);
+  const [morningWeight, setMorningWeight] = useState("");
+  const [morningStress, setMorningStress] = useState(0);
+  const [wentToBathroom, setWentToBathroom] = useState("");
+  const [dreamsQuality, setDreamsQuality] = useState("");
+  const [morningHunger, setMorningHunger] = useState(0);
 
-    // Combine reported periods + sample data
-    const allStarts = new Set();
-    sampleData.forEach(d => { if (d.isPeriodStart) allStarts.add(d.date); });
-    periodLog.forEach(d => allStarts.add(d));
-    const sortedStarts = Array.from(allStarts).sort();
-    const recentStarts = sortedStarts.slice(-6).reverse();
+  // Evening questionnaire
+  const [eveningDone, setEveningDone] = useState(false);
+  const [eveningMood, setEveningMood] = useState(0);
+  const [eveningEnergy, setEveningEnergy] = useState(0);
+  const [eveningFeelings, setEveningFeelings] = useState([]);
+  const [eveningNotes, setEveningNotes] = useState("");
 
-    // Compute average cycle length from history
-    let avgCycle = CYCLE_LEN;
-    if (sortedStarts.length >= 2) {
-      const gaps = [];
-      for (let i = 1; i < sortedStarts.length; i++) {
-        const diff = Math.round((new Date(sortedStarts[i]) - new Date(sortedStarts[i - 1])) / 86400000);
-        if (diff > 15 && diff < 45) gaps.push(diff);
+  // Water
+  const [waterCups, setWaterCups] = useState(0);
+  const [showHomeCustomize, setShowHomeCustomize] = useState(false);
+  const [homeModules, setHomeModules] = useState({
+    calories: true, // always on (base)
+    protein: true,
+    macros: true,
+    quickStatus: true,
+    water: true,
+    questionnaires: true,
+    healthReport: true,
+    foodLog: true,
+    supplements: true,
+    symptoms: true,
+    period: true,
+    exercise: true,
+    sleep: true,
+    mood: true,
+    steps: true,
+  });
+
+  // Exercise
+  const [todayExercise, setTodayExercise] = useState(null);
+  const [todaySteps, setTodaySteps] = useState("");
+
+  // Supplements
+  const [todaySupplements, setTodaySupplements] = useState([]);
+  const [supplementLog, setSupplementLog] = useState([]); // timestamped entries
+  const [showSupplementPicker, setShowSupplementPicker] = useState(false);
+  const [supplementSearch, setSupplementSearch] = useState("");
+  const [customSupplementInput, setCustomSupplementInput] = useState("");
+
+  // Goals
+  const [selectedGoals, setSelectedGoals] = useState([]);
+  const [calorieGoal, setCalorieGoal] = useState(1800);
+  const [proteinGoal, setProteinGoal] = useState(80);
+  const [weightGoal, setWeightGoal] = useState("");
+  const [stepsGoal, setStepsGoal] = useState(8000);
+
+  // Weight tracking
+  const [weightHistory, setWeightHistory] = useState(() => {
+    // Generate 90 days of sample weight history
+    const hist = [];
+    const today = new Date();
+    for (let i = 90; i >= 0; i--) {
+      const d = new Date(today); d.setDate(d.getDate() - i);
+      hist.push({ date: d.toISOString().split("T")[0], weight: parseFloat((72 - (i * 0.04) + (Math.random() * 0.6 - 0.3)).toFixed(1)) });
+    }
+    return hist;
+  });
+  const [weightTimePeriod, setWeightTimePeriod] = useState("month");
+  const [newWeightValue, setNewWeightValue] = useState("");
+  const [newWeightDate, setNewWeightDate] = useState(new Date().toISOString().split("T")[0]);
+  const [showAddWeightForm, setShowAddWeightForm] = useState(false);
+  const [dietProject, setDietProject] = useState(null);
+  const [showDietProjectForm, setShowDietProjectForm] = useState(false);
+  const [dietProjectName, setDietProjectName] = useState("");
+  const [dietProjectTarget, setDietProjectTarget] = useState("");
+  const [dietProjectDeadline, setDietProjectDeadline] = useState("");
+
+  // Health symptoms
+  const [symptoms, setSymptoms] = useState([]);
+  const [newSymptom, setNewSymptom] = useState("");
+  const [showSymptomPicker, setShowSymptomPicker] = useState(false);
+  const [homeSymptomSearch, setHomeSymptomSearch] = useState("");
+
+  // Free-style health reports (with time, severity, description)
+  const [healthReports, setHealthReports] = useState([]);
+  const [newReportTypes, setNewReportTypes] = useState([]);
+  const [newReportSeverity, setNewReportSeverity] = useState(3);
+  const [newReportNote, setNewReportNote] = useState("");
+  const [newReportBodyParts, setNewReportBodyParts] = useState([]);
+
+  // Period
+  const [periodToday, setPeriodToday] = useState(false);
+  const [periodLog, setPeriodLog] = useState([]); // array of ISO date strings
+  const [periodDayLogs, setPeriodDayLogs] = useState({}); // { "2026-04-09": { intensity: "medium", symptoms: ["cramps","back"] } }
+
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // ===== Persistence (localStorage) =====
+  const PERSIST_KEY = "wellness-app-v1";
+  const [_loaded, _setLoaded] = useState(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(PERSIST_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.onboardingDone !== undefined) setOnboardingDone(d.onboardingDone);
+        if (d.userProfile) setUserProfile(d.userProfile);
+        if (d.todayFoods) setTodayFoods(d.todayFoods);
+        if (d.recentFoods) setRecentFoods(d.recentFoods);
+        if (d.myFoods) setMyFoods(d.myFoods);
+        if (d.waterCups !== undefined) setWaterCups(d.waterCups);
+        if (d.homeModules) setHomeModules(d.homeModules);
+        if (d.todayExercise !== undefined) setTodayExercise(d.todayExercise);
+        if (d.todaySteps !== undefined) setTodaySteps(d.todaySteps);
+        if (d.todaySupplements) setTodaySupplements(d.todaySupplements);
+        if (d.supplementLog) setSupplementLog(d.supplementLog);
+        if (d.selectedGoals) setSelectedGoals(d.selectedGoals);
+        if (d.calorieGoal !== undefined) setCalorieGoal(d.calorieGoal);
+        if (d.proteinGoal !== undefined) setProteinGoal(d.proteinGoal);
+        if (d.weightGoal !== undefined) setWeightGoal(d.weightGoal);
+        if (d.stepsGoal !== undefined) setStepsGoal(d.stepsGoal);
+        if (d.weightHistory) setWeightHistory(d.weightHistory);
+        if (d.dietProject !== undefined) setDietProject(d.dietProject);
+        if (d.symptoms) setSymptoms(d.symptoms);
+        if (d.healthReports) setHealthReports(d.healthReports);
+        if (d.periodLog) setPeriodLog(d.periodLog);
+        if (d.periodDayLogs) setPeriodDayLogs(d.periodDayLogs);
+        if (d.morningDone !== undefined) setMorningDone(d.morningDone);
+        if (d.eveningDone !== undefined) setEveningDone(d.eveningDone);
       }
-      if (gaps.length > 0) avgCycle = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
-    }
+    } catch (e) { console.error("load failed", e); }
+    _setLoaded(true);
+  }, []);
+  useEffect(() => {
+    if (!_loaded) return;
+    try {
+      localStorage.setItem(PERSIST_KEY, JSON.stringify({
+        onboardingDone, userProfile, todayFoods, recentFoods, myFoods,
+        waterCups, homeModules, todayExercise, todaySteps,
+        todaySupplements, supplementLog, selectedGoals,
+        calorieGoal, proteinGoal, weightGoal, stepsGoal, weightHistory, dietProject,
+        symptoms, healthReports, periodLog, periodDayLogs,
+        morningDone, eveningDone,
+      }));
+    } catch (e) {}
+  }, [_loaded, onboardingDone, userProfile, todayFoods, recentFoods, myFoods, waterCups, homeModules, todayExercise, todaySteps, todaySupplements, supplementLog, selectedGoals, calorieGoal, proteinGoal, weightGoal, stepsGoal, weightHistory, dietProject, symptoms, healthReports, periodLog, periodDayLogs, morningDone, eveningDone]);
 
-    // Predict next 3 periods
-    const lastStart = sortedStarts.length > 0 ? new Date(sortedStarts[sortedStarts.length - 1]) : null;
-    const predictions = [];
-    if (lastStart) {
-      for (let i = 1; i <= 3; i++) {
-        const next = new Date(lastStart);
-        next.setDate(next.getDate() + avgCycle * i);
-        const pmsStart = new Date(next);
-        pmsStart.setDate(pmsStart.getDate() - PMS_DAYS);
-        const periodEnd = new Date(next);
-        periodEnd.setDate(periodEnd.getDate() + PERIOD_LEN - 1);
-        predictions.push({
-          start: next.toISOString().split("T")[0],
-          end: periodEnd.toISOString().split("T")[0],
-          pmsStart: pmsStart.toISOString().split("T")[0],
-        });
-      }
-    }
-
-    // Current cycle info
-    const now = new Date();
-    const todayStr = now.toISOString().split("T")[0];
-    let currentPhase = null;
-    let dayInCycle = null;
-    let daysToNext = null;
-    if (lastStart) {
-      const diffDays = Math.floor((now - lastStart) / 86400000);
-      dayInCycle = diffDays + 1;
-      daysToNext = avgCycle - diffDays;
-      if (diffDays < PERIOD_LEN) currentPhase = "period";
-      else if (daysToNext <= PMS_DAYS && daysToNext > 0) currentPhase = "pms";
-      else if (diffDays >= 12 && diffDays <= 16) currentPhase = "ovulation";
-      else currentPhase = "follicular_luteal";
-    }
-
-    const phaseInfo = {
-      period: { label: "וסת", color: "#ec4899", bg: "#fdf2f8", emoji: "🩸", desc: "את במחזור. הגוף שלך עובד קשה — תני לו מנוחה, ברזל, ומזון מזין." },
-      pms: { label: "תסמונת קדם וסתית", color: "#f97316", bg: "#fff7ed", emoji: "⚠️", desc: "את בחלון ה-PMS. ייתכנו מיחושים, נפיחות, שינויי מצב רוח." },
-      ovulation: { label: "ביוץ", color: "#22c55e", bg: "#f0fdf4", emoji: "🥚", desc: "זמן ביוץ — אנרגיה גבוהה, פוריות מקסימלית." },
-      follicular_luteal: { label: "שלב בין-מחזורי", color: "#6366f1", bg: "#eef2ff", emoji: "🌸", desc: "שלב רגיל במחזור. הגוף שלך בשיווי משקל." },
-    };
-
-    const addPeriodDate = (dateStr) => {
-      if (!dateStr) return;
-      setPeriodLog(prev => prev.includes(dateStr) ? prev : [...prev, dateStr].sort());
-    };
-    const removePeriodDate = (dateStr) => {
-      setPeriodLog(prev => prev.filter(d => d !== dateStr));
-    };
+  // Computed - placeholder for rest of implementation
+  return null; // Placeholder
+}

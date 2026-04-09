@@ -1,364 +1,58 @@
- color: "#64748b" }}>BMI</div>
-        </div>
-      </div>
-      <div style={{ fontSize: 11, color: "#64748b", display: "flex", gap: 12 }}>
-        <span>{"גובה: " + profile.height + " ס״מ"}</span>
-        <span>{"משקל: " + w + " ק״ג"}</span>
-        {morningWeight && <span style={{ color: info.color, fontWeight: 600 }}>(משקל בוקר)</span>}
-      </div>
-    </div>
-  );
-};
+const EXERCISE_TYPES = [
+  { id: "walk", label: "הליכה", icon: "🚶" },
+  { id: "run", label: "ריצה", icon: "🏃" },
+  { id: "gym", label: "חדר כושר", icon: "🏋️" },
+  { id: "swim", label: "שחייה", icon: "🏊" },
+  { id: "yoga", label: "יוגה", icon: "🧘" },
+  { id: "bike", label: "אופניים", icon: "🚴" },
+  { id: "other", label: "אחר", icon: "💪" },
+];
 
-const MiniChart = ({ data, color, label, height = 100 }) => {
-  const max = Math.max(...data.map(d => d.value), 1);
-  return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>{label}</div>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height, direction: "ltr" }}>
-        {data.slice(-14).map((d, i) => (
-          <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{
-              width: "100%", borderRadius: "3px 3px 0 0",
-              height: `${(d.value / max) * (height - 20)}px`,
-              background: color, opacity: 0.7 + (i / data.length) * 0.3,
-              minHeight: 2, transition: "height 0.3s"
-            }} />
-            {i % 2 === 0 && <span style={{ fontSize: 9, color: "#94a3b8", marginTop: 2 }}>{d.label}</span>}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+const DIET_GOALS = [
+  { id: "weight_loss", label: "ירידה במשקל", icon: TrendingDown, color: "#ef4444", desc: "גרעון קלורי + חלבון גבוה" },
+  { id: "weight_gain", label: "עלייה במשקל", icon: TrendingUp, color: "#22c55e", desc: "עודף קלורי + שרירים" },
+  { id: "keto", label: "קיטו", icon: Flame, color: "#f59e0b", desc: "שומן גבוה, פחמימה נמוכה" },
+  { id: "health", label: "בריאות כללית", icon: Heart, color: "#ec4899", desc: "תזונה מאוזנת + מעקב" },
+  { id: "sensitivity", label: "איתור רגישויות", icon: Search, color: "#8b5cf6", desc: "מעקב תגובות למזונות" },
+  { id: "energy", label: "שיפור אנרגיה", icon: Sparkles, color: "#06b6d4", desc: "מיפוי מזונות שנותנים כוח" },
+];
 
-// ==================== ONBOARDING SCREEN ====================
-const OnboardingScreen = ({ onComplete }) => {
-  const [step, setStep] = useState(0);
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
-  const [height, setHeight] = useState("");
-  const [currentWeight, setCurrentWeight] = useState("");
-  const [dietType, setDietType] = useState("");
-  const [goalTypes, setGoalTypes] = useState([]);
-  const [conditions, setConditions] = useState([]);
-  const [conditionNotes, setConditionNotes] = useState("");
-  const [currentMeds, setCurrentMeds] = useState("");
-  const [currentSupplements, setCurrentSupplements] = useState([]);
-  const [customSupplement, setCustomSupplement] = useState("");
-  const [trackingChoices, setTrackingChoices] = useState(["calories", "protein", "water", "sleep", "mood"]);
-  const [painAreas, setPainAreas] = useState("");
-  const [allergies, setAllergies] = useState("");
-  const [weightGoalValue, setWeightGoalValue] = useState("");
-  const [calorieGoalValue, setCalorieGoalValue] = useState(1800);
-  const [proteinGoalValue, setProteinGoalValue] = useState(80);
+const SUPPLEMENTS = [
+  "ברזל", "ויטמין D", "ויטמין B12", "מגנזיום", "אומגה 3",
+  "חומצה פולית", "ויטמין C", "אבץ", "פרוביוטיקה", "סידן"
+];
 
-  const totalSteps = 6;
-
-  const toggleCondition = (id) => {
-    if (id === "none") { setConditions(["none"]); return; }
-    setConditions(prev => {
-      const filtered = prev.filter(c => c !== "none");
-      return filtered.includes(id) ? filtered.filter(c => c !== id) : [...filtered, id];
-    });
-  };
-
-  const toggleSupplement = (name) => {
-    setCurrentSupplements(prev =>
-      prev.includes(name) ? prev.filter(s => s !== name) : [...prev, name]
-    );
-  };
-
-  const toggleTracking = (id) => {
-    setTrackingChoices(prev =>
-      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
-    );
-  };
-
-  const canProceed = () => {
-    switch(step) {
-      case 0: return name.trim().length > 0;
-      case 1: return dietType !== "";
-      case 2: return goalTypes.length > 0;
-      case 3: return conditions.length > 0;
-      case 4: return true;
-      case 5: return trackingChoices.length > 0;
-      default: return true;
-    }
-  };
-
-  const handleComplete = () => {
-    onComplete({
-      name, age, gender, height, currentWeight,
-      dietType, goalTypes, conditions, conditionNotes,
-      currentMeds, currentSupplements,
-      trackingChoices, painAreas, allergies,
-      weightGoal: weightGoalValue,
-      calorieGoal: calorieGoalValue,
-      proteinGoal: proteinGoalValue,
-    });
-  };
-
-  const handleSkip = () => {
-    onComplete({
-      name: "אורח/ת", age: "30", gender: "female", height: "165", currentWeight: "65",
-      dietType: "regular", goalTypes: ["health", "weight_loss"],
-      conditions: ["none"], conditionNotes: "",
-      currentMeds: "", currentSupplements: ["ויטמין D", "אומגה 3"],
-      trackingChoices: ["calories", "protein", "water", "sleep", "mood", "weight", "symptoms", "period", "steps"],
-      painAreas: "", allergies: "",
-      weightGoal: "60", calorieGoal: 1800, proteinGoal: 80,
-    });
-  };
-
-  const cardStyle = { background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" };
-  const inputStyle = { width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", direction: "rtl", boxSizing: "border-box", fontFamily: "inherit" };
-
-  return (
-    <div style={{ direction: "rtl", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", maxWidth: 480, margin: "0 auto", background: "#f8fafc", minHeight: "100vh" }}>
-      {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", padding: "30px 20px 24px", color: "#fff", textAlign: "center", position: "relative" }}>
-        <button onClick={handleSkip}
-          style={{ position: "absolute", top: 16, left: 16, background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", padding: "6px 14px", borderRadius: 20, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
-          דלג/י ←
-        </button>
-        <div style={{ fontSize: 36, marginBottom: 8 }}>🥗</div>
-        <div style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>NutriTrack</div>
-        <div style={{ fontSize: 14, opacity: 0.85 }}>בואו נכיר! כמה שאלות קצרות כדי להתאים לך את האפליקציה</div>
-      </div>
-
-      {/* Progress dots */}
-      <div style={{ display: "flex", justifyContent: "center", gap: 8, padding: "16px 0" }}>
-        {Array.from({ length: totalSteps }).map((_, i) => (
-          <div key={i} style={{
-            width: i === step ? 24 : 8, height: 8, borderRadius: 4,
-            background: i <= step ? "#6366f1" : "#e2e8f0",
-            transition: "all 0.3s"
-          }} />
-        ))}
-      </div>
-
-      <div style={{ padding: 16, paddingBottom: 100 }}>
-
-        {/* Step 0: Personal Info */}
-        {step === 0 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
-              👋 שלום! ספר/י לנו קצת עליך
-            </div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
-              המידע הזה יעזור לנו להתאים לך את החוויה
-            </div>
-
-            <div style={cardStyle}>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>שם *</label>
-                <input type="text" placeholder="איך קוראים לך?" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-                <div>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>גיל</label>
-                  <input type="number" placeholder="גיל" value={age} onChange={e => setAge(e.target.value)} style={inputStyle} />
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>מין</label>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    {[{ id: "female", label: "נקבה" }, { id: "male", label: "זכר" }].map(g => (
-                      <button key={g.id} onClick={() => setGender(g.id)}
-                        style={{
-                          flex: 1, padding: "10px 4px", borderRadius: 10, border: "2px solid",
-                          borderColor: gender === g.id ? "#6366f1" : "#e2e8f0",
-                          background: gender === g.id ? "#eef2ff" : "#fff",
-                          color: gender === g.id ? "#6366f1" : "#64748b",
-                          cursor: "pointer", fontSize: 13, fontWeight: 600
-                        }}>{g.label}</button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>גובה (ס״מ)</label>
-                  <input type="number" placeholder="170" value={height} onChange={e => setHeight(e.target.value)} style={inputStyle} />
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>משקל נוכחי (ק״ג)</label>
-                  <input type="number" placeholder="68" value={currentWeight} onChange={e => setCurrentWeight(e.target.value)} style={inputStyle} />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 1: Diet Type */}
-        {step === 1 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
-              🍽️ מה סוג התזונה שלך?
-            </div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
-              בחר/י את סגנון התזונה הקרוב ביותר אליך
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-              {DIET_TYPES.map(dt => (
-                <button key={dt.id} onClick={() => setDietType(dt.id)}
-                  style={{
-                    padding: 16, borderRadius: 14, border: "2px solid",
-                    borderColor: dietType === dt.id ? dt.color : "#e2e8f0",
-                    background: dietType === dt.id ? `${dt.color}10` : "#fff",
-                    cursor: "pointer", textAlign: "center",
-                    boxShadow: dietType === dt.id ? `0 4px 12px ${dt.color}25` : "none",
-                    transition: "all 0.2s"
-                  }}>
-                  <div style={{ fontSize: 28, marginBottom: 6 }}>{dt.icon}</div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: dietType === dt.id ? dt.color : "#475569" }}>{dt.label}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 2: Goals */}
-        {step === 2 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
-              🎯 מה המטרה שלך?
-            </div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
-              מה את/ה רוצה לקבל מהאפליקציה? (ניתן לבחור כמה מטרות)
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-              {DIET_GOALS.map(goal => {
-                const Icon = goal.icon;
-                const isSelected = goalTypes.includes(goal.id);
-                return (
-                  <button key={goal.id} onClick={() => setGoalTypes(prev => prev.includes(goal.id) ? prev.filter(g => g !== goal.id) : [...prev, goal.id])}
-                    style={{
-                      padding: 16, borderRadius: 14, border: "2px solid",
-                      borderColor: isSelected ? goal.color : "#e2e8f0",
-                      background: isSelected ? `${goal.color}10` : "#fff",
-                      cursor: "pointer", textAlign: "right",
-                      boxShadow: isSelected ? `0 4px 12px ${goal.color}30` : "none",
-                      transition: "all 0.2s", position: "relative"
-                    }}>
-                    {isSelected && <div style={{ position: "absolute", top: 8, left: 8, width: 20, height: 20, borderRadius: 10, background: goal.color, display: "flex", alignItems: "center", justifyContent: "center" }}><Check size={12} color="#fff" /></div>}
-                    <Icon size={24} color={goal.color} style={{ marginBottom: 8 }} />
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>{goal.label}</div>
-                    <div style={{ fontSize: 11, color: "#64748b" }}>{goal.desc}</div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {goalTypes.length > 0 && (
-              <div style={{ background: "#f0fdf4", borderRadius: 12, padding: 12, marginBottom: 16, textAlign: "right" }}>
-                <span style={{ fontSize: 13, color: "#166534", fontWeight: 600 }}>נבחרו {goalTypes.length} מטרות: </span>
-                <span style={{ fontSize: 13, color: "#166534" }}>{goalTypes.map(g => DIET_GOALS.find(d => d.id === g)?.label).join(", ")}</span>
-              </div>
-            )}
-
-            {(goalTypes.includes("weight_loss") || goalTypes.includes("weight_gain")) && (
-              <div style={cardStyle}>
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
-                    משקל יעד (ק״ג)
-                  </label>
-                  <input type="number" placeholder="למשל: 65" value={weightGoalValue} onChange={e => setWeightGoalValue(e.target.value)} style={inputStyle} />
-                </div>
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
-                    🔥 יעד קלוריות יומי
-                  </label>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>קק״ל</span>
-                    <input type="number" min="1000" max="5000" value={calorieGoalValue === 0 ? "" : calorieGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setCalorieGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setCalorieGoalValue(Math.min(5000, Math.max(0, v))); }}
-                      onBlur={e => { const v = parseInt(e.target.value) || 1800; setCalorieGoalValue(Math.min(5000, Math.max(1000, v))); }}
-                      style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#6366f1", boxSizing: "border-box" }} />
-                  </div>
-                  <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 1,000 ל-5,000 קק״ל</div>
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
-                    🥩 יעד חלבון יומי (גרם)
-                  </label>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>גרם</span>
-                    <input type="number" min="0" max="700" value={proteinGoalValue === 0 ? "" : proteinGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setProteinGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
-                      onBlur={e => { const v = parseInt(e.target.value) || 80; setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
-                      style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#f59e0b", boxSizing: "border-box" }} />
-                  </div>
-                  <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Step 3: Health Conditions */}
-        {step === 3 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
-              🏥 מצב בריאותי
-            </div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
-              יש לך מחלות, מיחושים או כאבים כרוניים? (ניתן לבחור כמה)
-            </div>
-
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16, justifyContent: "flex-end" }}>
-              {HEALTH_CONDITIONS.map(c => {
-                const isSelected = conditions.includes(c.id);
-                return (
-                  <button key={c.id} onClick={() => toggleCondition(c.id)}
-                    style={{
-                      padding: "10px 14px", borderRadius: 20, border: "2px solid",
-                      borderColor: isSelected ? "#6366f1" : "#e2e8f0",
-                      background: isSelected ? "#eef2ff" : "#fff",
-                      color: isSelected ? "#6366f1" : "#64748b",
-                      cursor: "pointer", fontSize: 13, fontWeight: 500,
-                      display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s"
-                    }}>
-                    <span>{c.label}</span>
-                    <span>{c.icon}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {!conditions.includes("none") && conditions.length > 0 && (
-              <div style={cardStyle}>
-                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
-                  פרטים נוספים על המצב הבריאותי (אופציונלי)
-                </label>
-                <textarea placeholder="למשל: יש לי מיגרנות פעם בשבוע, כאבי גב תחתון כרוניים..."
-                  value={conditionNotes} onChange={e => setConditionNotes(e.target.value)}
-                  rows={3} style={{ ...inputStyle, resize: "vertical" }} />
-              </div>
-            )}
-
-            <div style={cardStyle}>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
-                אלרגיות ורגישויות למזון (אופציונלי)
-              </label>
-              <input type="text" placeholder="למשל: בוטנים, סויה, גלוטן..."
-                value={allergies} onChange={e => setAllergies(e.target.value)} style={inputStyle} />
-            </div>
-
-            <div style={cardStyle}>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
-                כאבים או מיחושים שחוזרים (אופציונלי)
-              </label>
-              <input type="text" placeholder="למשל: כאבי בטן, פריחה, כאב ראש..."
-                value={painAreas} onChange={e => setPainAreas(e.target.value)} style={inputStyle} />
-            </div>
-          </div>
-        )}
-
-        {/* Step 4: Medications & Supplements */}
-        {step === 4 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, te
+const ALL_SUPPLEMENTS = [
+  { group: "ויטמינים", items: [
+    "ויטמין A", "ויטמין B1 (תיאמין)", "ויטמין B2 (ריבופלבין)", "ויטמין B3 (ניאצין)",
+    "ויטמין B5 (פנטותנית)", "ויטמין B6", "ויטמין B7 (ביוטין)", "ויטמין B9 (חומצה פולית)",
+    "ויטמין B12", "ויטמין C", "ויטמין D", "ויטמין D3", "ויטמין E", "ויטמין K", "ויטמין K2",
+    "מולטי ויטמין", "B Complex",
+  ]},
+  { group: "מינרלים", items: [
+    "ברזל", "מגנזיום", "סידן", "אבץ", "סלניום", "יוד", "נחושת", "מנגן", "כרום", "אשלגן", "זרחן",
+  ]},
+  { group: "שומנים ואומגה", items: [
+    "אומגה 3", "אומגה 3-6-9", "שמן דגים", "שמן קריל", "DHA", "EPA",
+  ]},
+  { group: "פרוביוטיקה ועיכול", items: [
+    "פרוביוטיקה", "פרה-ביוטיקה", "אנזימי עיכול", "סיבים תזונתיים", "גלוטמין",
+  ]},
+  { group: "חלבון וספורט", items: [
+    "אבקת חלבון מי גבינה", "חלבון קזאין", "חלבון צמחי", "BCAA", "קריאטין", "גלוטמין",
+    "בטא-אלנין", "L-קרניטין", "קפאין", "פרה-וורקאאוט",
+  ]},
+  { group: "צמחים וסופרפוד", items: [
+    "כורכומין", "ג׳ינג׳ר", "שום", "ספירולינה", "כלורלה", "מאקה",
+    "אשוואגנדה", "ג׳ינסנג", "מורינגה", "אלוורה", "חילבה", "ערער",
+  ]},
+  { group: "בריאות כללית", items: [
+    "קולגן", "חומצה היאלורונית", "קו-אנזים Q10", "מלטונין", "L-תאנין",
+    "גלוקוזאמין", "כונדרואיטין", "MSM", "NAC", "אלפא ליפואית",
+  ]},
+  { group: "תרופות נפוצות", items: [
+    "אקמול", "נורופן", "אופטלגין", "אספירין", "אנטיביוטיקה", "אנטי-היסטמין",
+    "תרופת לחץ דם", "סטטין (כולסטרול)", "מטפורמין", "אלטרוקסין (תריס)",
+    "גלולות למניעת הריון", "אנטי-דפרסנט", "תרופה לחרדה",
+  ]},
+];

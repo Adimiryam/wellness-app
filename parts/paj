@@ -1,155 +1,80 @@
-gn: "right" }}>משקל יעד (ק״ג)</label>
-            <input type="number" placeholder="למשל: 65" value={weightGoal} onChange={e => setWeightGoal(e.target.value)}
-              style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", boxSizing: "border-box" }} />
-          </div>
-        </div>
-      )}
+const cardStyle = { background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" };
+  const inputStyle = { width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", direction: "rtl", boxSizing: "border-box", fontFamily: "inherit" };
 
-      {/* Per-goal tips */}
-      {selectedGoals.length > 0 && (
-        <div style={{ background: "#f0f9ff", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#0369a1", marginBottom: 12, textAlign: "right" }}>💡 מה כדאי לך להזין כל יום לפי המטרות שלך:</div>
-          {selectedGoals.map(goalId => {
-            const goal = DIET_GOALS.find(g => g.id === goalId);
-            const Icon = goal?.icon;
-            return (
-              <div key={goalId} style={{ background: "#fff", borderRadius: 12, padding: 14, marginBottom: 8 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginBottom: 6 }}>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: goal?.color }}>{goal?.label}</span>
-                  {Icon && <Icon size={18} color={goal?.color} />}
+  return (
+    <div style={{ direction: "rtl", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", maxWidth: 480, margin: "0 auto", background: "#f8fafc", minHeight: "100vh" }}>
+      {/* Header */}
+      <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", padding: "30px 20px 24px", color: "#fff", textAlign: "center", position: "relative" }}>
+        <button onClick={handleSkip}
+          style={{ position: "absolute", top: 16, left: 16, background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", padding: "6px 14px", borderRadius: 20, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+          דלג/י ←
+        </button>
+        <div style={{ fontSize: 36, marginBottom: 8 }}>🥗</div>
+        <div style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>NutriTrack</div>
+        <div style={{ fontSize: 14, opacity: 0.85 }}>בואו נכיר! כמה שאלות קצרות כדי להתאים לך את האפליקציה</div>
+      </div>
+
+      {/* Progress dots */}
+      <div style={{ display: "flex", justifyContent: "center", gap: 8, padding: "16px 0" }}>
+        {Array.from({ length: totalSteps }).map((_, i) => (
+          <div key={i} style={{
+            width: i === step ? 24 : 8, height: 8, borderRadius: 4,
+            background: i <= step ? "#6366f1" : "#e2e8f0",
+            transition: "all 0.3s"
+          }} />
+        ))}
+      </div>
+
+      <div style={{ padding: 16, paddingBottom: 100 }}>
+
+        {/* Step 0: Personal Info */}
+        {step === 0 && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              👋 שלום! ספר/י לנו קצת עליך
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              המידע הזה יעזור לנו להתאים לך את החוויה
+            </div>
+
+            <div style={cardStyle}>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>שם *</label>
+                <input type="text" placeholder="איך קוראים לך?" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>גיל</label>
+                  <input type="number" placeholder="גיל" value={age} onChange={e => setAge(e.target.value)} style={inputStyle} />
                 </div>
-                <div style={{ fontSize: 12, color: "#0c4a6e", textAlign: "right", lineHeight: 1.7 }}>
-                  {GOAL_TIPS[goalId] || ""}
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>מין</label>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {[{ id: "female", label: "נקבה" }, { id: "male", label: "זכר" }].map(g => (
+                      <button key={g.id} onClick={() => setGender(g.id)}
+                        style={{
+                          flex: 1, padding: "10px 4px", borderRadius: 10, border: "2px solid",
+                          borderColor: gender === g.id ? "#6366f1" : "#e2e8f0",
+                          background: gender === g.id ? "#eef2ff" : "#fff",
+                          color: gender === g.id ? "#6366f1" : "#64748b",
+                          cursor: "pointer", fontSize: 13, fontWeight: 600
+                        }}>{g.label}</button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
 
-  // --- STATISTICS ---
-  const renderStats = () => {
-    const last14 = sampleData.slice(-14);
-    const last7 = sampleData.slice(-7);
-    const avgCalories7 = Math.round(last7.reduce((s, d) => s + d.totalCalories, 0) / 7);
-    const avgProtein7 = Math.round(last7.reduce((s, d) => s + d.totalProtein, 0) / 7);
-    const avgSleep7 = (last7.reduce((s, d) => s + d.sleepHours, 0) / 7).toFixed(1);
-    const avgSteps7 = Math.round(last7.reduce((s, d) => s + d.steps, 0) / 7);
-    const lowProteinDays = sampleData.filter(d => d.totalProtein <= 50);
-    const highProteinDays = sampleData.filter(d => d.totalProtein > 50);
-    const lowProteinHunger = lowProteinDays.filter(d => d.feelings.includes("hungry")).length;
-    const highProteinHunger = highProteinDays.filter(d => d.feelings.includes("hungry")).length;
-    const radishDays = sampleData.filter(d => d.hadRadish);
-    const radishRash = radishDays.filter(d => d.hadRash).length;
-    const noRadishDays = sampleData.filter(d => !d.hadRadish);
-    const noRadishRash = noRadishDays.filter(d => d.hadRash).length;
-    const ironDays = sampleData.filter(d => d.tookIron);
-    const noIronDays = sampleData.filter(d => !d.tookIron);
-    const ironEnergy = ironDays.length > 0 ? (ironDays.reduce((s, d) => s + d.energy, 0) / ironDays.length).toFixed(1) : 0;
-    const noIronEnergy = noIronDays.length > 0 ? (noIronDays.reduce((s, d) => s + d.energy, 0) / noIronDays.length).toFixed(1) : 0;
-
-    return (
-      <div>
-        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>📊 סטטיסטיקות ותובנות</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-          {[
-            { label: "קלוריות (ממוצע 7 ימים)", value: avgCalories7, unit: "קק״ל", color: "#6366f1" },
-            { label: "חלבון (ממוצע 7 ימים)", value: avgProtein7, unit: "g", color: "#f59e0b" },
-            { label: "שינה (ממוצע 7 ימים)", value: avgSleep7, unit: "שעות", color: "#8b5cf6" },
-            { label: "צעדים (ממוצע 7 ימים)", value: avgSteps7.toLocaleString(), unit: "", color: "#22c55e" },
-          ].map((stat, i) => (
-            <div key={i} style={{ background: "#fff", borderRadius: 14, padding: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", textAlign: "center" }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: stat.color }}>{stat.value}</div>
-              <div style={{ fontSize: 11, color: "#94a3b8" }}>{stat.unit}</div>
-              <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{stat.label}</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>גובה (ס״מ)</label>
+                  <input type="number" placeholder="170" value={height} onChange={e => setHeight(e.target.value)} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>משקל נוכחי (ק״ג)</label>
+                  <input type="number" placeholder="68" value={currentWeight} onChange={e => setCurrentWeight(e.target.value)} style={inputStyle} />
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-          <MiniChart data={last14.map(d => ({ value: d.totalCalories, label: new Date(d.date).getDate() }))} color="#6366f1" label="קלוריות - 14 ימים אחרונים" height={100} />
-          <MiniChart data={last14.map(d => ({ value: d.totalProtein, label: new Date(d.date).getDate() }))} color="#f59e0b" label="חלבון - 14 ימים אחרונים" height={80} />
-          <MiniChart data={last14.map(d => ({ value: d.weight, label: new Date(d.date).getDate() }))} color="#ec4899" label="משקל - 14 ימים אחרונים" height={80} />
-        </div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right" }}>🧠 תובנות חכמות</div>
-        <div style={{ background: "linear-gradient(135deg, #fef3c7, #fef9c3)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#92400e", marginBottom: 8, textAlign: "right" }}>🍗 קשר חלבון ↔ רעב</div>
-          <div style={{ fontSize: 13, color: "#78350f", textAlign: "right", lineHeight: 1.8 }}>
-            בימים שאכלת <strong>עד 50g חלבון</strong> — הרגשת רעב ב-{lowProteinDays.length > 0 ? Math.round((lowProteinHunger / lowProteinDays.length) * 100) : 0}% מהמקרים.<br />
-            בימים שאכלת <strong>מעל 50g חלבון</strong> — הרגשת רעב רק ב-{highProteinDays.length > 0 ? Math.round((highProteinHunger / highProteinDays.length) * 100) : 0}% מהמקרים.<br />
-            <strong>💡 המלצה: </strong>נסה/י לשמור על לפחות 50g חלבון ביום כדי להרגיש שובע.
           </div>
-        </div>
-        <div style={{ background: "linear-gradient(135deg, #fce7f3, #fdf2f8)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#9d174d", marginBottom: 8, textAlign: "right" }}>🔍 קשר צנון ↔ פריחה</div>
-          <div style={{ fontSize: 13, color: "#831843", textAlign: "right", lineHeight: 1.8 }}>
-            מתוך {radishDays.length} ימים שאכלת צנון — הופיעה פריחה ב-{radishDays.length > 0 ? Math.round((radishRash / radishDays.length) * 100) : 0}% מהמקרים.<br />
-            מתוך {noRadishDays.length} ימים בלי צנון — הופיעה פריחה רק ב-{noRadishDays.length > 0 ? Math.round((noRadishRash / noRadishDays.length) * 100) : 0}% מהמקרים.<br />
-            <strong>⚠️ שים/י לב: </strong>ייתכן שיש לך רגישות לצנון! שווה לבדוק עם רופא/ה.
-          </div>
-        </div>
-        <div style={{ background: "linear-gradient(135deg, #dbeafe, #eff6ff)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#1e40af", marginBottom: 8, textAlign: "right" }}>💊 קשר ברזל ↔ אנרגיה</div>
-          <div style={{ fontSize: 13, color: "#1e3a5f", textAlign: "right", lineHeight: 1.8 }}>
-            בימים שלקחת ברזל — ציון אנרגיה ממוצע: <strong>{ironEnergy}/5</strong><br />
-            בימים שלא לקחת — ציון אנרגיה ממוצע: <strong>{noIronEnergy}/5</strong><br />
-            <strong>💡 המלצה: </strong>ברזל עושה לך הבדל! אל תשכח/י לקחת כל יום.
-          </div>
-        </div>
-        <div style={{ background: "linear-gradient(135deg, #d1fae5, #ecfdf5)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#065f46", marginBottom: 8, textAlign: "right" }}>⚖️ מגמת משקל</div>
-          <div style={{ fontSize: 13, color: "#064e3b", textAlign: "right", lineHeight: 1.8 }}>
-            משקל התחלתי: <strong>{sampleData[0].weight.toFixed(1)} ק״ג</strong><br />
-            משקל נוכחי: <strong>{sampleData[sampleData.length - 1].weight.toFixed(1)} ק״ג</strong><br />
-            שינוי: <strong>{(sampleData[sampleData.length - 1].weight - sampleData[0].weight).toFixed(1)} ק״ג</strong> ב-30 ימים<br />
-            <strong>📈 קצב: </strong>{Math.abs((sampleData[sampleData.length - 1].weight - sampleData[0].weight) / 4).toFixed(2)} ק״ג בשבוע
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // --- WEIGHT TRACKING ---
-  // --- CYCLE / PERIOD TRACKING ---
-  const renderCycle = () => {
-    const CYCLE_LEN = 28;
-    const PERIOD_LEN = 5;
-    const PMS_DAYS = 3;
-
-    // Combine reported periods + sample data
-    const allStarts = new Set();
-    sampleData.forEach(d => { if (d.isPeriodStart) allStarts.add(d.date); });
-    periodLog.forEach(d => allStarts.add(d));
-    const sortedStarts = Array.from(allStarts).sort();
-    const recentStarts = sortedStarts.slice(-6).reverse();
-
-    // Compute average cycle length from history
-    let avgCycle = CYCLE_LEN;
-    if (sortedStarts.length >= 2) {
-      const gaps = [];
-      for (let i = 1; i < sortedStarts.length; i++) {
-        const diff = Math.round((new Date(sortedStarts[i]) - new Date(sortedStarts[i - 1])) / 86400000);
-        if (diff > 15 && diff < 45) gaps.push(diff);
-      }
-      if (gaps.length > 0) avgCycle = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
-    }
-
-    // Predict next 3 periods
-    const lastStart = sortedStarts.length > 0 ? new Date(sortedStarts[sortedStarts.length - 1]) : null;
-    const predictions = [];
-    if (lastStart) {
-      for (let i = 1; i <= 3; i++) {
-        const next = new Date(lastStart);
-        next.setDate(next.getDate() + avgCycle * i);
-        const pmsStart = new Date(next);
-        pmsStart.setDate(pmsStart.getDate() - PMS_DAYS);
-        const periodEnd = new Date(next);
-        periodEnd.setDate(periodEnd.getDate() + PERIOD_LEN - 1);
-        predictions.push({
-          start: next.toISOString().split("T")[0],
-          end: periodEnd.toISOString().split("T")[0],
-          pmsStart: pmsStart.toISOString().split("T")[0],
-        });
-      }
-    }
+        )}

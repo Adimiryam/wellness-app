@@ -1,130 +1,28 @@
-.includes(d);
-            const date = new Date(d);
-            const endDate = new Date(date);
-            endDate.setDate(endDate.getDate() + PERIOD_LEN - 1);
-            const prevStart = sortedStarts[sortedStarts.length - recentStarts.indexOf(d) - 2];
-            const cycleLen = prevStart ? Math.round((date - new Date(prevStart)) / 86400000) : null;
-            return (
-              <div key={i} style={{
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                padding: "10px 0", borderBottom: i < recentStarts.length - 1 ? "1px solid #f1f5f9" : "none", direction: "rtl",
-              }}>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>
-                    🩸 {d} — {endDate.toISOString().split("T")[0]}
-                  </div>
-                  {cycleLen && (
-                    <div style={{ fontSize: 11, color: "#94a3b8" }}>אורך מחזור: {cycleLen} ימים</div>
-                  )}
-                </div>
-                {isFromLog && (
-                  <button onClick={() => removePeriodDate(d)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}>
-                    <Trash2 size={14} />
-                  </button>
-                )}
-              </div>
-            );
-          }) : (
-            <div style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", padding: 20 }}>
-              עדיין לא נרשמו תאריכי מחזור
+        {/* Step 1: Diet Type */}
+        {step === 1 && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              🍽️ מה סוג התזונה שלך?
             </div>
-          )}
-        </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              בחר/י את סגנון התזונה הקרוב ביותר אליך
+            </div>
 
-        {/* Forecast */}
-        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
-            🔮 צפי מחזורים קדימה
-          </div>
-          {predictions.length > 0 ? predictions.map((p, i) => {
-            const d = new Date(p.start);
-            const daysFromNow = Math.round((d - now) / 86400000);
-            // Build list of PMS dates
-            const pmsDates = [];
-            for (let k = 0; k < PMS_DAYS; k++) {
-              const pmsD = new Date(p.pmsStart);
-              pmsD.setDate(pmsD.getDate() + k);
-              pmsDates.push(pmsD.toISOString().split("T")[0]);
-            }
-            return (
-              <div key={i} style={{
-                background: "linear-gradient(135deg, #fdf2f8, #fce7f3)", borderRadius: 12, padding: 12, marginBottom: 8,
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", direction: "rtl", marginBottom: 6 }}>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "#9f1239" }}>
-                      🩸 מחזור: {p.start} — {p.end}
-                    </div>
-                  </div>
-                  <div style={{ fontSize: 12, color: "#ec4899", fontWeight: 600, textAlign: "left" }}>
-                    {daysFromNow > 0 ? "בעוד " + daysFromNow + " ימים" : "עבר"}
-                  </div>
-                </div>
-                <div style={{ fontSize: 11, color: "#92400e", textAlign: "right", background: "#fff7ed", borderRadius: 8, padding: "6px 8px" }}>
-                  ⚠️ ימי PMS: {pmsDates.join(" • ")}
-                </div>
-              </div>
-            );
-          }) : (
-            <div style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", padding: 20 }}>
-              הוסיפי לפחות תאריך מחזור אחד כדי לקבל צפי
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+              {DIET_TYPES.map(dt => (
+                <button key={dt.id} onClick={() => setDietType(dt.id)}
+                  style={{
+                    padding: 16, borderRadius: 14, border: "2px solid",
+                    borderColor: dietType === dt.id ? dt.color : "#e2e8f0",
+                    background: dietType === dt.id ? `${dt.color}10` : "#fff",
+                    cursor: "pointer", textAlign: "center",
+                    boxShadow: dietType === dt.id ? `0 4px 12px ${dt.color}25` : "none",
+                    transition: "all 0.2s"
+                  }}>
+                  <div style={{ fontSize: 28, marginBottom: 6 }}>{dt.icon}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: dietType === dt.id ? dt.color : "#475569" }}>{dt.label}</div>
+                </button>
+              ))}
             </div>
-          )}
-          <div style={{ fontSize: 10, color: "#94a3b8", textAlign: "right", marginTop: 6 }}>
-            * הצפי מבוסס על ממוצע {avgCycle} ימים. ככל שתהיה יותר היסטוריה, הדיוק ישתפר.
-          </div>
-        </div>
-
-        {/* Recent daily logs */}
-        {Object.keys(periodDayLogs).length > 0 && (
-          <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
-              📋 דיווחים אחרונים
-            </div>
-            {Object.entries(periodDayLogs).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 7).map(([date, log]) => {
-              const intensityLabel = { none: "אין", spotting: "טפטוף", light: "קל", medium: "בינוני", heavy: "חזק" }[log.intensity] || "-";
-              const intensityColor = { none: "#94a3b8", spotting: "#f9a8d4", light: "#ec4899", medium: "#be185d", heavy: "#831843" }[log.intensity] || "#94a3b8";
-              return (
-                <div key={date} style={{ padding: "8px 0", borderBottom: "1px solid #f1f5f9", direction: "rtl" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, color: "#64748b" }}>{date}</span>
-                    {log.intensity && (
-                      <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 10, background: intensityColor, color: "#fff", fontWeight: 600 }}>
-                        🩸 {intensityLabel}
-                      </span>
-                    )}
-                  </div>
-                  {log.symptoms && log.symptoms.length > 0 && (
-                    <div style={{ fontSize: 11, color: "#9f1239", textAlign: "right" }}>
-                      {log.symptoms.join(" • ")}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
           </div>
         )}
-
-        {/* Mini calendar visualization of next cycle */}
-        {lastStart && (
-          <div style={{ background: "#fff", borderRadius: 16, padding: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
-              ציר זמן - המחזור הנוכחי
-            </div>
-            <div style={{ display: "flex", borderRadius: 10, overflow: "hidden", height: 26, marginBottom: 6 }}>
-              <div style={{ flex: PERIOD_LEN, background: "#ec4899", color: "#fff", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600 }}>וסת</div>
-              <div style={{ flex: 7, background: "#c7d2fe", color: "#3730a3", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600 }}>פוליקולרי</div>
-              <div style={{ flex: 3, background: "#86efac", color: "#14532d", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600 }}>ביוץ</div>
-              <div style={{ flex: avgCycle - PERIOD_LEN - 7 - 3 - PMS_DAYS, background: "#ddd6fe", color: "#4c1d95", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600 }}>לוטאלי</div>
-              <div style={{ flex: PMS_DAYS, background: "#fdba74", color: "#7c2d12", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600 }}>PMS</div>
-            </div>
-            {dayInCycle !== null && dayInCycle <= avgCycle && (
-              <div style={{ position: "relative", height: 4, background: "#f1f5f9", borderRadius: 2 }}>
-                <div style={{ position: "absolute", top: -3, width: 10, height: 10, borderRadius: 5, background: "#1e293b", left: ((dayInCycle / avgCycle) * 100) + "%", transform: "translateX(-50%)" }} />
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
