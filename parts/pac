@@ -276,8 +276,8 @@ const OnboardingScreen = ({ onComplete }) => {
                   </label>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>קק״ל</span>
-                    <input type="number" min="1000" max="5000" value={calorieGoalValue} onChange={e => { const v = parseInt(e.target.value) || 0; setCalorieGoalValue(Math.min(5000, Math.max(0, v))); }}
-                      onBlur={e => { const v = parseInt(e.target.value) || 1000; setCalorieGoalValue(Math.min(5000, Math.max(1000, v))); }}
+                    <input type="number" min="1000" max="5000" value={calorieGoalValue === 0 ? "" : calorieGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setCalorieGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setCalorieGoalValue(Math.min(5000, Math.max(0, v))); }}
+                      onBlur={e => { const v = parseInt(e.target.value) || 1800; setCalorieGoalValue(Math.min(5000, Math.max(1000, v))); }}
                       style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#6366f1", boxSizing: "border-box" }} />
                   </div>
                   <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 1,000 ל-5,000 קק״ל</div>
@@ -288,8 +288,8 @@ const OnboardingScreen = ({ onComplete }) => {
                   </label>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>גרם</span>
-                    <input type="number" min="0" max="700" value={proteinGoalValue} onChange={e => { const v = parseInt(e.target.value) || 0; setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
-                      onBlur={e => { const v = parseInt(e.target.value) || 0; setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
+                    <input type="number" min="0" max="700" value={proteinGoalValue === 0 ? "" : proteinGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setProteinGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
+                      onBlur={e => { const v = parseInt(e.target.value) || 80; setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
                       style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#f59e0b", boxSizing: "border-box" }} />
                   </div>
                   <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
@@ -361,8 +361,4 @@ const OnboardingScreen = ({ onComplete }) => {
         {/* Step 4: Medications & Supplements */}
         {step === 4 && (
           <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
-              💊 תרופות ותוספים
-            </div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
-              איזה
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, te
