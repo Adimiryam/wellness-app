@@ -1,4 +1,57 @@
-nDays.length).toFixed(1) : 0;
+            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>משקל יעד (ק״ג)</label>
+            <input type="number" placeholder="למשל: 65" value={weightGoal} onChange={e => setWeightGoal(e.target.value)}
+              style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", boxSizing: "border-box" }} />
+          </div>
+        </div>
+      )}
+
+      {/* Per-goal tips */}
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#f0f9ff", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#0369a1", marginBottom: 12, textAlign: "right" }}>💡 מה כדאי לך להזין כל יום לפי המטרות שלך:</div>
+          {selectedGoals.map(goalId => {
+            const goal = DIET_GOALS.find(g => g.id === goalId);
+            const Icon = goal?.icon;
+            return (
+              <div key={goalId} style={{ background: "#fff", borderRadius: 12, padding: 14, marginBottom: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginBottom: 6 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: goal?.color }}>{goal?.label}</span>
+                  {Icon && <Icon size={18} color={goal?.color} />}
+                </div>
+                <div style={{ fontSize: 12, color: "#0c4a6e", textAlign: "right", lineHeight: 1.7 }}>
+                  {GOAL_TIPS[goalId] || ""}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+
+  // --- STATISTICS ---
+  const renderStats = () => {
+    const last14 = sampleData.slice(-14);
+    const last7 = sampleData.slice(-7);
+    const avgCalories7 = Math.round(last7.reduce((s, d) => s + d.totalCalories, 0) / 7);
+    const avgProtein7 = Math.round(last7.reduce((s, d) => s + d.totalProtein, 0) / 7);
+    const avgSleep7 = (last7.reduce((s, d) => s + d.sleepHours, 0) / 7).toFixed(1);
+    const avgSteps7 = Math.round(last7.reduce((s, d) => s + d.steps, 0) / 7);
+    const lowProteinDays = sampleData.filter(d => d.totalProtein <= 50);
+    const highProteinDays = sampleData.filter(d => d.totalProtein > 50);
+    const lowProteinHunger = lowProteinDays.filter(d => d.feelings.includes("hungry")).length;
+    const highProteinHunger = highProteinDays.filter(d => d.feelings.includes("hungry")).length;
+    const radishDays = sampleData.filter(d => d.hadRadish);
+    const radishRash = radishDays.filter(d => d.hadRash).length;
+    const noRadishDays = sampleData.filter(d => !d.hadRadish);
+    const noRadishRash = noRadishDays.filter(d => d.hadRash).length;
+    const ironDays = sampleData.filter(d => d.tookIron);
+    const noIronDays = sampleData.filter(d => !d.tookIron);
+    const ironEnergy = ironDays.length > 0 ? (ironDays.reduce((s, d) => s + d.energy, 0) / ironDays.length).toFixed(1) : 0;
+    const noIronEnergy = noIronDays.length > 0 ? (noIronDays.reduce((s, d) => s + d.energy, 0) / noIronDays.length).toFixed(1) : 0;
 
     return (
       <div>
@@ -263,67 +316,4 @@ nDays.length).toFixed(1) : 0;
         </div>
 
         {/* Recent period dates */}
-        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
-            📅 תאריכי מחזור אחרונים
-          </div>
-          {recentStarts.length > 0 ? recentStarts.map((d, i) => {
-            const isFromLog = periodLog.includes(d);
-            const date = new Date(d);
-            const endDate = new Date(date);
-            endDate.setDate(endDate.getDate() + PERIOD_LEN - 1);
-            const prevStart = sortedStarts[sortedStarts.length - recentStarts.indexOf(d) - 2];
-            const cycleLen = prevStart ? Math.round((date - new Date(prevStart)) / 86400000) : null;
-            return (
-              <div key={i} style={{
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                padding: "10px 0", borderBottom: i < recentStarts.length - 1 ? "1px solid #f1f5f9" : "none", direction: "rtl",
-              }}>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>
-                    🩸 {d} — {endDate.toISOString().split("T")[0]}
-                  </div>
-                  {cycleLen && (
-                    <div style={{ fontSize: 11, color: "#94a3b8" }}>אורך מחזור: {cycleLen} ימים</div>
-                  )}
-                </div>
-                {isFromLog && (
-                  <button onClick={() => removePeriodDate(d)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}>
-                    <Trash2 size={14} />
-                  </button>
-                )}
-              </div>
-            );
-          }) : (
-            <div style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", padding: 20 }}>
-              עדיין לא נרשמו תאריכי מחזור
-            </div>
-          )}
-        </div>
-
-        {/* Forecast */}
-        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
-            🔮 צפי מחזורים קדימה
-          </div>
-          {predictions.length > 0 ? predictions.map((p, i) => {
-            const d = new Date(p.start);
-            const daysFromNow = Math.round((d - now) / 86400000);
-            // Build list of PMS dates
-            const pmsDates = [];
-            for (let k = 0; k < PMS_DAYS; k++) {
-              const pmsD = new Date(p.pmsStart);
-              pmsD.setDate(pmsD.getDate() + k);
-              pmsDates.push(pmsD.toISOString().split("T")[0]);
-            }
-            return (
-              <div key={i} style={{
-                background: "linear-gradient(135deg, #fdf2f8, #fce7f3)", borderRadius: 12, padding: 12, marginBottom: 8,
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", direction: "rtl", marginBottom: 6 }}>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "#9f1239" }}>
-                      🩸 מחזור: {p.start} — {p.end}
-                    </div>
-                  </div>
-                  <div style
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,
