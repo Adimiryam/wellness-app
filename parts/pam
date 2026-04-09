@@ -1,84 +1,319 @@
-{/* Health pattern insights */}
-        <div style={{ background: "linear-gradient(135deg, #fce7f3, #fdf2f8)", borderRadius: 16, padding: 20, marginBottom: 16 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#9d174d", marginBottom: 12, textAlign: "right" }}>
-            🩺 תובנות בריאותיות מדיווחים
+            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
           </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>משקל יעד (ק״ג)</label>
+            <input type="number" placeholder="למשל: 65" value={weightGoal} onChange={e => setWeightGoal(e.target.value)}
+              style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", boxSizing: "border-box" }} />
+          </div>
+        </div>
+      )}
 
-          {[
-            { icon: "🤕", title: "כאב ראש", insight: "ב-92% מהפעמים שדיווחת על כאב ראש, אכלת מוצרי חלב עד שעתיים לפני. ב-89% מהמקרים לא לקחת ברזל ביומיים שלפני.", rec: "נסה/י להימנע מחלב ולקחת ברזל באופן קבוע.", bg: "#fff0f6" },
-            { icon: "🫧", title: "נפיחות", insight: "ב-78% מהדיווחים על נפיחות, אכלת לחם/פסטה באותו יום. ב-65% מהם גם ישנת פחות מ-7 שעות.", rec: "שים/י לב לצריכת גלוטן ולשינה.", bg: "#fef0f5" },
-            { icon: "😴", title: "עייפות", insight: "בימים שלא לקחת ברזל + ישנת פחות מ-7 שעות, דירגת עייפות 4+ ב-95% מהמקרים. בימים עם ברזל + 7+ שעות שינה, הדירוג ירד ל-2 בממוצע.", rec: "ברזל + שינה = הקומבו שלך!", bg: "#fff5f0" },
-            { icon: "🔴", title: "פריחה", insight: "85% מדיווחי הפריחה היו תוך 24 שעות מאכילת צנון. בימים בלי צנון — פריחה ב-12% בלבד.", rec: "יש לך כנראה רגישות לצנון. שווה לבדוק עם אלרגולוג/ית.", bg: "#f0f5ff" },
-          ].map((item, i) => (
-            <div key={i} style={{ background: item.bg, borderRadius: 12, padding: 14, marginBottom: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", marginBottom: 6 }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>{item.title}</span>
-                <span style={{ fontSize: 18 }}>{item.icon}</span>
+      {/* Per-goal tips */}
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#f0f9ff", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#0369a1", marginBottom: 12, textAlign: "right" }}>💡 מה כדאי לך להזין כל יום לפי המטרות שלך:</div>
+          {selectedGoals.map(goalId => {
+            const goal = DIET_GOALS.find(g => g.id === goalId);
+            const Icon = goal?.icon;
+            return (
+              <div key={goalId} style={{ background: "#fff", borderRadius: 12, padding: 14, marginBottom: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginBottom: 6 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: goal?.color }}>{goal?.label}</span>
+                  {Icon && <Icon size={18} color={goal?.color} />}
+                </div>
+                <div style={{ fontSize: 12, color: "#0c4a6e", textAlign: "right", lineHeight: 1.7 }}>
+                  {GOAL_TIPS[goalId] || ""}
+                </div>
               </div>
-              <div style={{ fontSize: 12, color: "#475569", textAlign: "right", lineHeight: 1.7, marginBottom: 6 }}>{item.insight}</div>
-              <div style={{ fontSize: 12, color: "#6366f1", fontWeight: 600, textAlign: "right" }}>💡 {item.rec}</div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+
+  // --- STATISTICS ---
+  const renderStats = () => {
+    const last14 = sampleData.slice(-14);
+    const last7 = sampleData.slice(-7);
+    const avgCalories7 = Math.round(last7.reduce((s, d) => s + d.totalCalories, 0) / 7);
+    const avgProtein7 = Math.round(last7.reduce((s, d) => s + d.totalProtein, 0) / 7);
+    const avgSleep7 = (last7.reduce((s, d) => s + d.sleepHours, 0) / 7).toFixed(1);
+    const avgSteps7 = Math.round(last7.reduce((s, d) => s + d.steps, 0) / 7);
+    const lowProteinDays = sampleData.filter(d => d.totalProtein <= 50);
+    const highProteinDays = sampleData.filter(d => d.totalProtein > 50);
+    const lowProteinHunger = lowProteinDays.filter(d => d.feelings.includes("hungry")).length;
+    const highProteinHunger = highProteinDays.filter(d => d.feelings.includes("hungry")).length;
+    const radishDays = sampleData.filter(d => d.hadRadish);
+    const radishRash = radishDays.filter(d => d.hadRash).length;
+    const noRadishDays = sampleData.filter(d => !d.hadRadish);
+    const noRadishRash = noRadishDays.filter(d => d.hadRash).length;
+    const ironDays = sampleData.filter(d => d.tookIron);
+    const noIronDays = sampleData.filter(d => !d.tookIron);
+    const ironEnergy = ironDays.length > 0 ? (ironDays.reduce((s, d) => s + d.energy, 0) / ironDays.length).toFixed(1) : 0;
+    const noIronEnergy = noIronDays.length > 0 ? (noIronDays.reduce((s, d) => s + d.energy, 0) / noIronDays.length).toFixed(1) : 0;
+
+    return (
+      <div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>📊 סטטיסטיקות ותובנות</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+          {[
+            { label: "קלוריות (ממוצע 7 ימים)", value: avgCalories7, unit: "קק״ל", color: "#6366f1" },
+            { label: "חלבון (ממוצע 7 ימים)", value: avgProtein7, unit: "g", color: "#f59e0b" },
+            { label: "שינה (ממוצע 7 ימים)", value: avgSleep7, unit: "שעות", color: "#8b5cf6" },
+            { label: "צעדים (ממוצע 7 ימים)", value: avgSteps7.toLocaleString(), unit: "", color: "#22c55e" },
+          ].map((stat, i) => (
+            <div key={i} style={{ background: "#fff", borderRadius: 14, padding: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", textAlign: "center" }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: stat.color }}>{stat.value}</div>
+              <div style={{ fontSize: 11, color: "#94a3b8" }}>{stat.unit}</div>
+              <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{stat.label}</div>
             </div>
           ))}
+        </div>
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <MiniChart data={last14.map(d => ({ value: d.totalCalories, label: new Date(d.date).getDate() }))} color="#6366f1" label="קלוריות - 14 ימים אחרונים" height={100} />
+          <MiniChart data={last14.map(d => ({ value: d.totalProtein, label: new Date(d.date).getDate() }))} color="#f59e0b" label="חלבון - 14 ימים אחרונים" height={80} />
+          <MiniChart data={last14.map(d => ({ value: d.weight, label: new Date(d.date).getDate() }))} color="#ec4899" label="משקל - 14 ימים אחרונים" height={80} />
+        </div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right" }}>🧠 תובנות חכמות</div>
+        <div style={{ background: "linear-gradient(135deg, #fef3c7, #fef9c3)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#92400e", marginBottom: 8, textAlign: "right" }}>🍗 קשר חלבון ↔ רעב</div>
+          <div style={{ fontSize: 13, color: "#78350f", textAlign: "right", lineHeight: 1.8 }}>
+            בימים שאכלת <strong>עד 50g חלבון</strong> — הרגשת רעב ב-{lowProteinDays.length > 0 ? Math.round((lowProteinHunger / lowProteinDays.length) * 100) : 0}% מהמקרים.<br />
+            בימים שאכלת <strong>מעל 50g חלבון</strong> — הרגשת רעב רק ב-{highProteinDays.length > 0 ? Math.round((highProteinHunger / highProteinDays.length) * 100) : 0}% מהמקרים.<br />
+            <strong>💡 המלצה: </strong>נסה/י לשמור על לפחות 50g חלבון ביום כדי להרגיש שובע.
+          </div>
+        </div>
+        <div style={{ background: "linear-gradient(135deg, #fce7f3, #fdf2f8)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#9d174d", marginBottom: 8, textAlign: "right" }}>🔍 קשר צנון ↔ פריחה</div>
+          <div style={{ fontSize: 13, color: "#831843", textAlign: "right", lineHeight: 1.8 }}>
+            מתוך {radishDays.length} ימים שאכלת צנון — הופיעה פריחה ב-{radishDays.length > 0 ? Math.round((radishRash / radishDays.length) * 100) : 0}% מהמקרים.<br />
+            מתוך {noRadishDays.length} ימים בלי צנון — הופיעה פריחה רק ב-{noRadishDays.length > 0 ? Math.round((noRadishRash / noRadishDays.length) * 100) : 0}% מהמקרים.<br />
+            <strong>⚠️ שים/י לב: </strong>ייתכן שיש לך רגישות לצנון! שווה לבדוק עם רופא/ה.
+          </div>
+        </div>
+        <div style={{ background: "linear-gradient(135deg, #dbeafe, #eff6ff)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#1e40af", marginBottom: 8, textAlign: "right" }}>💊 קשר ברזל ↔ אנרגיה</div>
+          <div style={{ fontSize: 13, color: "#1e3a5f", textAlign: "right", lineHeight: 1.8 }}>
+            בימים שלקחת ברזל — ציון אנרגיה ממוצע: <strong>{ironEnergy}/5</strong><br />
+            בימים שלא לקחת — ציון אנרגיה ממוצע: <strong>{noIronEnergy}/5</strong><br />
+            <strong>💡 המלצה: </strong>ברזל עושה לך הבדל! אל תשכח/י לקחת כל יום.
+          </div>
+        </div>
+        <div style={{ background: "linear-gradient(135deg, #d1fae5, #ecfdf5)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#065f46", marginBottom: 8, textAlign: "right" }}>⚖️ מגמת משקל</div>
+          <div style={{ fontSize: 13, color: "#064e3b", textAlign: "right", lineHeight: 1.8 }}>
+            משקל התחלתי: <strong>{sampleData[0].weight.toFixed(1)} ק״ג</strong><br />
+            משקל נוכחי: <strong>{sampleData[sampleData.length - 1].weight.toFixed(1)} ק״ג</strong><br />
+            שינוי: <strong>{(sampleData[sampleData.length - 1].weight - sampleData[0].weight).toFixed(1)} ק״ג</strong> ב-30 ימים<br />
+            <strong>📈 קצב: </strong>{Math.abs((sampleData[sampleData.length - 1].weight - sampleData[0].weight) / 4).toFixed(2)} ק״ג בשבוע
+          </div>
         </div>
       </div>
     );
   };
 
-  // ==================== MAIN LAYOUT ====================
-  const tabs = [
-    { id: "home", label: "בית", icon: UtensilsCrossed },
-    { id: "weight", label: "משקל", icon: Weight },
-    { id: "cycle", label: "מחזור", icon: Droplets },
-    { id: "questionnaires", label: "שאלונים", icon: Stethoscope },
-    { id: "goals", label: "יעדים", icon: Target },
-    { id: "stats", label: "נתונים", icon: BarChart3 },
-    { id: "predictions", label: "תובנות", icon: Sparkles },
-  ];
+  // --- WEIGHT TRACKING ---
+  // --- CYCLE / PERIOD TRACKING ---
+  const renderCycle = () => {
+    const CYCLE_LEN = 28;
+    const PERIOD_LEN = 5;
+    const PMS_DAYS = 3;
 
-  return (
-    <div style={{ direction: "rtl", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", maxWidth: 480, margin: "0 auto", background: "#f8fafc", minHeight: "100vh", position: "relative" }}>
-      {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", padding: "20px 20px 16px", color: "#fff" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: 11, opacity: 0.8, background: "rgba(255,255,255,0.2)", padding: "4px 10px", borderRadius: 20 }}>MVP v1.1</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div>
-              <div style={{ fontSize: 20, fontWeight: 800 }}>NutriTrack</div>
-              <div style={{ fontSize: 11, opacity: 0.8 }}>המעקב התזונתי החכם שלך</div>
+    // Combine reported periods + sample data
+    const allStarts = new Set();
+    sampleData.forEach(d => { if (d.isPeriodStart) allStarts.add(d.date); });
+    periodLog.forEach(d => allStarts.add(d));
+    const sortedStarts = Array.from(allStarts).sort();
+    const recentStarts = sortedStarts.slice(-6).reverse();
+
+    // Compute average cycle length from history
+    let avgCycle = CYCLE_LEN;
+    if (sortedStarts.length >= 2) {
+      const gaps = [];
+      for (let i = 1; i < sortedStarts.length; i++) {
+        const diff = Math.round((new Date(sortedStarts[i]) - new Date(sortedStarts[i - 1])) / 86400000);
+        if (diff > 15 && diff < 45) gaps.push(diff);
+      }
+      if (gaps.length > 0) avgCycle = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+    }
+
+    // Predict next 3 periods
+    const lastStart = sortedStarts.length > 0 ? new Date(sortedStarts[sortedStarts.length - 1]) : null;
+    const predictions = [];
+    if (lastStart) {
+      for (let i = 1; i <= 3; i++) {
+        const next = new Date(lastStart);
+        next.setDate(next.getDate() + avgCycle * i);
+        const pmsStart = new Date(next);
+        pmsStart.setDate(pmsStart.getDate() - PMS_DAYS);
+        const periodEnd = new Date(next);
+        periodEnd.setDate(periodEnd.getDate() + PERIOD_LEN - 1);
+        predictions.push({
+          start: next.toISOString().split("T")[0],
+          end: periodEnd.toISOString().split("T")[0],
+          pmsStart: pmsStart.toISOString().split("T")[0],
+        });
+      }
+    }
+
+    // Current cycle info
+    const now = new Date();
+    const todayStr = now.toISOString().split("T")[0];
+    let currentPhase = null;
+    let dayInCycle = null;
+    let daysToNext = null;
+    if (lastStart) {
+      const diffDays = Math.floor((now - lastStart) / 86400000);
+      dayInCycle = diffDays + 1;
+      daysToNext = avgCycle - diffDays;
+      if (diffDays < PERIOD_LEN) currentPhase = "period";
+      else if (daysToNext <= PMS_DAYS && daysToNext > 0) currentPhase = "pms";
+      else if (diffDays >= 12 && diffDays <= 16) currentPhase = "ovulation";
+      else currentPhase = "follicular_luteal";
+    }
+
+    const phaseInfo = {
+      period: { label: "וסת", color: "#ec4899", bg: "#fdf2f8", emoji: "🩸", desc: "את במחזור. הגוף שלך עובד קשה — תני לו מנוחה, ברזל, ומזון מזין." },
+      pms: { label: "תסמונת קדם וסתית", color: "#f97316", bg: "#fff7ed", emoji: "⚠️", desc: "את בחלון ה-PMS. ייתכנו מיחושים, נפיחות, שינויי מצב רוח." },
+      ovulation: { label: "ביוץ", color: "#22c55e", bg: "#f0fdf4", emoji: "🥚", desc: "זמן ביוץ — אנרגיה גבוהה, פוריות מקסימלית." },
+      follicular_luteal: { label: "שלב בין-מחזורי", color: "#6366f1", bg: "#eef2ff", emoji: "🌸", desc: "שלב רגיל במחזור. הגוף שלך בשיווי משקל." },
+    };
+
+    const addPeriodDate = (dateStr) => {
+      if (!dateStr) return;
+      setPeriodLog(prev => prev.includes(dateStr) ? prev : [...prev, dateStr].sort());
+    };
+    const removePeriodDate = (dateStr) => {
+      setPeriodLog(prev => prev.filter(d => d !== dateStr));
+    };
+
+    return (
+      <div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 6, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
+          <span>מעקב מחזור</span>
+          <Droplets size={22} color="#ec4899" />
+        </div>
+        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14, textAlign: "right" }}>
+          אורך מחזור ממוצע: {avgCycle} ימים • {sortedStarts.length} מחזורים בהיסטוריה
+        </div>
+
+        {/* Current Phase */}
+        {currentPhase && (
+          <div style={{ background: phaseInfo[currentPhase].bg, borderRadius: 16, padding: 16, marginBottom: 14, border: "2px solid " + phaseInfo[currentPhase].color + "33" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", direction: "rtl", marginBottom: 8 }}>
+              <div style={{ fontSize: 11, color: phaseInfo[currentPhase].color, fontWeight: 600 }}>יום {dayInCycle} במחזור</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: phaseInfo[currentPhase].color }}>
+                {phaseInfo[currentPhase].emoji} {phaseInfo[currentPhase].label}
+              </div>
             </div>
-            <div style={{ fontSize: 28 }}>🥗</div>
+            <div style={{ fontSize: 12, color: "#475569", textAlign: "right", lineHeight: 1.6 }}>
+              {phaseInfo[currentPhase].desc}
+            </div>
+            {daysToNext !== null && daysToNext > 0 && (
+              <div style={{ fontSize: 12, color: phaseInfo[currentPhase].color, fontWeight: 600, textAlign: "right", marginTop: 8 }}>
+                מחזור הבא בעוד {daysToNext} ימים
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Daily Log — bleeding intensity + period symptoms */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+            🩸 דיווח יומי - {todayStr}
+          </div>
+          {/* Bleeding intensity */}
+          <div style={{ fontSize: 12, color: "#64748b", marginBottom: 6, textAlign: "right" }}>עוצמת דימום:</div>
+          <div style={{ display: "flex", gap: 6, marginBottom: 12, flexDirection: "row-reverse" }}>
+            {[
+              { id: "none", label: "אין", color: "#e2e8f0", dotColor: "#94a3b8" },
+              { id: "spotting", label: "טפטוף", color: "#fce7f3", dotColor: "#f9a8d4" },
+              { id: "light", label: "קל", color: "#fbcfe8", dotColor: "#ec4899" },
+              { id: "medium", label: "בינוני", color: "#f472b6", dotColor: "#be185d" },
+              { id: "heavy", label: "חזק", color: "#be185d", dotColor: "#fff" },
+            ].map(lvl => {
+              const active = periodDayLogs[todayStr]?.intensity === lvl.id;
+              return (
+                <button key={lvl.id} onClick={() => setPeriodDayLogs(prev => ({
+                  ...prev,
+                  [todayStr]: { ...(prev[todayStr] || { symptoms: [] }), intensity: lvl.id }
+                }))} style={{
+                  flex: 1, padding: "8px 4px", borderRadius: 10, border: active ? "2px solid #1e293b" : "2px solid transparent",
+                  background: lvl.color, color: lvl.id === "heavy" ? "#fff" : "#1e293b",
+                  fontSize: 11, fontWeight: 600, cursor: "pointer",
+                }}>
+                  <div style={{ width: 8, height: 8, borderRadius: 4, background: lvl.dotColor, margin: "0 auto 4px" }} />
+                  {lvl.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Period symptoms */}
+          <div style={{ fontSize: 12, color: "#64748b", marginBottom: 6, textAlign: "right" }}>תסמיני מחזור:</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, flexDirection: "row-reverse" }}>
+            {[
+              { id: "cramps", label: "כאבי בטן/התכווצויות", icon: "😣" },
+              { id: "back_pain", label: "כאבי גב", icon: "🦴" },
+              { id: "headache", label: "כאב ראש/מיגרנה", icon: "🤕" },
+              { id: "breast_tender", label: "רגישות בחזה", icon: "💗" },
+              { id: "bloating", label: "נפיחות", icon: "🫧" },
+              { id: "nausea", label: "בחילה", icon: "🤢" },
+              { id: "fatigue", label: "עייפות", icon: "😴" },
+              { id: "mood_swings", label: "מצבי רוח", icon: "🎭" },
+              { id: "acne", label: "פצעונים", icon: "🔴" },
+              { id: "cravings", label: "חשק למתוק", icon: "🍫" },
+              { id: "diarrhea", label: "שלשול", icon: "💧" },
+              { id: "insomnia", label: "נדודי שינה", icon: "🌙" },
+            ].map(sym => {
+              const active = periodDayLogs[todayStr]?.symptoms?.includes(sym.id);
+              return (
+                <button key={sym.id} onClick={() => setPeriodDayLogs(prev => {
+                  const cur = prev[todayStr] || { symptoms: [] };
+                  const syms = cur.symptoms || [];
+                  return {
+                    ...prev,
+                    [todayStr]: {
+                      ...cur,
+                      symptoms: syms.includes(sym.id) ? syms.filter(s => s !== sym.id) : [...syms, sym.id]
+                    }
+                  };
+                })} style={{
+                  padding: "6px 10px", borderRadius: 20, border: "2px solid",
+                  borderColor: active ? "#ec4899" : "#e2e8f0",
+                  background: active ? "#fdf2f8" : "#fff",
+                  color: active ? "#9f1239" : "#64748b",
+                  fontSize: 11, fontWeight: 500, cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 3,
+                }}>
+                  {active && <Check size={10} />}
+                  <span>{sym.icon}</span>
+                  <span>{sym.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div style={{ padding: 16, paddingBottom: 80 }}>
-        {activeTab === "home" && renderHome()}
-        {activeTab === "questionnaires" && renderQuestionnaires()}
-        {activeTab === "goals" && renderGoals()}
-        {activeTab === "stats" && renderStats()}
-        {activeTab === "weight" && renderWeight()}
-        {activeTab === "cycle" && renderCycle()}
-        {activeTab === "predictions" && renderPredictions()}
-      </div>
-
-      {/* Bottom Navigation */}
-      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, background: "#fff", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "space-around", padding: "8px 0 12px", zIndex: 100, boxShadow: "0 -2px 10px rgba(0,0,0,0.06)" }}>
-        {tabs.map(tab => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, background: "none", border: "none", cursor: "pointer", padding: "4px 12px", transition: "all 0.2s" }}>
-              <Icon size={22} color={isActive ? "#6366f1" : "#94a3b8"} strokeWidth={isActive ? 2.5 : 1.5} />
-              <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, color: isActive ? "#6366f1" : "#94a3b8" }}>{tab.label}</span>
-              {isActive && <div style={{ width: 4, height: 4, borderRadius: 2, background: "#6366f1", marginTop: 1 }} />}
+        {/* Add period date form */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+            הוסיפי תאריך תחילת מחזור
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input type="date" defaultValue={todayStr} id="cycle-date-input"
+              style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 14, boxSizing: "border-box" }} />
+            <button onClick={() => {
+              const el = document.getElementById("cycle-date-input");
+              if (el && el.value) addPeriodDate(el.value);
+            }} style={{
+              padding: "10px 16px", borderRadius: 10, border: "none", background: "#ec4899", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}>
+              <Plus size={14} /> הוסף
             </button>
-          );
-        })}
-      </div>
+          </div>
+        </div>
 
-      {renderFoodSearchModal()}
-    </div>
-  );
-}
+        {/* Recent period dates */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,
