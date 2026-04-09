@@ -1,0 +1,337 @@
+-kcal"] || 0),
+          protein: Math.round((p.nutriments?.proteins_100g || 0) * 10) / 10,
+          carbs: Math.round((p.nutriments?.carbohydrates_100g || 0) * 10) / 10,
+          fat: Math.round((p.nutriments?.fat_100g || 0) * 10) / 10,
+          category: "ברקוד",
+          source: "openfoodfacts",
+          barcode,
+          image: p.image_small_url,
+        });
+      } else {
+        setBarcodeError("המוצר לא נמצא במאגר. נסה/י ברקוד אחר או הזנה ידנית.");
+      }
+    } catch (e) {
+      setBarcodeError("שגיאה בחיבור. בדוק/י את חיבור האינטרנט.");
+    }
+    setBarcodeLoading(false);
+  };
+
+  const addManualFood = () => {
+    if (!manualFood.name || !manualFood.calories) return;
+    const food = {
+      id: `manual-${Date.now()}`,
+      name: manualFood.name,
+      serving: manualFood.serving || "1 מנה",
+      calories: parseInt(manualFood.calories) || 0,
+      protein: parseFloat(manualFood.protein) || 0,
+      carbs: parseFloat(manualFood.carbs) || 0,
+      fat: parseFloat(manualFood.fat) || 0,
+      category: "הזנה ידנית",
+    };
+    addFood(food);
+    setManualFood({ name: "", serving: "", calories: "", protein: "", carbs: "", fat: "" });
+  };
+
+  const saveToMyFoods = (food) => {
+    const exists = myFoods.some(f => f.name === food.name);
+    if (!exists) {
+      setMyFoods(prev => [{ ...food, id: `my-${Date.now()}`, savedAt: Date.now() }, ...prev]);
+    }
+  };
+
+  const removeFromMyFoods = (id) => {
+    setMyFoods(prev => prev.filter(f => f.id !== id));
+  };
+
+  const isInMyFoods = (foodName) => myFoods.some(f => f.name === foodName);
+
+  const toggleFeeling = (id) => {
+    setEveningFeelings(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+  };
+
+  const toggleSupplement = (name) => {
+    setTodaySupplements(prev => {
+      if (prev.includes(name)) {
+        setSupplementLog(log => log.filter(l => l.name !== name));
+        return prev.filter(s => s !== name);
+      } else {
+        const now = new Date();
+        setSupplementLog(log => [...log, {
+          id: Date.now(),
+          name,
+          time: now.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }),
+          timestamp: now.getTime()
+        }]);
+        return [...prev, name];
+      }
+    });
+  };
+
+  // ==================== RENDER SECTIONS ====================
+
+  // --- HOME ---
+  const renderHome = () => (
+    <div>
+      {/* Welcome */}
+      {userProfile && (
+        <div style={{ fontSize: 15, color: "#64748b", marginBottom: 12, textAlign: "right" }}>
+          שלום {userProfile.name}! 👋
+        </div>
+      )}
+
+      {/* BIG ADD FOOD BUTTON - the main action */}
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => { setFoodModalTab("search"); setShowFoodSearch(true); }} style={{
+          width: "100%", padding: "18px 20px", borderRadius: 20, border: "none",
+          background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff",
+          fontSize: 17, fontWeight: 700, cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+          boxShadow: "0 8px 20px rgba(99,102,241,0.35)",
+          direction: "rtl",
+        }}>
+          <Plus size={24} strokeWidth={3} />
+          הוספת מזון
+        </button>
+        {/* Quick access to the 4 methods */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 6, marginTop: 8 }}>
+          <button onClick={() => { setFoodModalTab("search"); setShowFoodSearch(true); }} style={{
+            padding: "10px 4px", borderRadius: 12, border: "2px solid #e0e7ff", background: "#fff",
+            cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+          }}>
+            <Search size={18} color="#6366f1" />
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#4338ca" }}>חיפוש</span>
+          </button>
+          <button onClick={() => { setFoodModalTab("barcode"); setShowFoodSearch(true); }} style={{
+            padding: "10px 4px", borderRadius: 12, border: "2px solid #dcfce7", background: "#fff",
+            cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+          }}>
+            <Camera size={18} color="#16a34a" />
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#15803d" }}>ברקוד</span>
+          </button>
+          <button onClick={() => { setFoodModalTab("myfoods"); setShowFoodSearch(true); }} style={{
+            padding: "10px 4px", borderRadius: 12, border: "2px solid #fef3c7", background: "#fff",
+            cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+          }}>
+            <Bookmark size={18} color="#d97706" />
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#b45309" }}>שלי</span>
+          </button>
+          <button onClick={() => { setFoodModalTab("manual"); setShowFoodSearch(true); }} style={{
+            padding: "10px 4px", borderRadius: 12, border: "2px solid #fce7f3", background: "#fff",
+            cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+          }}>
+            <Edit3 size={18} color="#ec4899" />
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#be185d" }}>ידני</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Home customize button */}
+      <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 10 }}>
+        <button onClick={() => setShowHomeCustomize(true)} style={{
+          background: "#fff", border: "1px solid #e2e8f0", borderRadius: 20, padding: "6px 12px",
+          cursor: "pointer", fontSize: 12, color: "#64748b", fontWeight: 600, display: "flex", alignItems: "center", gap: 4,
+        }}>
+          <Settings size={14} /> התאם דף בית
+        </button>
+      </div>
+
+      {/* Today's Summary Card */}
+      <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", borderRadius: 20, padding: 24, color: "#fff", marginBottom: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={{ fontSize: 13, opacity: 0.8 }}>
+            {new Date().toLocaleDateString("he-IL", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+          </div>
+          <div style={{ fontSize: 20, fontWeight: 700 }}>סיכום יומי</div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+          <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 12, textAlign: "center" }}>
+            <div style={{ fontSize: 24, fontWeight: 700 }}>{Math.round(todayTotals.calories)}</div>
+            <div style={{ fontSize: 12, opacity: 0.8 }}>קלוריות מתוך {calorieGoal}</div>
+          </div>
+          {homeModules.protein && (
+          <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 12, textAlign: "center" }}>
+            <div style={{ fontSize: 24, fontWeight: 700 }}>{Math.round(todayTotals.protein)}g</div>
+            <div style={{ fontSize: 12, opacity: 0.8 }}>חלבון מתוך {proteinGoal}g</div>
+          </div>
+          )}
+        </div>
+
+        <ProgressBar value={todayTotals.calories} max={calorieGoal} color="rgba(255,255,255,0.9)" label="קלוריות" unit=" קק״ל" />
+        {homeModules.protein && (
+          <ProgressBar value={todayTotals.protein} max={proteinGoal} color="#fbbf24" label="חלבון" unit="g" />
+        )}
+      </div>
+
+      {/* Quick Status */}
+      {homeModules.quickStatus && (
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 20 }}>
+        {[
+          { icon: <BedDouble size={20} color="#6366f1" />, value: `${sleepHours}h`, label: "שינה" },
+          { icon: <Footprints size={20} color="#22c55e" />, value: todaySteps || "—", label: "צעדים" },
+          { icon: <Droplets size={20} color="#3b82f6" />, value: waterCups, label: "כוסות מים" },
+          { icon: <Pill size={20} color="#f59e0b" />, value: todaySupplements.length, label: "ויטמינים" },
+        ].map((s, i) => (
+          <div key={i} style={{ background: "#fff", borderRadius: 14, padding: 12, textAlign: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <div style={{ marginBottom: 2 }}>{s.icon}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>{s.value}</div>
+            <div style={{ fontSize: 10, color: "#94a3b8" }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+      )}
+
+      {/* Water Tracker (if tracking) */}
+      {homeModules.water && (
+        <div style={{ background: "#fff", borderRadius: 16, padding: 18, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <button onClick={() => setWaterCups(Math.max(0, waterCups - 1))}
+                style={{ width: 32, height: 32, borderRadius: 8, border: "2px solid #e2e8f0", background: "#fff", cursor: "pointer", fontSize: 18, color: "#64748b" }}>−</button>
+              <span style={{ fontSize: 20, fontWeight: 700, color: "#3b82f6", minWidth: 30, textAlign: "center" }}>{waterCups}</span>
+              <button onClick={() => setWaterCups(waterCups + 1)}
+                style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: "#3b82f6", color: "#fff", cursor: "pointer", fontSize: 18, fontWeight: 700 }}>+</button>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>מים 💧</span>
+            </div>
+          </div>
+          <ProgressBar value={waterCups} max={8} color="#3b82f6" label="יעד: 8 כוסות" unit="" />
+        </div>
+      )}
+
+      {/* Questionnaire Status — compact cards linking to the שאלונים tab */}
+      {homeModules.questionnaires && (
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+        <button onClick={() => { if (!morningDone) setActiveTab("questionnaires"); }}
+          style={{ background: morningDone ? "#f0fdf4" : "#fff", borderRadius: 14, padding: 14, border: morningDone ? "2px solid #86efac" : "2px solid #fbbf24", cursor: morningDone ? "default" : "pointer", textAlign: "right", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", marginBottom: 6 }}>
+            <span style={{ fontWeight: 700, fontSize: 14, color: morningDone ? "#166534" : "#92400e" }}>שאלון בוקר</span>
+            <span>{morningDone ? "✅" : "☀️"}</span>
+          </div>
+          <div style={{ fontSize: 12, color: morningDone ? "#166534" : "#b45309" }}>
+            {morningDone ? `הושלם — ${sleepHours} שעות שינה` : "ממתין למילוי →"}
+          </div>
+        </button>
+        <button onClick={() => { if (!eveningDone) setActiveTab("questionnaires"); }}
+          style={{ background: eveningDone ? "#f5f3ff" : "#fff", borderRadius: 14, padding: 14, border: eveningDone ? "2px solid #c4b5fd" : "2px solid #e2e8f0", cursor: eveningDone ? "default" : "pointer", textAlign: "right", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", marginBottom: 6 }}>
+            <span style={{ fontWeight: 700, fontSize: 14, color: eveningDone ? "#4c1d95" : "#475569" }}>שאלון ערב</span>
+            <span>{eveningDone ? "✅" : "🌙"}</span>
+          </div>
+          <div style={{ fontSize: 12, color: eveningDone ? "#4c1d95" : "#64748b" }}>
+            {eveningDone ? "הושלם" : "ימולא בערב →"}
+          </div>
+        </button>
+      </div>
+      )}
+
+      {/* Quick health report button */}
+      {homeModules.healthReport && (
+      <button onClick={() => setActiveTab("questionnaires")}
+        style={{ width: "100%", padding: 14, borderRadius: 14, border: "2px solid #fecaca", background: "#fff", color: "#dc2626", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+        <Stethoscope size={18} /> דיווח בריאות חופשי
+        {healthReports.length > 0 && <span style={{ background: "#dc2626", color: "#fff", borderRadius: 10, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{healthReports.length}</span>}
+      </button>
+      )}
+
+      {/* Food Log — MFP Style */}
+      {homeModules.foodLog && (
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        {/* Calorie ring + macros summary */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ display: "flex", gap: 16 }}>
+            {[
+              { label: "חלבון", value: todayTotals.protein, goal: proteinGoal, color: "#ef4444", unit: "g" },
+              { label: "פחמימות", value: todayTotals.carbs, goal: Math.round(calorieGoal * 0.45 / 4), color: "#3b82f6", unit: "g" },
+              { label: "שומן", value: todayTotals.fat, goal: Math.round(calorieGoal * 0.3 / 9), color: "#f59e0b", unit: "g" },
+            ].map((m, i) => (
+              <div key={i} style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: m.color }}>{m.value}</div>
+                <div style={{ fontSize: 10, color: "#94a3b8" }}>/{m.goal}{m.unit}</div>
+                <div style={{ fontSize: 10, color: "#64748b" }}>{m.label}</div>
+              </div>
+            ))}
+          </div>
+          {/* Calorie circle */}
+          <div style={{ position: "relative", width: 80, height: 80 }}>
+            <svg width="80" height="80" viewBox="0 0 80 80" style={{ transform: "rotate(-90deg)" }}>
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#f1f5f9" strokeWidth="6" />
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#6366f1" strokeWidth="6"
+                strokeDasharray={`${Math.min((todayTotals.calories / calorieGoal) * 213.6, 213.6)} 213.6`}
+                strokeLinecap="round" />
+            </svg>
+            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#1e293b" }}>{Math.max(0, calorieGoal - todayTotals.calories)}</div>
+              <div style={{ fontSize: 8, color: "#94a3b8" }}>נותרו קק״ל</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Add food button */}
+        <button onClick={() => setShowFoodSearch(true)}
+          style={{ width: "100%", padding: 14, borderRadius: 12, border: "2px dashed #c7d2fe", background: "#eef2ff", color: "#6366f1", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16, transition: "all 0.2s" }}>
+          <Plus size={20} /> הוסף מאכל
+        </button>
+
+        {/* Today's food list */}
+        {todayFoods.length > 0 && (
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#64748b", marginBottom: 8, textAlign: "right" }}>
+              מה אכלתי היום ({todayFoods.length} מאכלים)
+            </div>
+            {todayFoods.map(entry => (
+              <div key={entry.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #f1f5f9" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <button onClick={() => removeFood(entry.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#cbd5e1", padding: 2 }}>
+                    <X size={16} />
+                  </button>
+                  <div style={{ textAlign: "left", minWidth: 50 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{Math.round(entry.food.calories * entry.servings)}</div>
+                    <div style={{ fontSize: 9, color: "#94a3b8" }}>קק״ל</div>
+                  </div>
+                </div>
+                <div style={{ flex: 1, textAlign: "right", paddingRight: 8 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", display: "flex", justifyContent: "flex-end", gap: 6, alignItems: "center" }}>
+                    <span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 500, background: "#f1f5f9", padding: "2px 6px", borderRadius: 10 }}>🕐 {entry.time}</span>
+                    <span>{entry.food.name}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", display: "flex", gap: 4, justifyContent: "flex-end", alignItems: "center" }}>
+                    <span>{entry.food.serving || ""}</span>
+                    {entry.servings !== 1 && <span style={{ color: "#6366f1", fontWeight: 600 }}>×{entry.servings}</span>}
+                    <span style={{ marginRight: 6 }}>•</span>
+                    <span>ח׳{Math.round(entry.food.protein * entry.servings)}  פ׳{Math.round(entry.food.carbs * entry.servings)}  ש׳{Math.round(entry.food.fat * entry.servings)}</span>
+                  </div>
+                </div>
+                {/* Serving adjuster */}
+                <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
+                  <button onClick={() => updateServings(entry.id, Math.max(0.5, entry.servings - 0.5))}
+                    style={{ width: 24, height: 24, borderRadius: 6, border: "1px solid #e2e8f0", background: "#fff", cursor: "pointer", fontSize: 14, color: "#64748b", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#475569", minWidth: 20, textAlign: "center" }}>{entry.servings}</span>
+                  <button onClick={() => updateServings(entry.id, entry.servings + 0.5)}
+                    style={{ width: 24, height: 24, borderRadius: 6, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                </div>
+              </div>
+            ))}
+            {/* Daily total bar */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12, padding: "10px 0", borderTop: "2px solid #e2e8f0" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{todayTotals.calories} קק״ל</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>סה״כ היום</div>
+            </div>
+          </div>
+        )}
+
+        {todayFoods.length === 0 && (
+          <div style={{ textAlign: "center", padding: 20, color: "#94a3b8" }}>
+            <UtensilsCrossed size={28} style={{ marginBottom: 6, opacity: 0.4 }} />
+            <div style={{ fontSize: 13 }}>עוד לא הזנת מאכלים היום</div>
+            <div style={{ fontSize: 11 }}>לחצ/י למעלה כדי להוסיף</div>
+          </div>
+        )}
+      </div>
+      )}
+
+      {/* Supplements */}
+      {homeModules.supplements && (
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        <div style={{ fontSize: 16, fontWeight: 
