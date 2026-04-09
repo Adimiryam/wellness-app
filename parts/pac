@@ -300,7 +300,7 @@ const OnboardingScreen = ({ onComplete }) => {
         )}
 
         {/* Step 3: Health Conditions */}
-        {{step === 3 && (
+        {step === 3 && (
           <div>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
               🏥 מצב בריאותי
@@ -357,3 +357,12 @@ const OnboardingScreen = ({ onComplete }) => {
             </div>
           </div>
         )}
+
+        {/* Step 4: Medications & Supplements */}
+        {step === 4 && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              💊 תרופות ותוספים
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              איזה
