@@ -1,0 +1,322 @@
+lowY: "auto", padding: 20 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+              <button onClick={() => setShowHomeCustomize(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8" }}>
+                <X size={22} />
+              </button>
+              <div style={{ fontSize: 17, fontWeight: 700, color: "#1e293b" }}>התאם דף בית</div>
+            </div>
+            <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14, textAlign: "right" }}>
+              בחר/י אילו מודולים יופיעו בדף הבית. קלוריות הם הבסיס ותמיד מוצגים.
+            </div>
+            {[
+              { id: "calories", label: "קלוריות (בסיס)", icon: "🔥", locked: true },
+              { id: "protein", label: "מעקב חלבון", icon: "💪" },
+              { id: "macros", label: "פחמימות ושומנים", icon: "🥑" },
+              { id: "quickStatus", label: "סטטוס מהיר (שינה/צעדים/מים/ויטמינים)", icon: "📊" },
+              { id: "water", label: "מעקב מים", icon: "💧" },
+              { id: "questionnaires", label: "שאלוני בוקר/ערב", icon: "📋" },
+              { id: "healthReport", label: "דיווח בריאות חופשי", icon: "🩺" },
+              { id: "foodLog", label: "יומן מזון מפורט", icon: "🍽️" },
+              { id: "supplements", label: "ויטמינים ותוספים", icon: "💊" },
+              { id: "exercise", label: "פעילות גופנית", icon: "🏃" },
+              { id: "steps", label: "ספירת צעדים", icon: "👟" },
+              { id: "period", label: "סימון מחזור יומי", icon: "🩸" },
+              { id: "symptoms", label: "תסמינים ומיחושים", icon: "⚠️" },
+            ].map(mod => {
+              const on = homeModules[mod.id];
+              return (
+                <div key={mod.id} style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center", direction: "rtl",
+                  padding: "12px 10px", marginBottom: 6, borderRadius: 10,
+                  background: on ? "#f0fdf4" : "#f8fafc",
+                  border: on ? "1px solid #86efac" : "1px solid #e2e8f0",
+                  opacity: mod.locked ? 0.7 : 1,
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 18 }}>{mod.icon}</span>
+                    <span style={{ fontSize: 13, color: "#1e293b", fontWeight: 500 }}>{mod.label}</span>
+                  </div>
+                  <label style={{ position: "relative", display: "inline-block", width: 44, height: 24, cursor: mod.locked ? "not-allowed" : "pointer" }}>
+                    <input type="checkbox" checked={on} disabled={mod.locked}
+                      onChange={() => !mod.locked && setHomeModules(prev => ({ ...prev, [mod.id]: !prev[mod.id] }))}
+                      style={{ opacity: 0, width: 0, height: 0 }} />
+                    <span style={{
+                      position: "absolute", inset: 0, borderRadius: 12,
+                      background: on ? "#22c55e" : "#cbd5e1", transition: "0.2s",
+                    }}>
+                      <span style={{
+                        position: "absolute", top: 2, left: on ? 22 : 2, width: 20, height: 20,
+                        borderRadius: 10, background: "#fff", transition: "0.2s",
+                      }} />
+                    </span>
+                  </label>
+                </div>
+              );
+            })}
+            <button onClick={() => setShowHomeCustomize(false)} style={{
+              width: "100%", padding: 12, marginTop: 10, borderRadius: 12, border: "none",
+              background: "#6366f1", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}>סיימתי</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // --- MFP-STYLE FOOD SEARCH SCREEN (4 TABS) ---
+  const renderFoodSearchModal = () => {
+    if (!showFoodSearch) return null;
+
+    const FOOD_TABS = [
+      { id: "search", label: "חיפוש", icon: <Search size={16} /> },
+      { id: "barcode", label: "ברקוד", icon: <Camera size={16} /> },
+      { id: "manual", label: "ידני", icon: <Edit3 size={16} /> },
+      { id: "myfoods", label: "המאכלים שלי", icon: <Bookmark size={16} /> },
+    ];
+
+    const FoodItem = ({ food, showServing = true, showSaveBtn = true }) => (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "12px 4px", borderBottom: "1px solid #f1f5f9" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={() => addFood(food)} title="הוסף"
+            style={{ background: "#6366f1", border: "none", cursor: "pointer", color: "#fff", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Plus size={16} />
+          </button>
+          {showSaveBtn && (
+            <button onClick={() => isInMyFoods(food.name) ? null : saveToMyFoods(food)} title={isInMyFoods(food.name) ? "כבר נשמר" : "שמור למאכלים שלי"}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
+              <Star size={16} color={isInMyFoods(food.name) ? "#f59e0b" : "#cbd5e1"} fill={isInMyFoods(food.name) ? "#f59e0b" : "none"} />
+            </button>
+          )}
+          <div style={{ textAlign: "left", minWidth: 45 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{food.calories}</div>
+            <div style={{ fontSize: 9, color: "#94a3b8" }}>קק״ל</div>
+          </div>
+        </div>
+        <div style={{ flex: 1, paddingRight: 8, textAlign: "right" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{food.name}</div>
+          <div style={{ fontSize: 11, color: "#94a3b8" }}>
+            {showServing && food.serving && <span>{food.serving} • </span>}
+            ח׳{food.protein}g  פ׳{food.carbs}g  ש׳{food.fat}g
+          </div>
+        </div>
+      </div>
+    );
+
+    // --- Tab: Search (local + API) ---
+    const renderSearchTab = () => (
+      <>
+        {/* Search bar */}
+        <div style={{ padding: "12px 16px", background: "#f8fafc", direction: "rtl" }}>
+          <div style={{ position: "relative", marginBottom: 8 }}>
+            <input type="text" placeholder="חפש מאכל... (למשל: חזה עוף, בננה, שקשוקה)" value={foodSearch} onChange={e => { setFoodSearch(e.target.value); }}
+              autoFocus style={{ width: "100%", padding: "12px 40px 12px 12px", borderRadius: 12, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+            <Search size={18} color="#94a3b8" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)" }} />
+          </div>
+          {/* API search button */}
+          {foodSearch.length >= 2 && (
+            <button onClick={() => searchOpenFoodFacts(foodSearch)}
+              style={{ width: "100%", padding: "8px", borderRadius: 10, border: "2px solid #6366f1", background: apiSearchLoading ? "#f1f5f9" : "#fff", color: "#6366f1", cursor: "pointer", fontWeight: 600, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              {apiSearchLoading ? <><span style={{ display: "inline-block", animation: "spin 1s linear infinite" }}>⏳</span> מחפש במאגר עולמי...</> : <><Search size={14} /> חפש ב-Open Food Facts (מאגר עולמי)</>}
+            </button>
+          )}
+        </div>
+
+        {/* Category filter chips */}
+        <div style={{ padding: "8px 16px", overflowX: "auto", display: "flex", gap: 6, background: "#f8fafc", borderBottom: "1px solid #e2e8f0", direction: "rtl" }}>
+          {FOOD_CATEGORIES.map(cat => (
+            <button key={cat.id} onClick={() => setFoodCategoryFilter(cat.id)}
+              style={{
+                padding: "5px 10px", borderRadius: 20, border: "none", whiteSpace: "nowrap",
+                background: foodCategoryFilter === cat.id ? "#6366f1" : "#fff",
+                color: foodCategoryFilter === cat.id ? "#fff" : "#64748b",
+                fontSize: 11, fontWeight: 600, cursor: "pointer",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.06)"
+              }}>
+              {cat.icon} {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Food list area */}
+        <div style={{ flex: 1, overflow: "auto", padding: "0 16px", direction: "rtl" }}>
+          {/* Quick add calories */}
+          {!foodSearch && foodCategoryFilter === "all" && (
+            <div style={{ padding: "14px 0", borderBottom: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#64748b", marginBottom: 8 }}>⚡ הוספה מהירה — רק קלוריות</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input type="number" placeholder="הזן קלוריות..." value={quickAddCals} onChange={e => setQuickAddCals(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") quickAddCalories(); }}
+                  style={{ flex: 1, padding: 10, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right" }} />
+                <button onClick={quickAddCalories}
+                  style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
+                  הוסף
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* API results */}
+          {apiSearchResults.length > 0 && (
+            <div style={{ paddingTop: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#8b5cf6", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <Search size={14} /> תוצאות מהמאגר העולמי ({apiSearchResults.length})
+              </div>
+              {apiSearchResults.map(food => <FoodItem key={food.id} food={food} />)}
+              <div style={{ height: 1, background: "#e2e8f0", margin: "12px 0" }} />
+            </div>
+          )}
+
+          {/* Recent foods */}
+          {!foodSearch && foodCategoryFilter === "all" && recentFoodItems.length > 0 && (
+            <div style={{ paddingTop: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <Clock size={14} /> אחרונים
+              </div>
+              {recentFoodItems.map(food => <FoodItem key={`recent-${food.id}`} food={food} />)}
+            </div>
+          )}
+
+          {/* Popular foods */}
+          {!foodSearch && foodCategoryFilter === "all" && (
+            <div style={{ paddingTop: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <TrendingUp size={14} /> פופולריים
+              </div>
+              {popularFoods.map(food => <FoodItem key={`pop-${food.id}`} food={food} />)}
+            </div>
+          )}
+
+          {/* Search results or category browse */}
+          {(foodSearch || foodCategoryFilter !== "all") && (
+            <div style={{ paddingTop: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 8 }}>
+                {foodSearch ? `תוצאות מקומיות (${filteredFoods.length})` : `${FOOD_CATEGORIES.find(c => c.id === foodCategoryFilter)?.label} (${filteredFoods.length})`}
+              </div>
+              {filteredFoods.length > 0 ? (
+                filteredFoods.map(food => <FoodItem key={food.id} food={food} />)
+              ) : (
+                <div style={{ textAlign: "center", padding: 30, color: "#94a3b8" }}>
+                  <Search size={28} style={{ marginBottom: 8, opacity: 0.4 }} />
+                  <div style={{ fontSize: 14 }}>לא נמצאו תוצאות מקומיות</div>
+                  <div style={{ fontSize: 12, marginTop: 4 }}>לחצ/י על "חפש ב-Open Food Facts" למאגר עולמי</div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* All foods (default browse) */}
+          {!foodSearch && foodCategoryFilter === "all" && (
+            <div style={{ paddingTop: 16, paddingBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <UtensilsCrossed size={14} /> כל המאכלים ({FOOD_DATABASE.length})
+              </div>
+              {FOOD_DATABASE.map(food => <FoodItem key={`all-${food.id}`} food={food} />)}
+            </div>
+          )}
+        </div>
+      </>
+    );
+
+    // --- Tab: Barcode ---
+    const renderBarcodeTab = () => (
+      <div style={{ flex: 1, overflow: "auto", padding: "20px 16px", direction: "rtl" }}>
+        {/* Barcode illustration */}
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div style={{ fontSize: 48, marginBottom: 8 }}>📷</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>סרוק ברקוד של מוצר</div>
+          <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>הזן/י את מספר הברקוד שמופיע על המוצר</div>
+          <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>נתונים מ-Open Food Facts — מאגר מזון עולמי ופתוח</div>
+        </div>
+
+        {/* Barcode input */}
+        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          <input type="text" inputMode="numeric" placeholder="הזן מספר ברקוד..." value={barcodeInput}
+            onChange={e => { setBarcodeInput(e.target.value.replace(/\D/g, "")); setBarcodeError(""); setBarcodeResult(null); }}
+            onKeyDown={e => { if (e.key === "Enter") searchByBarcode(barcodeInput); }}
+            style={{ flex: 1, padding: 14, borderRadius: 12, border: "2px solid #e2e8f0", fontSize: 16, textAlign: "center", letterSpacing: 2, fontWeight: 600 }} />
+          <button onClick={() => searchByBarcode(barcodeInput)} disabled={barcodeLoading || !barcodeInput}
+            style={{ padding: "14px 20px", borderRadius: 12, border: "none", background: barcodeInput ? "#6366f1" : "#e2e8f0", color: barcodeInput ? "#fff" : "#94a3b8", cursor: barcodeInput ? "pointer" : "default", fontWeight: 600, fontSize: 14 }}>
+            {barcodeLoading ? <span style={{ display: "inline-block", animation: "spin 1s linear infinite" }}>⏳</span> : <Search size={18} />}
+          </button>
+        </div>
+
+        {/* Common barcodes quick access */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#94a3b8", marginBottom: 8 }}>דוגמאות ברקוד לנסיון:</div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {[
+              { code: "7290000066318", label: "חלב תנובה" },
+              { code: "7290000810126", label: "קוטג׳ תנובה" },
+              { code: "8901058856507", label: "Coca Cola" },
+            ].map(ex => (
+              <button key={ex.code} onClick={() => { setBarcodeInput(ex.code); searchByBarcode(ex.code); }}
+                style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", fontSize: 12, color: "#475569" }}>
+                {ex.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Error */}
+        {barcodeError && (
+          <div style={{ padding: 16, borderRadius: 12, background: "#fef2f2", border: "1px solid #fecaca", textAlign: "center", marginBottom: 16 }}>
+            <div style={{ fontSize: 14, color: "#dc2626", fontWeight: 600 }}>{barcodeError}</div>
+          </div>
+        )}
+
+        {/* Result */}
+        {barcodeResult && (
+          <div style={{ background: "#f0fdf4", borderRadius: 16, padding: 20, border: "2px solid #bbf7d0" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#16a34a", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+              <Check size={16} /> נמצא!
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>{barcodeResult.name}</div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 12 }}>{barcodeResult.serving}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 16 }}>
+              {[
+                { label: "קלוריות", val: barcodeResult.calories, unit: "קק״ל", color: "#f59e0b" },
+                { label: "חלבון", val: barcodeResult.protein, unit: "g", color: "#ef4444" },
+                { label: "פחמימות", val: barcodeResult.carbs, unit: "g", color: "#3b82f6" },
+                { label: "שומן", val: barcodeResult.fat, unit: "g", color: "#8b5cf6" },
+              ].map(n => (
+                <div key={n.label} style={{ textAlign: "center", padding: 8, background: "#fff", borderRadius: 10 }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: n.color }}>{n.val}</div>
+                  <div style={{ fontSize: 10, color: "#64748b" }}>{n.unit}</div>
+                  <div style={{ fontSize: 10, color: "#94a3b8" }}>{n.label}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => addFood(barcodeResult)}
+                style={{ flex: 1, padding: 14, borderRadius: 12, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 15 }}>
+                <Plus size={18} style={{ verticalAlign: "middle", marginLeft: 4 }} /> הוסף ליומן
+              </button>
+              <button onClick={() => saveToMyFoods(barcodeResult)}
+                style={{ padding: 14, borderRadius: 12, border: "2px solid #f59e0b", background: isInMyFoods(barcodeResult.name) ? "#fef3c7" : "#fff", color: "#f59e0b", cursor: "pointer" }}>
+                <Star size={18} fill={isInMyFoods(barcodeResult.name) ? "#f59e0b" : "none"} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+
+    // --- Tab: Manual Entry ---
+    const renderManualTab = () => {
+      const fields = [
+        { key: "name", label: "שם המאכל", placeholder: "למשל: עוגת שוקולד ביתית", type: "text", required: true },
+        { key: "serving", label: "גודל מנה", placeholder: "למשל: 1 פרוסה, 100 גרם", type: "text" },
+        { key: "calories", label: "קלוריות", placeholder: "0", type: "number", required: true, icon: "🔥" },
+        { key: "protein", label: "חלבון (g)", placeholder: "0", type: "number", icon: "🥩" },
+        { key: "carbs", label: "פחמימות (g)", placeholder: "0", type: "number", icon: "🍞" },
+        { key: "fat", label: "שומן (g)", placeholder: "0", type: "number", icon: "🧈" },
+      ];
+      return (
+        <div style={{ flex: 1, overflow: "auto", padding: "20px 16px", direction: "rtl" }}>
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <div style={{ fontSize: 40, marginBottom: 4 }}>✍️</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>הזנה ידנית</div>
+            <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>הוסף/י מאכל עם הערכים התזונתיים שלו</div>
+          </div>
+
+  
