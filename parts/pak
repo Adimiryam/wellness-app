@@ -1,9 +1,4 @@
-0,0.06)" }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
-            📅 תאריכי מחזור אחרונים
-          </div>
-          {recentStarts.length > 0 ? recentStarts.map((d, i) => {
-            const isFromLog = periodLog.includes(d);
+.includes(d);
             const date = new Date(d);
             const endDate = new Date(date);
             endDate.setDate(endDate.getDate() + PERIOD_LEN - 1);
@@ -356,4 +351,11 @@
               </button>
               <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>
                 <Target size={16} style={{ verticalAlign: "middle", marginLeft: 4 }} />
-                {
+                {dietProject.name}
+              </div>
+            </div>
+            {/* Progress bar */}
+            {dpProgress && (
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#64748b", marginBottom: 4, direction: "rtl" }}>
+               
