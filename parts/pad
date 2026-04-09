@@ -1,4 +1,8 @@
-תרופות ותוספי תזונה את/ה לוקח/ת?
+xtAlign: "right" }}>
+              💊 תרופות ותוספים
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              איזה תרופות ותוספי תזונה את/ה לוקח/ת?
             </div>
 
             <div style={cardStyle}>
