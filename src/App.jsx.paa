@@ -1,0 +1,23 @@
+import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  UtensilsCrossed, Activity, Target, BarChart3, Sun, Moon,
+  Plus, X, Search, ChevronLeft, ChevronRight, Check,
+  Droplets, Pill, Heart, Brain, Flame, TrendingDown,
+  TrendingUp, AlertTriangle, Smile, Frown, Meh, Coffee,
+  Apple, Beef, Wheat, Fish, Egg, Milk, Clock, Weight,
+  Footprints, BedDouble, Sparkles, ArrowRight, Trash2, Edit3,
+  User, Settings, ChevronDown, Zap, Eye, Stethoscope,
+  Camera, BookOpen, Star, Bookmark
+} from "lucide-react";
+
+// ==================== DATA & CONSTANTS ====================
+const FOOD_DATABASE = [
+  // חלבון
+  { id: 1, name: "ביצה מבושלת", serving: "1 ביצה", calories: 78, protein: 6, carbs: 1, fat: 5, category: "חלבון", popular: true },
+  { id: 2, name: "חזה עוף", serving: "100 גרם", calories: 165, protein: 31, carbs: 0, fat: 3.6, category: "חלבון", popular: true },
+  { id: 3, name: "סלמון", serving: "100 גרם", calories: 208, protein: 20, carbs: 0, fat: 13, category: "חלבון", popular: true },
+  { id: 4, name: "טונה בקופסה", serving: "1 קופסה (100 גרם)", calories: 120, protein: 26, carbs: 0, fat: 1, category: "חלבון", popular: true },
+  { id: 5, name: "שניצל עוף", serving: "1 יחידה", calories: 280, protein: 22, carbs: 15, fat: 14, category: "חלבון" },
+  { id: 6, name: "המבורגר בקר", serving: "1 קציצה (100 גרם)", calories: 250, protein: 26, carbs: 0, fat: 17, category: "חלבון" },
+  { id: 7, name: "ביצת עין", serving: "1 ביצה", calories: 90, protein: 6, carbs: 0, fat: 7, category: "חלבון" },
+  { id: 8, name: "חביתה (2 ביצים)", serving: "1 מנה", calories: 180, protein: 12, carbs: 1, fat: 14, category: "חלבון" },
