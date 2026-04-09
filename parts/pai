@@ -1,0 +1,294 @@
+nItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", textAlign: "right" }}>מה מפריע לך? (בחר/י אחד או יותר)</div>
+              {newReportTypes.length > 0 && <span style={{ fontSize: 12, fontWeight: 700, color: "#dc2626", background: "#fef2f2", padding: "2px 10px", borderRadius: 12 }}>{newReportTypes.length} נבחרו</span>}
+            </div>
+            {SYMPTOM_GROUPS.map(group => (
+              <div key={group} style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", marginBottom: 4, textAlign: "right" }}>{group}</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5, justifyContent: "flex-end" }}>
+                  {SYMPTOM_TYPES.filter(s => s.group === group).map(s => (
+                    <button key={s.id} onClick={() => toggleReportType(s.id)}
+                      style={{
+                        padding: "6px 10px", borderRadius: 20, border: "2px solid",
+                        borderColor: newReportTypes.includes(s.id) ? "#dc2626" : "#e2e8f0",
+                        background: newReportTypes.includes(s.id) ? "#fef2f2" : "#fff",
+                        color: newReportTypes.includes(s.id) ? "#dc2626" : "#64748b",
+                        cursor: "pointer", fontSize: 11, fontWeight: 500,
+                        display: "flex", alignItems: "center", gap: 3
+                      }}>
+                      {newReportTypes.includes(s.id) && <Check size={12} />}
+                      <span>{s.label}</span>
+                      <span>{s.icon}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Body part selection (for rash/skin symptoms) */}
+          {needsBodyPartSelection && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>📍 איפה בגוף?</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "flex-end" }}>
+                {BODY_PARTS.map(bp => (
+                  <button key={bp.id} onClick={() => toggleBodyPart(bp.id)}
+                    style={{
+                      padding: "6px 10px", borderRadius: 16, border: "2px solid",
+                      borderColor: newReportBodyParts.includes(bp.id) ? "#8b5cf6" : "#e2e8f0",
+                      background: newReportBodyParts.includes(bp.id) ? "#f5f3ff" : "#fff",
+                      color: newReportBodyParts.includes(bp.id) ? "#7c3aed" : "#64748b",
+                      cursor: "pointer", fontSize: 11, fontWeight: 500,
+                      display: "flex", alignItems: "center", gap: 3
+                    }}>
+                    {newReportBodyParts.includes(bp.id) && <Check size={11} />}
+                    <span>{bp.icon}</span>
+                    <span>{bp.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Severity + notes + submit */}
+          {newReportTypes.length > 0 && (
+            <div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                  דרגת חומרה (1=קל, 5=חמור)
+                </div>
+                <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", direction: "ltr" }}>
+                  {[1, 2, 3, 4, 5].map(level => (
+                    <button key={level} onClick={() => setNewReportSeverity(level)}
+                      style={{
+                        width: 44, height: 44, borderRadius: 10, border: "none", cursor: "pointer",
+                        background: newReportSeverity >= level
+                          ? level <= 2 ? "#fbbf24" : level <= 3 ? "#f97316" : "#dc2626"
+                          : "#f1f5f9",
+                        color: newReportSeverity >= level ? "#fff" : "#94a3b8",
+                        fontWeight: 700, fontSize: 16, transition: "all 0.2s"
+                      }}>
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 12 }}>
+                <input type="text" placeholder="פרטים נוספים... (אופציונלי)" value={newReportNote} onChange={e => setNewReportNote(e.target.value)}
+                  style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+              </div>
+
+              {/* Summary before submit */}
+              <div style={{ background: "#fef2f2", borderRadius: 10, padding: 12, marginBottom: 12, textAlign: "right", fontSize: 12, color: "#991b1b" }}>
+                <strong>סיכום:</strong> {newReportTypes.map(t => SYMPTOM_TYPES.find(s => s.id === t)?.label).join(" + ")}
+                {needsBodyPartSelection && newReportBodyParts.length > 0 && <span> • מיקום: {newReportBodyParts.map(bp => BODY_PARTS.find(b => b.id === bp)?.label).join(", ")}</span>}
+                <span> • חומרה: {newReportSeverity}/5</span>
+              </div>
+
+              <button onClick={addHealthReport}
+                style={{ width: "100%", padding: 14, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #dc2626, #ef4444)", color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>
+                שמור דיווח 🩺
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Today's health reports log */}
+        {healthReports.length > 0 && (
+          <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right" }}>
+              🩺 דיווחים מהיום ({healthReports.length})
+            </div>
+            {healthReports.sort((a, b) => b.timestamp - a.timestamp).map(report => (
+              <div key={report.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #f1f5f9" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <button onClick={() => setHealthReports(prev => prev.filter(r => r.id !== report.id))} style={{ background: "none", border: "none", cursor: "pointer", color: "#cbd5e1", padding: 2 }}>
+                    <X size={14} />
+                  </button>
+                  <span style={{ fontSize: 11, color: "#94a3b8" }}>{report.time}</span>
+                </div>
+                <div style={{ flex: 1, textAlign: "right", paddingRight: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{report.label}</span>
+                    <span>{report.icons ? report.icons.join("") : report.icon}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", marginTop: 2, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 11, color: report.severity <= 2 ? "#f59e0b" : report.severity <= 3 ? "#f97316" : "#dc2626", fontWeight: 600 }}>
+                      חומרה: {report.severity}/5
+                    </span>
+                    {report.bodyPartsLabel && <span style={{ fontSize: 11, color: "#7c3aed" }}>📍 {report.bodyPartsLabel}</span>}
+                    {report.note && <span style={{ fontSize: 11, color: "#64748b" }}> • {report.note}</span>}
+                  </div>
+                </div>
+                {/* Severity indicator */}
+                <div style={{ display: "flex", gap: 2, marginLeft: 8 }}>
+                  {[1,2,3,4,5].map(i => (
+                    <div key={i} style={{ width: 6, height: 16, borderRadius: 3, background: i <= report.severity ? (report.severity <= 2 ? "#fbbf24" : report.severity <= 3 ? "#f97316" : "#dc2626") : "#f1f5f9" }} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Smart insights from health reports */}
+        <div style={{ background: "linear-gradient(135deg, #fef3c7, #fef9c3)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#92400e", marginBottom: 10, textAlign: "right" }}>
+            🧠 תובנות ממערכת הדיווחים
+          </div>
+          <div style={{ fontSize: 13, color: "#78350f", textAlign: "right", lineHeight: 1.9 }}>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>🤕 כאב ראש ↔ חלב:</strong> מתוך 30 הימים האחרונים, ב-<strong>92%</strong> מהפעמים שדיווחת על כאב ראש, זה היה בימים שאכלת חלב עד שעתיים לפני הדיווח.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>💊 כאב ראש ↔ ברזל:</strong> ב-<strong>89%</strong> מהפעמים שדיווחת על כאב ראש, לא לקחת ברזל ביומיים שלפני.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>🫧 נפיחות ↔ גלוטן:</strong> ב-<strong>78%</strong> מהדיווחים על נפיחות, אכלת לחם או פסטה באותו יום.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>😴 עייפות ↔ שינה:</strong> כשישנת פחות מ-6 שעות, דיווחת על עייפות חמורה (4-5) ב-<strong>95%</strong> מהמקרים.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12 }}>
+              <strong>🔴 פריחה ↔ צנון:</strong> מתוך כל הפעמים שדיווחת על פריחה, <strong>85%</strong> היו תוך 24 שעות מאכילת צנון.
+            </div>
+          </div>
+        </div>
+
+        <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#0369a1", marginBottom: 4, textAlign: "right" }}>
+            💡 ככל שתדווח/י יותר, התובנות יהיו מדויקות יותר!
+          </div>
+          <div style={{ fontSize: 12, color: "#0c4a6e", textAlign: "right" }}>
+            המערכת מחפשת קשרים בין מה שאכלת, מה לקחת, כמה ישנת, ומה הרגשת — ומזהה דפוסים חוזרים.
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // --- GOALS ---
+  const toggleGoal = (id) => {
+    setSelectedGoals(prev => prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]);
+  };
+
+  const GOAL_TIPS = {
+    weight_loss: "✓ כל ארוחה שאכלת  ✓ כמות חלבון  ✓ רגשות ורעב  ✓ משקל בוקר  ✓ פעילות גופנית  ✓ שעות שינה",
+    keto: "✓ כל ארוחה (חשוב: פחמימות!)  ✓ רמת אנרגיה  ✓ תחושות גופניות  ✓ משקל  ✓ קיטונים (אם מודד/ת)",
+    sensitivity: "✓ כל מה שאכלת (בפירוט!)  ✓ תופעות בריאותיות  ✓ תחושות אחרי כל ארוחה  ✓ עור, עיכול, אנרגיה",
+    health: "✓ ארוחות  ✓ ויטמינים  ✓ שינה  ✓ פעילות גופנית  ✓ מצב רוח  ✓ מחזור",
+    weight_gain: "✓ כל ארוחה  ✓ חלבון  ✓ אימונים  ✓ משקל בוקר  ✓ שינה ומנוחה",
+    energy: "✓ ארוחות + שעות  ✓ רמת אנרגיה (כל כמה שעות)  ✓ שינה  ✓ קפאין  ✓ פעילות גופנית",
+  };
+
+  const renderGoals = () => (
+    <div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>🎯 היעדים שלי</div>
+      <div style={{ fontSize: 13, color: "#64748b", marginBottom: 16, textAlign: "right" }}>ניתן לבחור כמה מטרות במקביל</div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+        {DIET_GOALS.map(goal => {
+          const Icon = goal.icon;
+          const isSelected = selectedGoals.includes(goal.id);
+          return (
+            <button key={goal.id} onClick={() => toggleGoal(goal.id)}
+              style={{
+                padding: 16, borderRadius: 14, border: "2px solid",
+                borderColor: isSelected ? goal.color : "#e2e8f0",
+                background: isSelected ? `${goal.color}10` : "#fff",
+                cursor: "pointer", textAlign: "right", position: "relative",
+                boxShadow: isSelected ? `0 4px 12px ${goal.color}30` : "0 2px 8px rgba(0,0,0,0.04)"
+              }}>
+              {isSelected && <div style={{ position: "absolute", top: 8, left: 8, width: 22, height: 22, borderRadius: 11, background: goal.color, display: "flex", alignItems: "center", justifyContent: "center" }}><Check size={14} color="#fff" /></div>}
+              <Icon size={24} color={goal.color} style={{ marginBottom: 8 }} />
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>{goal.label}</div>
+              <div style={{ fontSize: 11, color: "#64748b" }}>{goal.desc}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#f0fdf4", borderRadius: 12, padding: 12, marginBottom: 16, textAlign: "right" }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#166534" }}>
+            {selectedGoals.length} מטרות פעילות: {selectedGoals.map(g => DIET_GOALS.find(d => d.id === g)?.label).join(", ")}
+          </span>
+        </div>
+      )}
+
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>הגדרת יעדים</div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>🔥 יעד קלוריות יומי</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>קק״ל</span>
+              <input type="number" min="1000" max="5000" value={calorieGoal} onChange={e => { const v = parseInt(e.target.value) || 0; setCalorieGoal(Math.min(5000, Math.max(0, v))); }}
+                onBlur={e => { const v = parseInt(e.target.value) || 1000; setCalorieGoal(Math.min(5000, Math.max(1000, v))); }}
+                style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 20, fontWeight: 700, textAlign: "center", color: "#6366f1", boxSizing: "border-box" }} />
+            </div>
+            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 1,000 ל-5,000 קק״ל</div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>🥩 יעד חלבון יומי (גרם)</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>גרם</span>
+              <input type="number" min="0" max="700" value={proteinGoal} onChange={e => { const v = parseInt(e.target.value) || 0; setProteinGoal(Math.min(700, Math.max(0, v))); }}
+                onBlur={e => { const v = parseInt(e.target.value) || 0; setProteinGoal(Math.min(700, Math.max(0, v))); }}
+                style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 20, fontWeight: 700, textAlign: "center", color: "#f59e0b", boxSizing: "border-box" }} />
+            </div>
+            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>משקל יעד (ק״ג)</label>
+            <input type="number" placeholder="למשל: 65" value={weightGoal} onChange={e => setWeightGoal(e.target.value)}
+              style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", boxSizing: "border-box" }} />
+          </div>
+        </div>
+      )}
+
+      {/* Per-goal tips */}
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#f0f9ff", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#0369a1", marginBottom: 12, textAlign: "right" }}>💡 מה כדאי לך להזין כל יום לפי המטרות שלך:</div>
+          {selectedGoals.map(goalId => {
+            const goal = DIET_GOALS.find(g => g.id === goalId);
+            const Icon = goal?.icon;
+            return (
+              <div key={goalId} style={{ background: "#fff", borderRadius: 12, padding: 14, marginBottom: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginBottom: 6 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: goal?.color }}>{goal?.label}</span>
+                  {Icon && <Icon size={18} color={goal?.color} />}
+                </div>
+                <div style={{ fontSize: 12, color: "#0c4a6e", textAlign: "right", lineHeight: 1.7 }}>
+                  {GOAL_TIPS[goalId] || ""}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+
+  // --- STATISTICS ---
+  const renderStats = () => {
+    const last14 = sampleData.slice(-14);
+    const last7 = sampleData.slice(-7);
+    const avgCalories7 = Math.round(last7.reduce((s, d) => s + d.totalCalories, 0) / 7);
+    const avgProtein7 = Math.round(last7.reduce((s, d) => s + d.totalProtein, 0) / 7);
+    const avgSleep7 = (last7.reduce((s, d) => s + d.sleepHours, 0) / 7).toFixed(1);
+    const avgSteps7 = Math.round(last7.reduce((s, d) => s + d.steps, 0) / 7);
+    const lowProteinDays = sampleData.filter(d => d.totalProtein <= 50);
+    const highProteinDays = sampleData.filter(d => d.totalProtein > 50);
+    const lowProteinHunger = lowProteinDays.filter(d => d.feelings.includes("hungry")).length;
+    const highProteinHunger = highProteinDays.filter(d => d.feelings.includes("hungry")).length;
+    const radishDays = sampleData.filter(d => d.hadRadish);
+    const radishRash = radishDays.filter(d => d.hadRash).length;
+    const noRadishDays = sampleData.filter(d => !d.hadRadish);
+    const noRadishRash = noRadishDays.filter(d => d.hadRash).length;
+    const ironDays = sampleData.filter(d => d.tookIron);
+    const noIronDays = sampleData.filter(d => !d.tookIron);
+    const ironEnergy = ironDays.length > 0 ? (ironDays.reduce((s, d) => s + d.energy, 0) / ironDays.length).toFixed(1) : 0;
+    const noIronEnergy = noIronDays.length > 0 ? (noIronDays.reduce((s, d) => s + d.energy, 0) / noIro
