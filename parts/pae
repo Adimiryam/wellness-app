@@ -1,4 +1,7 @@
-round(p.nutriments?.["energy-kcal_100g"] || p.nutriments?.["energy-kcal"] || 0),
+arcode}-${Date.now()}`,
+          name: p.brands ? `${p.product_name || "מוצר"} (${p.brands})` : (p.product_name || "מוצר"),
+          serving: p.serving_size || "100 גרם",
+          calories: Math.round(p.nutriments?.["energy-kcal_100g"] || p.nutriments?.["energy-kcal"] || 0),
           protein: Math.round((p.nutriments?.proteins_100g || 0) * 10) / 10,
           carbs: Math.round((p.nutriments?.carbohydrates_100g || 0) * 10) / 10,
           fat: Math.round((p.nutriments?.fat_100g || 0) * 10) / 10,
@@ -351,5 +354,4 @@ round(p.nutriments?.["energy-kcal_100g"] || p.nutriments?.["energy-kcal"] || 0),
                     <div style={{ fontSize: 9, color: "#94a3b8" }}>קק״ל</div>
                   </div>
                 </div>
-                <div style={{ flex: 1, textAlign: "right", paddingRight: 8 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", display: "flex", justifyContent: "flex-end", gap: 6, alignItems: "cen
+                <div
