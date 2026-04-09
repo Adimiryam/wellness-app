@@ -1,1 +1,309 @@
-        {/* Quick c
+ter" }}>
+                    <span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 500, background: "#f1f5f9", padding: "2px 6px", borderRadius: 10 }}>🕐 {entry.time}</span>
+                    <span>{entry.food.name}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", display: "flex", gap: 4, justifyContent: "flex-end", alignItems: "center" }}>
+                    <span>{entry.food.serving || ""}</span>
+                    {entry.servings !== 1 && <span style={{ color: "#6366f1", fontWeight: 600 }}>×{entry.servings}</span>}
+                    <span style={{ marginRight: 6 }}>•</span>
+                    <span>ח׳{Math.round(entry.food.protein * entry.servings)}  פ׳{Math.round(entry.food.carbs * entry.servings)}  ש׳{Math.round(entry.food.fat * entry.servings)}</span>
+                  </div>
+                </div>
+                {/* Serving adjuster */}
+                <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
+                  <button onClick={() => updateServings(entry.id, Math.max(0.5, entry.servings - 0.5))}
+                    style={{ width: 24, height: 24, borderRadius: 6, border: "1px solid #e2e8f0", background: "#fff", cursor: "pointer", fontSize: 14, color: "#64748b", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#475569", minWidth: 20, textAlign: "center" }}>{entry.servings}</span>
+                  <button onClick={() => updateServings(entry.id, entry.servings + 0.5)}
+                    style={{ width: 24, height: 24, borderRadius: 6, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                </div>
+              </div>
+            ))}
+            {/* Daily total bar */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12, padding: "10px 0", borderTop: "2px solid #e2e8f0" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{todayTotals.calories} קק״ל</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>סה״כ היום</div>
+            </div>
+          </div>
+        )}
+
+        {todayFoods.length === 0 && (
+          <div style={{ textAlign: "center", padding: 20, color: "#94a3b8" }}>
+            <UtensilsCrossed size={28} style={{ marginBottom: 6, opacity: 0.4 }} />
+            <div style={{ fontSize: 13 }}>עוד לא הזנת מאכלים היום</div>
+            <div style={{ fontSize: 11 }}>לחצ/י למעלה כדי להוסיף</div>
+          </div>
+        )}
+      </div>
+      )}
+
+      {/* Supplements */}
+      {homeModules.supplements && (
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+          <span>ויטמינים ותוספים</span>
+          <Pill size={20} color="#f59e0b" />
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" }}>
+          {(userProfile?.currentSupplements?.length > 0 ? userProfile.currentSupplements : SUPPLEMENTS).map(sup => {
+            const taken = todaySupplements.includes(sup);
+            const logEntry = supplementLog.find(l => l.name === sup);
+            return (
+              <button key={sup} onClick={() => toggleSupplement(sup)}
+                style={{
+                  padding: "8px 14px", borderRadius: 20, border: "2px solid",
+                  borderColor: taken ? "#22c55e" : "#e2e8f0",
+                  background: taken ? "#f0fdf4" : "#fff",
+                  color: taken ? "#166534" : "#64748b",
+                  cursor: "pointer", fontSize: 13, fontWeight: 500,
+                  display: "flex", alignItems: "center", gap: 4
+                }}>
+                <span>{sup}</span>
+                {taken && <Check size={14} />}
+                {taken && logEntry && <span style={{ fontSize: 10, color: "#15803d", opacity: 0.8 }}>🕐{logEntry.time}</span>}
+              </button>
+            );
+          })}
+          {/* "אחר" button to open full supplement picker */}
+          <button onClick={() => setShowSupplementPicker(true)}
+            style={{
+              padding: "8px 14px", borderRadius: 20, border: "2px dashed #f59e0b",
+              background: "#fffbeb", color: "#d97706",
+              cursor: "pointer", fontSize: 13, fontWeight: 600,
+              display: "flex", alignItems: "center", gap: 4
+            }}>
+            <Plus size={14} />
+            <span>תוסף אחר</span>
+          </button>
+        </div>
+        {/* Extra supplements taken that aren't in the default list */}
+        {todaySupplements.filter(s => !(userProfile?.currentSupplements?.length > 0 ? userProfile.currentSupplements : SUPPLEMENTS).includes(s)).length > 0 && (
+          <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f1f5f9" }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", marginBottom: 6, textAlign: "right" }}>תוספים נוספים שנלקחו היום:</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "flex-end" }}>
+              {todaySupplements.filter(s => !(userProfile?.currentSupplements?.length > 0 ? userProfile.currentSupplements : SUPPLEMENTS).includes(s)).map(sup => (
+                <button key={sup} onClick={() => toggleSupplement(sup)}
+                  style={{ padding: "6px 12px", borderRadius: 20, border: "2px solid #22c55e", background: "#f0fdf4", color: "#166534", cursor: "pointer", fontSize: 12, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>
+                  <span>{sup}</span>
+                  <Check size={12} />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+      )}
+
+      {/* Supplement Picker Modal */}
+      {showSupplementPicker && (
+        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 1000, display: "flex", flexDirection: "column", maxWidth: 480, margin: "0 auto" }}>
+          <div style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)", padding: "16px", color: "#fff" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <button onClick={() => { setShowSupplementPicker(false); setSupplementSearch(""); }}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 14, fontWeight: 600 }}>
+                ✕ סגור
+              </button>
+              <span style={{ fontSize: 18, fontWeight: 700 }}>💊 כל התוספים והויטמינים</span>
+            </div>
+            <div style={{ position: "relative" }}>
+              <input type="text" placeholder="חפש תוסף..." value={supplementSearch} onChange={e => setSupplementSearch(e.target.value)} autoFocus
+                style={{ width: "100%", padding: "10px 40px 10px 10px", borderRadius: 12, border: "none", fontSize: 14, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+              <Search size={16} color="#94a3b8" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)" }} />
+            </div>
+          </div>
+
+          <div style={{ flex: 1, overflow: "auto", padding: "12px 16px", direction: "rtl" }}>
+            {/* Custom add */}
+            <div style={{ padding: "12px 0", borderBottom: "1px solid #e2e8f0", marginBottom: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#64748b", marginBottom: 6 }}>הוסף תוסף מותאם אישית:</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input type="text" placeholder="שם התוסף..." value={customSupplementInput} onChange={e => setCustomSupplementInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter" && customSupplementInput.trim()) { toggleSupplement(customSupplementInput.trim()); setCustomSupplementInput(""); }}}
+                  style={{ flex: 1, padding: 10, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 13, textAlign: "right" }} />
+                <button onClick={() => { if (customSupplementInput.trim()) { toggleSupplement(customSupplementInput.trim()); setCustomSupplementInput(""); }}}
+                  style={{ padding: "10px 14px", borderRadius: 10, border: "none", background: "#f59e0b", color: "#fff", cursor: "pointer", fontWeight: 600 }}>
+                  <Plus size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Grouped supplements */}
+            {ALL_SUPPLEMENTS.map(group => {
+              const filteredItems = supplementSearch
+                ? group.items.filter(item => item.includes(supplementSearch))
+                : group.items;
+              if (filteredItems.length === 0) return null;
+              return (
+                <div key={group.group} style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#92400e", marginBottom: 8, display: "flex", alignItems: "center", gap: 4 }}>
+                    {group.group}
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {filteredItems.map(sup => {
+                      const taken = todaySupplements.includes(sup);
+                      return (
+                        <button key={sup} onClick={() => toggleSupplement(sup)}
+                          style={{
+                            padding: "7px 12px", borderRadius: 20, border: "2px solid",
+                            borderColor: taken ? "#22c55e" : "#e2e8f0",
+                            background: taken ? "#f0fdf4" : "#fff",
+                            color: taken ? "#166534" : "#64748b",
+                            cursor: "pointer", fontSize: 12, fontWeight: 500,
+                            display: "flex", alignItems: "center", gap: 4
+                          }}>
+                          <span>{sup}</span>
+                          {taken && <Check size={12} />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{ height: 20 }} />
+          </div>
+
+          {/* Bottom summary */}
+          {todaySupplements.length > 0 && (
+            <div style={{ padding: "12px 16px", borderTop: "1px solid #e2e8f0", background: "#f0fdf4", direction: "rtl" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#166534", marginBottom: 4 }}>
+                ✅ נלקחו היום: {todaySupplements.length} תוספים
+              </div>
+              <div style={{ fontSize: 11, color: "#15803d" }}>{todaySupplements.join(" • ")}</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Symptom Picker Modal */}
+      {showSymptomPicker && (
+        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 1000, display: "flex", flexDirection: "column", maxWidth: 480, margin: "0 auto" }}>
+          <div style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)", padding: "16px", color: "#fff" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <button onClick={() => { setShowSymptomPicker(false); setHomeSymptomSearch(""); }}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 14, fontWeight: 600 }}>
+                ✕ סגור
+              </button>
+              <span style={{ fontSize: 18, fontWeight: 700 }}>🩺 כל התסמינים והמיחושים</span>
+            </div>
+            <div style={{ position: "relative" }}>
+              <input type="text" placeholder="חפש תסמין..." value={homeSymptomSearch} onChange={e => setHomeSymptomSearch(e.target.value)} autoFocus
+                style={{ width: "100%", padding: "10px 40px 10px 10px", borderRadius: 12, border: "none", fontSize: 14, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+              <Search size={16} color="#94a3b8" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)" }} />
+            </div>
+          </div>
+
+          <div style={{ flex: 1, overflow: "auto", padding: "12px 16px", direction: "rtl" }}>
+            {/* Free text add */}
+            <div style={{ padding: "10px 0", borderBottom: "1px solid #e2e8f0", marginBottom: 12 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 6 }}>הוסף תסמין מותאם אישית:</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input type="text" placeholder="תאר/י את התסמין..." value={newSymptom} onChange={e => setNewSymptom(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter" && newSymptom.trim()) { setSymptoms(prev => [...prev, { id: Date.now(), text: newSymptom.trim(), icon: "📝", time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }), timestamp: Date.now() }]); setNewSymptom(""); }}}
+                  style={{ flex: 1, padding: 10, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 13, textAlign: "right" }} />
+                <button onClick={() => { if (newSymptom.trim()) { setSymptoms(prev => [...prev, { id: Date.now(), text: newSymptom.trim(), icon: "📝", time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }), timestamp: Date.now() }]); setNewSymptom(""); }}}
+                  style={{ padding: "10px 14px", borderRadius: 10, border: "none", background: "#ef4444", color: "#fff", cursor: "pointer", fontWeight: 600 }}>
+                  <Plus size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Grouped symptoms */}
+            {SYMPTOM_GROUPS.map(group => {
+              const groupItems = SYMPTOM_TYPES.filter(s => s.group === group);
+              const filtered = homeSymptomSearch ? groupItems.filter(s => s.label.includes(homeSymptomSearch)) : groupItems;
+              if (filtered.length === 0) return null;
+              return (
+                <div key={group} style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", marginBottom: 6 }}>{group}</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {filtered.map(s => {
+                      const active = symptoms.some(sym => sym.typeId === s.id);
+                      return (
+                        <button key={s.id} onClick={() => {
+                          if (!active) {
+                            setSymptoms(prev => [...prev, { id: Date.now(), typeId: s.id, text: s.label, icon: s.icon, time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }), timestamp: Date.now() }]);
+                          } else {
+                            setSymptoms(prev => prev.filter(sym => sym.typeId !== s.id));
+                          }
+                        }}
+                          style={{
+                            padding: "6px 10px", borderRadius: 20, border: "2px solid",
+                            borderColor: active ? "#ef4444" : "#e2e8f0",
+                            background: active ? "#fef2f2" : "#fff",
+                            color: active ? "#dc2626" : "#64748b",
+                            cursor: "pointer", fontSize: 11, fontWeight: 500,
+                            display: "flex", alignItems: "center", gap: 3
+                          }}>
+                          {active && <Check size={11} />}
+                          <span>{s.icon}</span>
+                          <span>{s.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{ height: 20 }} />
+          </div>
+
+          {/* Bottom summary */}
+          {symptoms.length > 0 && (
+            <div style={{ padding: "12px 16px", borderTop: "1px solid #e2e8f0", background: "#fef2f2", direction: "rtl" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", marginBottom: 4 }}>
+                🩺 דווחו היום: {symptoms.length} תסמינים
+              </div>
+              <div style={{ fontSize: 11, color: "#dc2626" }}>{symptoms.map(s => `${s.icon || ""} ${s.text}`).join(" • ")}</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Exercise */}
+      {homeModules.exercise && (
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+          <span>פעילות גופנית</span>
+          <Activity size={20} color="#22c55e" />
+        </div>
+        <PillToggle items={EXERCISE_TYPES} selected={todayExercise} onToggle={id => setTodayExercise(todayExercise === id ? null : id)} multi={false} />
+        {homeModules.steps && (
+          <div style={{ marginTop: 12 }}>
+            <input type="number" placeholder="כמה צעדים היום?" value={todaySteps} onChange={e => setTodaySteps(e.target.value)}
+              style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+          </div>
+        )}
+      </div>
+      )}
+
+      {/* Period Tracking */}
+      {homeModules.period && (
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", justifyContent: "flex-end", fontSize: 15, fontWeight: 600, color: "#1e293b" }}>
+            <input type="checkbox" checked={periodToday} onChange={() => {
+              const todayStr = new Date().toISOString().split("T")[0];
+              if (!periodToday) {
+                setPeriodLog(prev => prev.includes(todayStr) ? prev : [...prev, todayStr]);
+              } else {
+                setPeriodLog(prev => prev.filter(d => d !== todayStr));
+              }
+              setPeriodToday(!periodToday);
+            }}
+              style={{ width: 20, height: 20, accentColor: "#ec4899" }} />
+            <span>מחזור חודשי היום</span>
+            <Droplets size={20} color="#ec4899" />
+          </label>
+        </div>
+      )}
+
+      {/* Health Symptoms */}
+      {homeModules.symptoms && (
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+          <span>תופעות בריאותיות ומיחושים</span>
+          <AlertTriangle size={20} color="#ef4444" />
+        </div>
+          {/* Quick common symptoms */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "flex-end", marginBottom: 10, direction: "rtl" }}>
+            {SYMPTOM_TYPES.filter(s => ["headache","stomach","back_pain","fatigue","bloating","nausea","dizziness","heartburn","anxiety","insomnia","joi
