@@ -1,7 +1,4 @@
-            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
-          </div>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>משקל יעד (ק״ג)</label>
+gn: "right" }}>משקל יעד (ק״ג)</label>
             <input type="number" placeholder="למשל: 65" value={weightGoal} onChange={e => setWeightGoal(e.target.value)}
               style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", boxSizing: "border-box" }} />
           </div>
@@ -316,4 +313,9 @@
         </div>
 
         {/* Recent period dates */}
-        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+            📅 תאריכי מחזור אחרונים
+          </div>
+          {recentStarts.length > 0 ? recentStarts.map((d, i) => {
+            const isFromLog = periodLog
