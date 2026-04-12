@@ -1,106 +1,55 @@
-  // --- Show onboarding if not done ---
-  if (!onboardingDone) {
-    return <OnboardingScreen onComplete={handleOnboardingComplete} />;
-  }
+  const inputStyle = { width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", direction: "rtl", boxSizing: "border-box", fontFamily: "inherit" };
 
-  // --- Handlers ---
-  const addFood = (food, servings = 1) => {
-    const now = new Date();
-    setTodayFoods(prev => [...prev, {
-      id: Date.now(), food, servings,
-      time: now.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }),
-      timestamp: now.getTime()
-    }]);
-    // Add to recent
-    setRecentFoods(prev => {
-      const filtered = prev.filter(id => id !== food.id);
-      return [food.id, ...filtered].slice(0, 10);
-    });
-    setShowFoodSearch(false);
-    setFoodSearch("");
-    setFoodCategoryFilter("all");
-    setFoodModalTab("search");
-    setApiSearchResults([]);
-    setBarcodeResult(null);
-    setBarcodeInput("");
-    setBarcodeError("");
-  };
+  return (
+    <div style={{ direction: "rtl", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", maxWidth: 480, margin: "0 auto", background: "#f8fafc", minHeight: "100vh" }}>
+      {/* Header */}
+      <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", padding: "30px 20px 24px", color: "#fff", textAlign: "center", position: "relative" }}>
+        <button onClick={handleSkip}
+          style={{ position: "absolute", top: 16, left: 16, background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", padding: "6px 14px", borderRadius: 20, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+          דלג/י ←
+        </button>
+        <div style={{ fontSize: 36, marginBottom: 8 }}>🥗</div>
+        <div style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>NutriTrack</div>
+        <div style={{ fontSize: 14, opacity: 0.85 }}>בואו נכיר! כמה שאלות קצרות כדי להתאים לך את האפליקציה</div>
+      </div>
 
-  const removeFood = (id) => setTodayFoods(prev => prev.filter(m => m.id !== id));
+      {/* Progress dots */}
+      <div style={{ display: "flex", justifyContent: "center", gap: 8, padding: "16px 0" }}>
+        {Array.from({ length: totalSteps }).map((_, i) => (
+          <div key={i} style={{
+            width: i === step ? 24 : 8, height: 8, borderRadius: 4,
+            background: i <= step ? "#6366f1" : "#e2e8f0",
+            transition: "all 0.3s"
+          }} />
+        ))}
+      </div>
 
-  const updateServings = (id, newServings) => {
-    if (newServings <= 0) return;
-    setTodayFoods(prev => prev.map(e => e.id === id ? { ...e, servings: newServings } : e));
-  };
+      <div style={{ padding: 16, paddingBottom: 100 }}>
 
-  const quickAddCalories = () => {
-    if (!quickAddCals || isNaN(quickAddCals)) return;
-    const cal = parseInt(quickAddCals);
-    setTodayFoods(prev => [...prev, {
-      id: Date.now(),
-      food: { id: 999, name: `הוספה מהירה (${cal} קק״ל)`, serving: "—", calories: cal, protein: 0, carbs: 0, fat: 0, category: "אחר" },
-      servings: 1,
-      time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })
-    }]);
-    setQuickAddCals("");
-    setShowFoodSearch(false);
-  };
+        {/* Step 0: Personal Info */}
+        {step === 0 && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              👋 שלום! ספר/י לנו קצת עליך
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              המידע הזה יעזור לנו להתאים לך את החוויה
+            </div>
 
-  // --- USDA FoodData Central API (primary) + Open Food Facts (secondary) ---
-  const USDA_API_KEY = "DEMO_KEY"; // Free USDA key — works for moderate usage
+            <div style={cardStyle}>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>שם *</label>
+                <input type="text" placeholder="איך קוראים לך?" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
+              </div>
 
-  const searchFoodDatabase = async (query) => {
-    if (!query || query.length < 2) { setApiSearchResults([]); return; }
-    setApiSearchLoading(true);
-    let allResults = [];
-
-    // 1) USDA FoodData Central — accurate, science-backed nutrition data
-    try {
-      const usdaRes = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${USDA_API_KEY}&query=${encodeURIComponent(query)}&pageSize=15&dataType=Foundation,SR%20Legacy`);
-      const usdaData = await usdaRes.json();
-      const usdaResults = (usdaData.foods || []).map((f, i) => {
-        const getNutrient = (id) => { const n = (f.foodNutrients || []).find(n => n.nutrientId === id); return n ? n.value : 0; };
-        return {
-          id: `usda-${f.fdcId || i}-${Date.now()}`,
-          name: f.description || f.lowercaseDescription || "מוצר",
-          serving: "100 גרם",
-          calories: Math.round(getNutrient(1008)), // Energy kcal
-          protein: Math.round(getNutrient(1003) * 10) / 10, // Protein
-          carbs: Math.round(getNutrient(1005) * 10) / 10, // Carbohydrate
-          fat: Math.round(getNutrient(1004) * 10) / 10, // Total fat
-          fiber: Math.round(getNutrient(1079) * 10) / 10, // Fiber
-          sugar: Math.round(getNutrient(2000) * 10) / 10, // Sugars
-          category: "🇺🇸 USDA",
-          source: "usda",
-          fdcId: f.fdcId,
-        };
-      });
-      allResults = [...allResults, ...usdaResults];
-    } catch (e) { /* USDA failed — continue to Open Food Facts */ }
-
-    // 2) Open Food Facts — good for branded/packaged/international products
-    try {
-      const offRes = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=10&fields=product_name,nutriments,serving_size,code,image_small_url,brands`);
-      const offData = await offRes.json();
-      const queryLower = query.toLowerCase();
-      const offResults = (offData.products || [])
-        .filter(p => p.product_name && p.nutriments && p.product_name.toLowerCase().includes(queryLower))
-        .map((p, i) => ({
-          id: `off-${p.code || i}-${Date.now()}`,
-          name: p.brands ? `${p.product_name} (${p.brands})` : p.product_name,
-          serving: p.serving_size || "100 גרם",
-          calories: Math.round(p.nutriments["energy-kcal_100g"] || p.nutriments["energy-kcal"] || 0),
-          protein: Math.round((p.nutriments.proteins_100g || p.nutriments.proteins || 0) * 10) / 10,
-          carbs: Math.round((p.nutriments.carbohydrates_100g || p.nutriments.carbohydrates || 0) * 10) / 10,
-          fat: Math.round((p.nutriments.fat_100g || p.nutriments.fat || 0) * 10) / 10,
-          category: "🌍 Open Food Facts",
-          source: "openfoodfacts",
-          barcode: p.code,
-          image: p.image_small_url,
-        }));
-      allResults = [...allResults, ...offResults];
-    } catch (e) { /* OFF failed too */ }
-
-    setApiSearchResults(allResults);
-    setApiSearchLoading(false);
-  };
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>גיל</label>
+                  <input type="number" placeholder="גיל" value={age} onChange={e => setAge(e.target.value)} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>מין</label>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {[{ id: "female", label: "נקבה" }, { id: "male", label: "זכר" }].map(g => (
+                      <button key={g.id} onClick={() => setGender(g.id)}
+                        style={{
