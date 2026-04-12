@@ -1,54 +1,55 @@
-        {/* Step 4: Medications & Supplements */}
-        {step === 4 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
-              💊 תרופות ותוספים
-            </div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
-              איזה תרופות ותוספי תזונה את/ה לוקח/ת?
-            </div>
+      symptomsReported: daySymptoms,
+      waterCups: Math.floor(Math.random() * 10) + 2,
+    });
+  }
+  return days;
+};
 
-            <div style={cardStyle}>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
-                תרופות קבועות (אופציונלי)
-              </label>
-              <textarea placeholder="למשל: אלטרוקסין, ונטולין..."
-                value={currentMeds} onChange={e => setCurrentMeds(e.target.value)}
-                rows={2} style={{ ...inputStyle, resize: "vertical" }} />
-            </div>
+// ==================== REUSABLE COMPONENTS ====================
 
-            <div style={cardStyle}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 12, textAlign: "right" }}>
-                ויטמינים ותוספי תזונה שאת/ה לוקח/ת:
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12, justifyContent: "flex-end" }}>
-                {SUPPLEMENTS.map(sup => {
-                  const taken = currentSupplements.includes(sup);
-                  return (
-                    <button key={sup} onClick={() => toggleSupplement(sup)}
-                      style={{
-                        padding: "8px 14px", borderRadius: 20, border: "2px solid",
-                        borderColor: taken ? "#22c55e" : "#e2e8f0",
-                        background: taken ? "#f0fdf4" : "#fff",
-                        color: taken ? "#166534" : "#64748b",
-                        cursor: "pointer", fontSize: 13, fontWeight: 500,
-                        display: "flex", alignItems: "center", gap: 4
-                      }}>
-                      <span>{sup}</span>
-                      {taken && <Check size={14} />}
-                    </button>
-                  );
-                })}
-              </div>
-              <div style={{ display: "flex", gap: 8, direction: "rtl" }}>
-                <input type="text" placeholder="תוסף אחר..." value={customSupplement} onChange={e => setCustomSupplement(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" && customSupplement.trim()) { toggleSupplement(customSupplement.trim()); setCustomSupplement(""); }}}
-                  style={{ ...inputStyle, flex: 1 }} />
-                <button onClick={() => { if (customSupplement.trim()) { toggleSupplement(customSupplement.trim()); setCustomSupplement(""); }}}
-                  style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontWeight: 600 }}>
-                  <Plus size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+const RatingInput = ({ value, onChange, label, icon: Icon, color = "#f59e0b" }) => (
+  <div style={{ marginBottom: 16 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, justifyContent: "flex-end" }}>
+      {Icon && <Icon size={18} color={color} />}
+      <span style={{ fontWeight: 600, fontSize: 14, color: "#1e293b" }}>{label}</span>
+    </div>
+    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", direction: "ltr" }}>
+      {[1, 2, 3, 4, 5].map(star => (
+        <button key={star} onClick={() => onChange(star)}
+          style={{
+            width: 40, height: 40, borderRadius: 10, border: "none", cursor: "pointer",
+            background: value >= star ? color : "#f1f5f9",
+            color: value >= star ? "#fff" : "#94a3b8",
+            fontWeight: 700, fontSize: 16, transition: "all 0.2s"
+          }}>
+          {star}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+const PillToggle = ({ items, selected, onToggle, multi = true }) => (
+  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" }}>
+    {items.map(item => {
+      const isSelected = multi ? selected.includes(item.id) : selected === item.id;
+      return (
+        <button key={item.id} onClick={() => onToggle(item.id)}
+          style={{
+            padding: "8px 14px", borderRadius: 20, border: "2px solid",
+            borderColor: isSelected ? (item.color || "#6366f1") : "#e2e8f0",
+            background: isSelected ? `${item.color || "#6366f1"}15` : "#fff",
+            color: isSelected ? (item.color || "#6366f1") : "#64748b",
+            cursor: "pointer", fontSize: 14, fontWeight: 500,
+            display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s"
+          }}>
+          <span>{item.label}</span>
+          {item.icon && typeof item.icon === "string" && <span>{item.icon}</span>}
+        </button>
+      );
+    })}
+  </div>
+);
+
+const ProgressBar = ({ value, max, color, label, unit = "" }) => {
+  const pct = Math.min((value / max) * 100, 100);

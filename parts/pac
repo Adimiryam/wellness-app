@@ -1,75 +1,55 @@
-const MiniChart = ({ data, color, label, height = 100 }) => {
-  const max = Math.max(...data.map(d => d.value), 1);
-  return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>{label}</div>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height, direction: "ltr" }}>
-        {data.slice(-14).map((d, i) => (
-          <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{
-              width: "100%", borderRadius: "3px 3px 0 0",
-              height: `${(d.value / max) * (height - 20)}px`,
-              background: color, opacity: 0.7 + (i / data.length) * 0.3,
-              minHeight: 2, transition: "height 0.3s"
-            }} />
-            {i % 2 === 0 && <span style={{ fontSize: 9, color: "#94a3b8", marginTop: 2 }}>{d.label}</span>}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+  { id: "שתייה", label: "שתייה", icon: "☕" },
+  { id: "חטיף", label: "חטיפים", icon: "🍫" },
+  { id: "מנה", label: "מנות", icon: "🥘" },
+];
 
-// ==================== ONBOARDING SCREEN ====================
-const OnboardingScreen = ({ onComplete }) => {
-  const [step, setStep] = useState(0);
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
-  const [height, setHeight] = useState("");
-  const [currentWeight, setCurrentWeight] = useState("");
-  const [dietType, setDietType] = useState("");
-  const [goalTypes, setGoalTypes] = useState([]);
-  const [conditions, setConditions] = useState([]);
-  const [conditionNotes, setConditionNotes] = useState("");
-  const [currentMeds, setCurrentMeds] = useState("");
-  const [currentSupplements, setCurrentSupplements] = useState([]);
-  const [customSupplement, setCustomSupplement] = useState("");
-  const [trackingChoices, setTrackingChoices] = useState(["calories", "protein", "water", "sleep", "mood"]);
-  const [painAreas, setPainAreas] = useState("");
-  const [allergies, setAllergies] = useState("");
-  const [weightGoalValue, setWeightGoalValue] = useState("");
-  const [calorieGoalValue, setCalorieGoalValue] = useState(1800);
-  const [proteinGoalValue, setProteinGoalValue] = useState(80);
-  const [stepsGoalValue, setStepsGoalValue] = useState(8000);
+const FEELINGS = [
+  { id: "energetic", label: "אנרגטי/ת", icon: "⚡", color: "#f59e0b" },
+  { id: "tired", label: "עייף/ה", icon: "😴", color: "#6b7280" },
+  { id: "happy", label: "שמח/ה", icon: "😊", color: "#10b981" },
+  { id: "sad", label: "עצוב/ה", icon: "😢", color: "#3b82f6" },
+  { id: "anxious", label: "חרד/ה", icon: "😰", color: "#8b5cf6" },
+  { id: "calm", label: "רגוע/ה", icon: "😌", color: "#06b6d4" },
+  { id: "bloated", label: "נפוח/ה", icon: "🫧", color: "#f97316" },
+  { id: "hungry", label: "רעב/ה", icon: "🍽️", color: "#ef4444" },
+  { id: "satisfied", label: "שבע/ה", icon: "✅", color: "#22c55e" },
+  { id: "nauseous", label: "בחילה", icon: "🤢", color: "#84cc16" },
+  { id: "headache", label: "כאב ראש", icon: "🤕", color: "#e11d48" },
+  { id: "pain", label: "כאבים אחרים", icon: "💢", color: "#dc2626" },
+];
 
-  const totalSteps = 6;
+const EXERCISE_TYPES = [
+  { id: "walk", label: "הליכה", icon: "🚶" },
+  { id: "run", label: "ריצה", icon: "🏃" },
+  { id: "gym", label: "חדר כושר", icon: "🏋️" },
+  { id: "swim", label: "שחייה", icon: "🏊" },
+  { id: "yoga", label: "יוגה", icon: "🧘" },
+  { id: "bike", label: "אופניים", icon: "🚴" },
+  { id: "other", label: "אחר", icon: "💪" },
+];
 
-  const toggleCondition = (id) => {
-    if (id === "none") { setConditions(["none"]); return; }
-    setConditions(prev => {
-      const filtered = prev.filter(c => c !== "none");
-      return filtered.includes(id) ? filtered.filter(c => c !== id) : [...filtered, id];
-    });
-  };
+const DIET_GOALS = [
+  { id: "weight_loss", label: "ירידה במשקל", icon: TrendingDown, color: "#ef4444", desc: "גרעון קלורי + חלבון גבוה" },
+  { id: "weight_gain", label: "עלייה במשקל", icon: TrendingUp, color: "#22c55e", desc: "עודף קלורי + שרירים" },
+  { id: "keto", label: "קיטו", icon: Flame, color: "#f59e0b", desc: "שומן גבוה, פחמימה נמוכה" },
+  { id: "health", label: "בריאות כללית", icon: Heart, color: "#ec4899", desc: "תזונה מאוזנת + מעקב" },
+  { id: "sensitivity", label: "איתור רגישויות", icon: Search, color: "#8b5cf6", desc: "מעקב תגובות למזונות" },
+  { id: "energy", label: "שיפור אנרגיה", icon: Sparkles, color: "#06b6d4", desc: "מיפוי מזונות שנותנים כוח" },
+];
 
-  const toggleSupplement = (name) => {
-    setCurrentSupplements(prev =>
-      prev.includes(name) ? prev.filter(s => s !== name) : [...prev, name]
-    );
-  };
+const SUPPLEMENTS = [
+  "ברזל", "ויטמין D", "ויטמין B12", "מגנזיום", "אומגה 3",
+  "חומצה פולית", "ויטמין C", "אבץ", "פרוביוטיקה", "סידן"
+];
 
-  const toggleTracking = (id) => {
-    setTrackingChoices(prev =>
-      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
-    );
-  };
-
-  const canProceed = () => {
-    switch(step) {
-      case 0: return name.trim().length > 0;
-      case 1: return dietType !== "";
-      case 2: return goalTypes.length > 0;
-      case 3: return conditions.length > 0;
-      case 4: return true;
-      case 5: return trackingChoices.length > 0;
+const ALL_SUPPLEMENTS = [
+  { group: "ויטמינים", items: [
+    "ויטמין A", "ויטמין B1 (תיאמין)", "ויטמין B2 (ריבופלבין)", "ויטמין B3 (ניאצין)",
+    "ויטמין B5 (פנטותנית)", "ויטמין B6", "ויטמין B7 (ביוטין)", "ויטמין B9 (חומצה פולית)",
+    "ויטמין B12", "ויטמין C", "ויטמין D", "ויטמין D3", "ויטמין E", "ויטמין K", "ויטמין K2",
+    "מולטי ויטמין", "B Complex",
+  ]},
+  { group: "מינרלים", items: [
+    "ברזל", "מגנזיום", "סידן", "אבץ", "סלניום", "יוד", "נחושת", "מנגן", "כרום", "אשלגן", "זרחן",
+  ]},
+  { group: "שומנים ואומגה", items: [

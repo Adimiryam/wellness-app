@@ -1,61 +1,55 @@
-        {/* Step 1: Diet Type */}
-        {step === 1 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
-              🍽️ מה סוג התזונה שלך?
-            </div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
-              בחר/י את סגנון התזונה הקרוב ביותר אליך
-            </div>
+  // עיניים ואוזניים
+  { id: "eye_strain", label: "עייפות עיניים", icon: "👁️", group: "עיניים ואוזניים" },
+  { id: "blurry_vision", label: "טשטוש ראייה", icon: "🔍", group: "עיניים ואוזניים" },
+  { id: "dry_eyes", label: "עיניים יבשות", icon: "💧", group: "עיניים ואוזניים" },
+  { id: "watery_eyes", label: "דמעת עיניים", icon: "😿", group: "עיניים ואוזניים" },
+  { id: "eye_redness", label: "אדמומיות בעיניים", icon: "🔴", group: "עיניים ואוזניים" },
+  { id: "tinnitus", label: "צפצופים באוזניים", icon: "🔔", group: "עיניים ואוזניים" },
+  { id: "hearing_changes", label: "שינויים בשמיעה", icon: "👂", group: "עיניים ואוזניים" },
+  { id: "sensitivity_light", label: "רגישות לאור", icon: "☀️", group: "עיניים ואוזניים" },
+  { id: "sensitivity_noise", label: "רגישות לרעש", icon: "🔊", group: "עיניים ואוזניים" },
+  // לב וכלי דם
+  { id: "palpitations", label: "דפיקות לב", icon: "💓", group: "לב וכלי דם" },
+  { id: "rapid_heartbeat", label: "דופק מהיר", icon: "💗", group: "לב וכלי דם" },
+  { id: "high_bp_symptoms", label: "תסמיני לחץ דם גבוה", icon: "📈", group: "לב וכלי דם" },
+  { id: "low_bp_symptoms", label: "תסמיני לחץ דם נמוך", icon: "📉", group: "לב וכלי דם" },
+  { id: "cold_hands_feet", label: "ידיים/רגליים קרות", icon: "🥶", group: "לב וכלי דם" },
+  { id: "swollen_legs", label: "רגליים נפוחות", icon: "🦶", group: "לב וכלי דם" },
+  { id: "numbness", label: "נימול/חוסר תחושה", icon: "🫠", group: "לב וכלי דם", needsBodyPart: true },
+  { id: "tingling", label: "עקצוץ/נמלול", icon: "⚡", group: "לב וכלי דם", needsBodyPart: true },
+  // הורמונלי ומטבולי
+  { id: "hot_flashes", label: "גלי חום", icon: "🥵", group: "הורמונלי" },
+  { id: "water_retention", label: "אגירת מים", icon: "💧", group: "הורמונלי" },
+  { id: "weight_gain", label: "עלייה במשקל", icon: "⬆️", group: "הורמונלי" },
+  { id: "weight_loss_symptom", label: "ירידה במשקל", icon: "⬇️", group: "הורמונלי" },
+  { id: "thirst", label: "צמא מוגבר", icon: "🥤", group: "הורמונלי" },
+  { id: "frequent_urination", label: "הטלת שתן תכופה", icon: "🚻", group: "הורמונלי" },
+  { id: "pms", label: "תסמונת קדם-וסתית (PMS)", icon: "📅", group: "הורמונלי" },
+  { id: "breast_tenderness", label: "רגישות בחזה", icon: "💗", group: "הורמונלי" },
+  { id: "libido_changes", label: "שינויים בחשק", icon: "💕", group: "הורמונלי" },
+  // אלרגיה
+  { id: "allergy_eyes", label: "אלרגיה בעיניים", icon: "👁️", group: "אלרגיה" },
+  { id: "allergy_skin", label: "אלרגיה בעור", icon: "🔴", group: "אלרגיה", needsBodyPart: true },
+  { id: "food_reaction", label: "תגובה למזון", icon: "🍽️", group: "אלרגיה" },
+  { id: "allergy_respiratory", label: "אלרגיה נשימתית", icon: "🫁", group: "אלרגיה" },
+  { id: "swollen_lips_tongue", label: "נפיחות שפתיים/לשון", icon: "👅", group: "אלרגיה" },
+  // אחר
+  { id: "vertigo", label: "ורטיגו", icon: "🌀", group: "אחר" },
+  { id: "tremor", label: "רעד", icon: "🫨", group: "אחר" },
+  { id: "stiffness", label: "נוקשות/קשיחות", icon: "🧊", group: "אחר" },
+  { id: "balance_issues", label: "בעיות שיווי משקל", icon: "🤸", group: "אחר" },
+  { id: "snoring", label: "נחירות", icon: "😴", group: "אחר" },
+  { id: "teeth_grinding", label: "חריקת שיניים", icon: "😬", group: "אחר" },
+  { id: "bleeding_gums", label: "דימום חניכיים", icon: "🩸", group: "אחר" },
+  { id: "nosebleed", label: "דימום מהאף", icon: "👃", group: "אחר" },
+  { id: "other", label: "אחר", icon: "📝", group: "אחר" },
+];
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-              {DIET_TYPES.map(dt => (
-                <button key={dt.id} onClick={() => setDietType(dt.id)}
-                  style={{
-                    padding: 16, borderRadius: 14, border: "2px solid",
-                    borderColor: dietType === dt.id ? dt.color : "#e2e8f0",
-                    background: dietType === dt.id ? `${dt.color}10` : "#fff",
-                    cursor: "pointer", textAlign: "center",
-                    boxShadow: dietType === dt.id ? `0 4px 12px ${dt.color}25` : "none",
-                    transition: "all 0.2s"
-                  }}>
-                  <div style={{ fontSize: 28, marginBottom: 6 }}>{dt.icon}</div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: dietType === dt.id ? dt.color : "#475569" }}>{dt.label}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 2: Goals */}
-        {step === 2 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
-              🌟 מה המטרה שלך?
-            </div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
-              מה את/ה רוצה לקבול מהאפליקיה? (ניתן לבחור כמה מטרות)
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-              {DIET_GOALS.map(goal => {
-                const Icon = goal.icon;
-                const isSelected = goalTypes.includes(goal.id);
-                return (
-                  <button key={goal.id} onClick={() => setGoalTypes(prev => prev.includes(goal.id) ? prev.filter(g => g !== goal.id) : [...prev, goal.id])}
-                    style={{
-                      padding: 16, borderRadius: 14, border: "2px solid",
-                      borderColor: isSelected ? goal.color : "#e2e8f0",
-                      background: isSelected ? `${goal.color}10` : "#fff",
-                      cursor: "pointer", textAlign: "right",
-                      boxShadow: isSelected ? `0 4px 12px ${goal.color}30` : "none",
-                      transition: "all 0.2s", position: "relative"
-                    }}>
-                    {isSelected && <div style={{ position: "absolute", top: 8, left: 8, width: 20, height: 20, borderRadius: 10, background: goal.color, display: "flex", alignItems: "center", justifyContent: "center" }}><Check size={12} color="#fff" /></div>}
-                    <Icon size={24} color={goal.color} style={{ marginBottom: 8 }} />
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>{goal.label}</div>
-                    <div style={{ fontSize: 11, color: "#64748b" }}>{goal.desc}</div>
-                  </button>
-                );
-              })}
-            </div>
+const BODY_PARTS = [
+  { id: "face", label: "פנים", icon: "😊" },
+  { id: "scalp", label: "קרקפת", icon: "🧑" },
+  { id: "forehead", label: "מצח", icon: "🙂" },
+  { id: "neck", label: "צוואר", icon: "🦒" },
+  { id: "shoulders", label: "כתפיים", icon: "🤷" },
+  { id: "upper_back", label: "גב עליון", icon: "🔙" },
+  { id: "lower_back", label: "גב תחתון", icon: "⬇️" },

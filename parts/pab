@@ -1,107 +1,55 @@
-// ==================== REUSABLE COMPONENTS ====================
+  { id: 37, name: "סלט ירקות", serving: "1 קערה", calories: 35, protein: 1.5, carbs: 7, fat: 0.3, category: "ירק", popular: true },
+  { id: 38, name: "עגבנייה", serving: "1 בינונית", calories: 22, protein: 1, carbs: 5, fat: 0.2, category: "ירק" },
+  { id: 39, name: "מלפפון", serving: "1 בינוני", calories: 16, protein: 0.7, carbs: 3.6, fat: 0.1, category: "ירק" },
+  { id: 40, name: "גזר", serving: "1 בינוני", calories: 25, protein: 0.6, carbs: 6, fat: 0.1, category: "ירק" },
+  { id: 41, name: "ברוקולי", serving: "1 כוס", calories: 31, protein: 2.6, carbs: 6, fat: 0.3, category: "ירק" },
+  { id: 42, name: "צנון", serving: "1 כוס", calories: 19, protein: 0.8, carbs: 4, fat: 0.1, category: "ירק" },
+  // שומנים ואגוזים
+  { id: 43, name: "אבוקדו", serving: "חצי", calories: 120, protein: 1.5, carbs: 6, fat: 11, category: "שומן", popular: true },
+  { id: 44, name: "שקדים", serving: "1 קומץ (30 גרם)", calories: 160, protein: 6, carbs: 6, fat: 14, category: "שומן" },
+  { id: 45, name: "חמאת בוטנים", serving: "1 כף", calories: 95, protein: 4, carbs: 3, fat: 8, category: "שומן" },
+  { id: 46, name: "שמן זית", serving: "1 כף", calories: 120, protein: 0, carbs: 0, fat: 14, category: "שומן" },
+  { id: 47, name: "טחינה גולמית", serving: "1 כף", calories: 90, protein: 3, carbs: 3, fat: 8, category: "שומן" },
+  { id: 48, name: "אגוזי מלך", serving: "1 קומץ (30 גרם)", calories: 185, protein: 4.3, carbs: 4, fat: 18, category: "שומן" },
+  // קטניות
+  { id: 49, name: "חומוס", serving: "2 כפות", calories: 70, protein: 3, carbs: 8, fat: 3, category: "קטנייה", popular: true },
+  { id: 50, name: "עדשים", serving: "1 כוס מבושלת", calories: 230, protein: 18, carbs: 40, fat: 0.8, category: "קטנייה" },
+  { id: 51, name: "שעועית", serving: "1 כוס מבושלת", calories: 225, protein: 15, carbs: 40, fat: 0.9, category: "קטנייה" },
+  { id: 52, name: "אדממה", serving: "1 כוס", calories: 188, protein: 18, carbs: 14, fat: 8, category: "קטנייה" },
+  // שתייה
+  { id: 53, name: "קפה שחור", serving: "1 כוס", calories: 2, protein: 0, carbs: 0, fat: 0, category: "שתייה", popular: true },
+  { id: 54, name: "קפה עם חלב", serving: "1 כוס", calories: 50, protein: 2, carbs: 5, fat: 2, category: "שתייה" },
+  { id: 55, name: "קפוצ׳ינו", serving: "1 כוס", calories: 120, protein: 4, carbs: 10, fat: 6, category: "שתייה" },
+  { id: 56, name: "תה", serving: "1 כוס", calories: 2, protein: 0, carbs: 0.5, fat: 0, category: "שתייה" },
+  { id: 57, name: "מיץ תפוזים טבעי", serving: "1 כוס (250 מ״ל)", calories: 112, protein: 2, carbs: 26, fat: 0.5, category: "שתייה" },
+  { id: 58, name: "סמוזי פירות", serving: "1 כוס", calories: 180, protein: 3, carbs: 40, fat: 1, category: "שתייה" },
+  // חטיפים ומתוקים
+  { id: 59, name: "שוקולד מריר 70%", serving: "2 קוביות (20 גרם)", calories: 110, protein: 1.5, carbs: 13, fat: 7, category: "חטיף" },
+  { id: 60, name: "גרנולה", serving: "חצי כוס (50 גרם)", calories: 220, protein: 5, carbs: 30, fat: 9, category: "חטיף" },
+  { id: 61, name: "חטיף חלבון", serving: "1 יחידה", calories: 200, protein: 20, carbs: 22, fat: 7, category: "חטיף" },
+  { id: 62, name: "ביסקוויט", serving: "2 יחידות", calories: 120, protein: 1.5, carbs: 18, fat: 5, category: "חטיף" },
+  { id: 63, name: "עוגיה", serving: "1 יחידה", calories: 150, protein: 2, carbs: 22, fat: 6, category: "חטיף" },
+  { id: 64, name: "פופקורן", serving: "3 כוסות", calories: 93, protein: 3, carbs: 19, fat: 1, category: "חטיף" },
+  // מנות מורכבות
+  { id: 65, name: "שקשוקה", serving: "1 מנה (2 ביצים)", calories: 250, protein: 14, carbs: 12, fat: 16, category: "מנה", popular: true },
+  { id: 66, name: "סלט קיסר עם עוף", serving: "1 מנה", calories: 350, protein: 28, carbs: 15, fat: 20, category: "מנה" },
+  { id: 67, name: "פסטה ברוטב עגבניות", serving: "1 מנה", calories: 380, protein: 12, carbs: 60, fat: 10, category: "מנה" },
+  { id: 68, name: "סושי מיקס", serving: "8 יחידות", calories: 350, protein: 12, carbs: 50, fat: 8, category: "מנה" },
+  { id: 69, name: "מרק ירקות", serving: "1 קערה", calories: 90, protein: 3, carbs: 15, fat: 2, category: "מנה" },
+  { id: 70, name: "מרק עוף", serving: "1 קערה", calories: 150, protein: 10, carbs: 12, fat: 6, category: "מנה" },
+  { id: 71, name: "חומוס עם פיתה", serving: "1 מנה", calories: 400, protein: 12, carbs: 45, fat: 18, category: "מנה" },
+  { id: 72, name: "סלט שופסקה", serving: "1 מנה", calories: 220, protein: 8, carbs: 10, fat: 16, category: "מנה" },
+  { id: 73, name: "טוסט גבינה", serving: "1 יחידה", calories: 250, protein: 12, carbs: 28, fat: 10, category: "מנה" },
+  { id: 74, name: "פיצה (משולש)", serving: "1 משולש", calories: 285, protein: 12, carbs: 36, fat: 10, category: "מנה" },
+  { id: 75, name: "בורקס גבינה", serving: "1 יחידה", calories: 350, protein: 10, carbs: 30, fat: 20, category: "מנה" },
+];
 
-const RatingInput = ({ value, onChange, label, icon: Icon, color = "#f59e0b" }) => (
-  <div style={{ marginBottom: 16 }}>
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, justifyContent: "flex-end" }}>
-      {Icon && <Icon size={18} color={color} />}
-      <span style={{ fontWeight: 600, fontSize: 14, color: "#1e293b" }}>{label}</span>
-    </div>
-    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", direction: "ltr" }}>
-      {[1, 2, 3, 4, 5].map(star => (
-        <button key={star} onClick={() => onChange(star)}
-          style={{
-            width: 40, height: 40, borderRadius: 10, border: "none", cursor: "pointer",
-            background: value >= star ? color : "#f1f5f9",
-            color: value >= star ? "#fff" : "#94a3b8",
-            fontWeight: 700, fontSize: 16, transition: "all 0.2s"
-          }}>
-          {star}
-        </button>
-      ))}
-    </div>
-  </div>
-);
-
-const PillToggle = ({ items, selected, onToggle, multi = true }) => (
-  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" }}>
-    {items.map(item => {
-      const isSelected = multi ? selected.includes(item.id) : selected === item.id;
-      return (
-        <button key={item.id} onClick={() => onToggle(item.id)}
-          style={{
-            padding: "8px 14px", borderRadius: 20, border: "2px solid",
-            borderColor: isSelected ? (item.color || "#6366f1") : "#e2e8f0",
-            background: isSelected ? `${item.color || "#6366f1"}15` : "#fff",
-            color: isSelected ? (item.color || "#6366f1") : "#64748b",
-            cursor: "pointer", fontSize: 14, fontWeight: 500,
-            display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s"
-          }}>
-          <span>{item.label}</span>
-          {item.icon && typeof item.icon === "string" && <span>{item.icon}</span>}
-        </button>
-      );
-    })}
-  </div>
-);
-
-const ProgressBar = ({ value, max, color, label, unit = "" }) => {
-  const pct = Math.min((value / max) * 100, 100);
-  return (
-    <div style={{ marginBottom: 12 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 13 }}>
-        <span style={{ color: "#64748b" }}>{Math.round(value)}{unit} / {max}{unit}</span>
-        <span style={{ fontWeight: 600, color: "#1e293b" }}>{label}</span>
-      </div>
-      <div style={{ height: 8, borderRadius: 4, background: "#f1f5f9", overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${pct}%`, borderRadius: 4, background: color, transition: "width 0.5s" }} />
-      </div>
-    </div>
-  );
-};
-
-const BmiCard = ({ profile, morningWeight }) => {
-  if (!profile?.height || (!profile?.currentWeight && !morningWeight)) return null;
-  const h = parseFloat(profile.height) / 100;
-  const w = parseFloat(morningWeight || profile.currentWeight);
-  if (!h || !w || h <= 0) return null;
-  const bmiVal = w / (h * h);
-  const bmi = bmiVal.toFixed(1);
-  const info = bmiVal < 18.5 ? { label: "תת משקל", color: "#3b82f6", bg: "#eff6ff", emoji: "⚠️" }
-    : bmiVal < 25 ? { label: "משקל תקין", color: "#22c55e", bg: "#f0fdf4", emoji: "✅" }
-    : bmiVal < 30 ? { label: "עודף משקל", color: "#f59e0b", bg: "#fffbeb", emoji: "⚡" }
-    : { label: "השמנה", color: "#ef4444", bg: "#fef2f2", emoji: "⚠️" };
-  const pct = Math.min(100, Math.max(0, ((bmiVal - 15) / 25) * 100));
-  return (
-    <div style={{ background: info.bg, borderRadius: 16, padding: 16, marginBottom: 16, border: "2px solid " + info.color + "22", direction: "rtl" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: info.color }}>{info.emoji} {info.label}</span>
-        </div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>BMI מדד</div>
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ height: 8, borderRadius: 4, background: "#e2e8f0", overflow: "hidden", position: "relative" }}>
-            <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: "27.5%", background: "#3b82f6", borderRadius: "4px 0 0 4px" }} />
-            <div style={{ position: "absolute", left: "27.5%", top: 0, height: "100%", width: "32.5%", background: "#22c55e" }} />
-            <div style={{ position: "absolute", left: "60%", top: 0, height: "100%", width: "20%", background: "#f59e0b" }} />
-            <div style={{ position: "absolute", left: "80%", top: 0, height: "100%", width: "20%", background: "#ef4444", borderRadius: "0 4px 4px 0" }} />
-            <div style={{ position: "absolute", top: -3, width: 14, height: 14, borderRadius: "50%", background: "#fff", border: "3px solid " + info.color, left: pct + "%", transform: "translateX(-50%)" }} />
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4, fontSize: 9, color: "#94a3b8" }}>
-            <span>15</span><span>18.5</span><span>25</span><span>30</span><span>40</span>
-          </div>
-        </div>
-        <div style={{ textAlign: "center", minWidth: 50 }}>
-          <div style={{ fontSize: 28, fontWeight: 800, color: info.color }}>{bmi}</div>
-          <div style={{ fontSize: 10, color: "#64748b" }}>BMI</div>
-        </div>
-      </div>
-      <div style={{ fontSize: 11, color: "#64748b", display: "flex", gap: 12 }}>
-        <span>{"גובה: " + profile.height + " ס״מ"}</span>
-        <span>{"משקל: " + w + " ק״ג"}</span>
-        {morningWeight && <span style={{ color: info.color, fontWeight: 600 }}>(משקל בוקר)</span>}
-      </div>
-    </div>
-  );
-};
+const FOOD_CATEGORIES = [
+  { id: "all", label: "הכל", icon: "🍽️" },
+  { id: "חלבון", label: "חלבון", icon: "🍗" },
+  { id: "חלבי", label: "חלבי", icon: "🥛" },
+  { id: "פחמימה", label: "פחמימות", icon: "🍞" },
+  { id: "פרי", label: "פירות", icon: "🍎" },
+  { id: "ירק", label: "ירקות", icon: "🥬" },
+  { id: "שומן", label: "שומנים", icon: "🥑" },
+  { id: "קטנייה", label: "קטניות", icon: "🫘" },

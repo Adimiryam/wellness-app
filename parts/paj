@@ -1,66 +1,55 @@
-        {/* Step 5: What to Track */}
-        {step === 5 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
-              📊 מה תרצה/י לעקוב?
-            </div>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
-              בחר/י את הנתונים שחשוב לך לעקוב אחריהם כל יום
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-              {TRACKING_OPTIONS.map(opt => {
-                const isSelected = trackingChoices.includes(opt.id);
-                return (
-                  <button key={opt.id} onClick={() => toggleTracking(opt.id)}
-                    style={{
-                      padding: 14, borderRadius: 14, border: "2px solid",
-                      borderColor: isSelected ? opt.color : "#e2e8f0",
-                      background: isSelected ? `${opt.color}10` : "#fff",
-                      cursor: "pointer", textAlign: "center",
-                      boxShadow: isSelected ? `0 3px 10px ${opt.color}20` : "none",
-                      transition: "all 0.2s"
-                    }}>
-                    <div style={{ fontSize: 24, marginBottom: 4 }}>{opt.icon}</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: isSelected ? opt.color : "#475569" }}>{opt.label}</div>
-                    {isSelected && <Check size={16} color={opt.color} style={{ marginTop: 4 }} />}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#0369a1", marginBottom: 6, textAlign: "right" }}>
-                💡 אפשר לשנות בכל עת
-              </div>
-              <div style={{ fontSize: 13, color: "#0c4a6e", textAlign: "right" }}>
-                תמיד אפשר להוסיף או להסיר נתונים למעקב מההגדרות. ככל שתזין/י יותר נתונים, התובנות יהיו מדויקות יותר!
-              </div>
-            </div>
-          </div>
-        )}
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 13 }}>
+        <span style={{ color: "#64748b" }}>{Math.round(value)}{unit} / {max}{unit}</span>
+        <span style={{ fontWeight: 600, color: "#1e293b" }}>{label}</span>
       </div>
-
-      {/* Bottom Navigation */}
-      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, background: "#fff", borderTop: "1px solid #e2e8f0", padding: "12px 16px", display: "flex", gap: 10, boxSizing: "border-box", zIndex: 100 }}>
-        {step > 0 && (
-          <button onClick={() => setStep(step - 1)}
-            style={{ flex: 1, padding: 14, borderRadius: 12, border: "2px solid #e2e8f0", background: "#fff", color: "#64748b", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-            → חזרה
-          </button>
-        )}
-        <button onClick={() => { if (step < totalSteps - 1) setStep(step + 1); else handleComplete(); }}
-          disabled={!canProceed()}
-          style={{
-            flex: 2, padding: 14, borderRadius: 12, border: "none",
-            background: canProceed() ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "#e2e8f0",
-            color: canProceed() ? "#fff" : "#94a3b8",
-            fontSize: 16, fontWeight: 700, cursor: canProceed() ? "pointer" : "not-allowed",
-            transition: "all 0.2s"
-          }}>
-          {step < totalSteps - 1 ? "← המשך" : "🚀 בואו נתחיל!"}
-        </button>
+      <div style={{ height: 8, borderRadius: 4, background: "#f1f5f9", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${pct}%`, borderRadius: 4, background: color, transition: "width 0.5s" }} />
       </div>
     </div>
   );
 };
+
+const BmiCard = ({ profile, morningWeight }) => {
+  if (!profile?.height || (!profile?.currentWeight && !morningWeight)) return null;
+  const h = parseFloat(profile.height) / 100;
+  const w = parseFloat(morningWeight || profile.currentWeight);
+  if (!h || !w || h <= 0) return null;
+  const bmiVal = w / (h * h);
+  const bmi = bmiVal.toFixed(1);
+  const info = bmiVal < 18.5 ? { label: "תת משקל", color: "#3b82f6", bg: "#eff6ff", emoji: "⚠️" }
+    : bmiVal < 25 ? { label: "משקל תקין", color: "#22c55e", bg: "#f0fdf4", emoji: "✅" }
+    : bmiVal < 30 ? { label: "עודף משקל", color: "#f59e0b", bg: "#fffbeb", emoji: "⚡" }
+    : { label: "השמנה", color: "#ef4444", bg: "#fef2f2", emoji: "⚠️" };
+  const pct = Math.min(100, Math.max(0, ((bmiVal - 15) / 25) * 100));
+  return (
+    <div style={{ background: info.bg, borderRadius: 16, padding: 16, marginBottom: 16, border: "2px solid " + info.color + "22", direction: "rtl" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: info.color }}>{info.emoji} {info.label}</span>
+        </div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>BMI מדד</div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ height: 8, borderRadius: 4, background: "#e2e8f0", overflow: "hidden", position: "relative" }}>
+            <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: "27.5%", background: "#3b82f6", borderRadius: "4px 0 0 4px" }} />
+            <div style={{ position: "absolute", left: "27.5%", top: 0, height: "100%", width: "32.5%", background: "#22c55e" }} />
+            <div style={{ position: "absolute", left: "60%", top: 0, height: "100%", width: "20%", background: "#f59e0b" }} />
+            <div style={{ position: "absolute", left: "80%", top: 0, height: "100%", width: "20%", background: "#ef4444", borderRadius: "0 4px 4px 0" }} />
+            <div style={{ position: "absolute", top: -3, width: 14, height: 14, borderRadius: "50%", background: "#fff", border: "3px solid " + info.color, left: pct + "%", transform: "translateX(-50%)" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4, fontSize: 9, color: "#94a3b8" }}>
+            <span>15</span><span>18.5</span><span>25</span><span>30</span><span>40</span>
+          </div>
+        </div>
+        <div style={{ textAlign: "center", minWidth: 50 }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: info.color }}>{bmi}</div>
+          <div style={{ fontSize: 10, color: "#64748b" }}>BMI</div>
+        </div>
+      </div>
+      <div style={{ fontSize: 11, color: "#64748b", display: "flex", gap: 12 }}>
+        <span>{"גובה: " + profile.height + " ס״מ"}</span>
+        <span>{"משקל: " + w + " ק״ג"}</span>
+        {morningWeight && <span style={{ color: info.color, fontWeight: 600 }}>(משקל בוקר)</span>}

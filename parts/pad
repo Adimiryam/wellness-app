@@ -1,57 +1,55 @@
-      default: return true;
-    }
-  };
+    "אומגה 3", "אומגה 3-6-9", "שמן דגים", "שמן קריל", "DHA", "EPA",
+  ]},
+  { group: "פרוביוטיקה ועיכול", items: [
+    "פרוביוטיקה", "פרה-ביוטיקה", "אנזימי עיכול", "סיבים תזונתיים", "גלוטמין",
+  ]},
+  { group: "חלבון וספורט", items: [
+    "אבקת חלבון מי גבינה", "חלבון קזאין", "חלבון צמחי", "BCAA", "קריאטין", "גלוטמין",
+    "בטא-אלנין", "L-קרניטין", "קפאין", "פרה-וורקאאוט",
+  ]},
+  { group: "צמחים וסופרפוד", items: [
+    "כורכומין", "ג׳ינג׳ר", "שום", "ספירולינה", "כלורלה", "מאקה",
+    "אשוואגנדה", "ג׳ינסנג", "מורינגה", "אלוורה", "חילבה", "ערער",
+  ]},
+  { group: "בריאות כללית", items: [
+    "קולגן", "חומצה היאלורונית", "קו-אנזים Q10", "מלטונין", "L-תאנין",
+    "גלוקוזאמין", "כונדרואיטין", "MSM", "NAC", "אלפא ליפואית",
+  ]},
+  { group: "תרופות נפוצות", items: [
+    "אקמול", "נורופן", "אופטלגין", "אספירין", "אנטיביוטיקה", "אנטי-היסטמין",
+    "תרופת לחץ דם", "סטטין (כולסטרול)", "מטפורמין", "אלטרוקסין (תריס)",
+    "גלולות למניעת הריון", "אנטי-דפרסנט", "תרופה לחרדה",
+  ]},
+];
 
-  const handleComplete = () => {
-    onComplete({
-      name, age, gender, height, currentWeight,
-      dietType, goalTypes, conditions, conditionNotes,
-      currentMeds, currentSupplements,
-      trackingChoices, painAreas, allergies,
-      weightGoal: weightGoalValue,
-      calorieGoal: calorieGoalValue,
-      proteinGoal: proteinGoalValue,
-      stepsGoal: stepsGoalValue,
-    });
-  };
-
-  const handleSkip = () => {
-    onComplete({
-      name: "אורח/ת", age: "30", gender: "female", height: "165", currentWeight: "65",
-      dietType: "regular", goalTypes: ["health", "weight_loss"],
-      conditions: ["none"], conditionNotes: "",
-      currentMeds: "", currentSupplements: ["ויטמין D", "אומגה 3"],
-      trackingChoices: ["calories", "protein", "water", "sleep", "mood", "weight", "symptoms", "period", "steps"],
-      painAreas: "", allergies: "",
-      weightGoal: "60", calorieGoal: 1800, proteinGoal: 80, stepsGoal: 8000,
-    });
-  };
-
-  const cardStyle = { background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" };
-  const inputStyle = { width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", direction: "rtl", boxSizing: "border-box", fontFamily: "inherit" };
-
-  return (
-    <div style={{ direction: "rtl", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", maxWidth: 480, margin: "0 auto", background: "#f8fafc", minHeight: "100vh" }}>
-      {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", padding: "30px 20px 24px", color: "#fff", textAlign: "center", position: "relative" }}>
-        <button onClick={handleSkip}
-          style={{ position: "absolute", top: 16, left: 16, background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", padding: "6px 14px", borderRadius: 20, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
-          דלג/י ←
-        </button>
-        <div style={{ fontSize: 36, marginBottom: 8 }}>🥗</div>
-        <div style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>NutriTrack</div>
-        <div style={{ fontSize: 14, opacity: 0.85 }}>בואו נכיר! כמה שאלות קצרות כדי להתאים לך את האפליקיה</div>
-      </div>
-
-      {/* Progress dots */}
-      <div style={{ display: "flex", justifyContent: "center", gap: 8, padding: "16px 0" }}>
-        {Array.from({ length: totalSteps }).map((_, i) => (
-          <div key={i} style={{
-            width: i === step ? 24 : 8, height: 8, borderRadius: 4,
-            background: i <= step ? "#6366f1" : "#e2e8f0",
-            transition: "all 0.3s"
-          }} />
-        ))}
-      </div>
-
-      <div style={{ padding: 16, paddingBottom: 100 }}>
+const SYMPTOM_TYPES = [
+  // כאבים
+  { id: "headache", label: "כאב ראש", icon: "🤕", group: "כאבים" },
+  { id: "migraine", label: "מיגרנה", icon: "🤯", group: "כאבים" },
+  { id: "stomach", label: "כאב בטן", icon: "🤢", group: "כאבים" },
+  { id: "back_pain", label: "כאב גב תחתון", icon: "💢", group: "כאבים" },
+  { id: "upper_back", label: "כאב גב עליון", icon: "🔙", group: "כאבים" },
+  { id: "neck_pain", label: "כאב צוואר", icon: "😣", group: "כאבים" },
+  { id: "shoulder_pain", label: "כאב כתפיים", icon: "🤷", group: "כאבים" },
+  { id: "chest_pain", label: "כאב חזה", icon: "💗", group: "כאבים" },
+  { id: "joint_pain", label: "כאבי מפרקים", icon: "🦴", group: "כאבים" },
+  { id: "knee_pain", label: "כאב ברכיים", icon: "🦵", group: "כאבים" },
+  { id: "hip_pain", label: "כאב ירכיים/אגן", icon: "🦿", group: "כאבים" },
+  { id: "muscle_pain", label: "כאבי שרירים", icon: "💪", group: "כאבים" },
+  { id: "muscle_cramps", label: "התכווצויות שרירים", icon: "⚡", group: "כאבים" },
+  { id: "menstrual_pain", label: "כאבי מחזור", icon: "🩸", group: "כאבים" },
+  { id: "tooth_pain", label: "כאב שיניים", icon: "🦷", group: "כאבים" },
+  { id: "jaw_pain", label: "כאב לסת", icon: "😬", group: "כאבים" },
+  { id: "ear_pain", label: "כאב אוזניים", icon: "👂", group: "כאבים" },
+  { id: "eye_pain", label: "כאב עיניים", icon: "👁️", group: "כאבים" },
+  { id: "pelvic_pain", label: "כאב אגן", icon: "🩻", group: "כאבים" },
+  { id: "rib_pain", label: "כאב צלעות", icon: "🫁", group: "כאבים" },
+  { id: "nerve_pain", label: "כאב עצבי/נוירופתי", icon: "⚡", group: "כאבים" },
+  // עיכול
+  { id: "nausea", label: "בחילה", icon: "🤮", group: "עיכול" },
+  { id: "vomiting", label: "הקאה", icon: "🤮", group: "עיכול" },
+  { id: "bloating", label: "נפיחות בטן", icon: "🫧", group: "עיכול" },
+  { id: "heartburn", label: "צרבת", icon: "🔥", group: "עיכול" },
+  { id: "acid_reflux", label: "ריפלוקס", icon: "🌋", group: "עיכול" },
+  { id: "gas", label: "גזים", icon: "💨", group: "עיכול" },
+  { id: "constipation", label: "עצירות", icon: "🚫", group: "עיכול" },
