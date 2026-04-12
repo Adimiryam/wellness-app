@@ -1,54 +1,50 @@
-  { id: "fainting", label: "התעלפות/כמעט התעלפות", icon: "😵", group: "עייפות ואנרגיה" },
-  { id: "low_energy", label: "חוסר אנרגיה", icon: "🔋", group: "עייפות ואנרגיה" },
-  { id: "drowsiness", label: "ישנוניות", icon: "😪", group: "עייפות ואנרגיה" },
-  // חום וחיסון
-  { id: "fever", label: "חום", icon: "🌡️", group: "חום וחיסון" },
-  { id: "low_fever", label: "חום נמוך (סאבפברילי)", icon: "🤒", group: "חום וחיסון" },
-  { id: "chills", label: "צמרמורת", icon: "🥶", group: "חום וחיסון" },
-  { id: "night_sweats", label: "הזעת לילה", icon: "🌙", group: "חום וחיסון" },
-  { id: "sweating", label: "הזעה מוגברת", icon: "💧", group: "חום וחיסון" },
-  { id: "swollen_lymph", label: "בלוטות נפוחות", icon: "🔵", group: "חום וחיסון" },
-  // עור
-  { id: "rash", label: "פריחה", icon: "🔴", group: "עור", needsBodyPart: true },
-  { id: "itching", label: "גירוד", icon: "🫳", group: "עור", needsBodyPart: true },
-  { id: "hives", label: "סרפדת/אורטיקריה", icon: "🟥", group: "עור", needsBodyPart: true },
-  { id: "dry_skin", label: "עור יבש", icon: "🏜️", group: "עור", needsBodyPart: true },
-  { id: "acne", label: "פצעונים/אקנה", icon: "😖", group: "עור", needsBodyPart: true },
-  { id: "swelling", label: "נפיחות מקומית", icon: "🎈", group: "עור", needsBodyPart: true },
-  { id: "bruising", label: "חבורות", icon: "🟣", group: "עור", needsBodyPart: true },
-  { id: "redness", label: "אדמומיות", icon: "🔴", group: "עור", needsBodyPart: true },
-  { id: "hair_loss", label: "נשירת שיער", icon: "💇", group: "עור" },
-  { id: "brittle_nails", label: "ציפורניים שבירות", icon: "💅", group: "עור" },
-  // נפשי
-  { id: "anxiety", label: "חרדה", icon: "😰", group: "נפשי" },
-  { id: "panic_attack", label: "התקפי חרדה", icon: "😱", group: "נפשי" },
-  { id: "depression", label: "מצב רוח ירוד", icon: "😞", group: "נפשי" },
-  { id: "insomnia", label: "נדודי שינה", icon: "🌙", group: "נפשי" },
-  { id: "oversleeping", label: "שינה מוגזמת", icon: "😴", group: "נפשי" },
-  { id: "mood_swings", label: "שינויי מצב רוח", icon: "🎭", group: "נפשי" },
-  { id: "brain_fog", label: "ערפול מוחי", icon: "🌫️", group: "נפשי" },
-  { id: "irritability", label: "עצבנות", icon: "😤", group: "נפשי" },
-  { id: "concentration", label: "קושי בריכוז", icon: "🎯", group: "נפשי" },
-  { id: "memory_issues", label: "בעיות זיכרון", icon: "🧠", group: "נפשי" },
-  { id: "restlessness", label: "אי-שקט", icon: "🔄", group: "נפשי" },
-  { id: "crying", label: "בכי/רגשיות יתר", icon: "😢", group: "נפשי" },
-  // נשימה
-  { id: "shortness_breath", label: "קוצר נשימה", icon: "🫁", group: "נשימה" },
-  { id: "cough", label: "שיעול", icon: "😷", group: "נשימה" },
-  { id: "dry_cough", label: "שיעול יבש", icon: "🗣️", group: "נשימה" },
-  { id: "wheezing", label: "צפצופים בנשימה", icon: "💨", group: "נשימה" },
-  { id: "runny_nose", label: "נזלת", icon: "🤧", group: "נשימה" },
-  { id: "stuffy_nose", label: "גודש באף", icon: "👃", group: "נשימה" },
-  { id: "sore_throat", label: "כאב גרון", icon: "🗣️", group: "נשימה" },
-  { id: "sneezing", label: "עיטוש", icon: "🤧", group: "נשימה" },
-  { id: "hoarseness", label: "צרידות", icon: "🎤", group: "נשימה" },
-  // עיניים ואוזניים
-  { id: "eye_strain", label: "עייפות עיניים", icon: "👁️", group: "עיניים ואוזניים" },
-  { id: "blurry_vision", label: "טשטוש ראייה", icon: "🔍", group: "עיניים ואוזניים" },
-  { id: "dry_eyes", label: "עיניים יבשות", icon: "💧", group: "עיניים ואוזניים" },
-  { id: "watery_eyes", label: "דמעת עיניים", icon: "😿", group: "עיניים ואוזניים" },
-  { id: "eye_redness", label: "אדמומיות בעיניים", icon: "🔴", group: "עיניים ואוזניים" },
-  { id: "tinnitus", label: "צפצופים באוזניים", icon: "🔔", group: "עיניים ואוזניים" },
-  { id: "hearing_changes", label: "שינויים בשמיעה", icon: "👂", group: "עיניים ואוזניים" },
-  { id: "sensitivity_light", label: "רגישות לאור", icon: "☀️", group: "עיניים ואוזניים" },
-  { id: "sensitivity_noise", label: "רגישות לרעש", icon: "🔊", group: "עיניים ואוזניים" },
+
+// ==================== SAMPLE DATA FOR DEMO ====================
+const generateSampleData = () => {
+  return [];
+  // eslint-disable-next-line no-unreachable
+  const days = [];
+  const today = new Date();
+  for (let i = 90; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split("T")[0];
+    // Cycle: period starts every 28 days at offsets 2, 30, 58, 86
+    const cycleDay = i % 28;
+    const isPeriodDay = cycleDay < 5;
+    const isPmsWindow = cycleDay >= 25; // 3 days before period
+    // Seed recurring migraines and bloating in PMS window for demo
+    const daySymptoms = [];
+    if (isPmsWindow && Math.random() > 0.2) daySymptoms.push({ typeId: "headache", text: "מיגרנה", icon: "🤕" });
+    if (isPmsWindow && Math.random() > 0.35) daySymptoms.push({ typeId: "bloating", text: "נפיחות", icon: "🫧" });
+    if (isPmsWindow && Math.random() > 0.5) daySymptoms.push({ typeId: "anxiety", text: "חרדה/מתח", icon: "😰" });
+    const protein = 40 + Math.floor(Math.random() * 80);
+    const hadRadish = Math.random() > 0.7;
+    const hadRash = hadRadish ? Math.random() > 0.2 : Math.random() > 0.85;
+    days.push({
+      date: dateStr,
+      totalCalories: 1400 + Math.floor(Math.random() * 800),
+      totalProtein: protein,
+      totalCarbs: 100 + Math.floor(Math.random() * 150),
+      totalFat: 30 + Math.floor(Math.random() * 50),
+      weight: 68 - (i * 0.05) + (Math.random() * 0.5 - 0.25),
+      steps: 3000 + Math.floor(Math.random() * 10000),
+      sleepHours: 5 + Math.random() * 4,
+      sleepQuality: Math.floor(Math.random() * 5) + 1,
+      energy: Math.floor(Math.random() * 5) + 1,
+      mood: Math.floor(Math.random() * 5) + 1,
+      bloated: Math.random() > 0.6,
+      hadRadish,
+      hadRash,
+      feelings: FEELINGS.filter(() => Math.random() > 0.7).map(f => f.id),
+      tookIron: Math.random() > 0.3,
+      exercise: Math.random() > 0.4 ? EXERCISE_TYPES[Math.floor(Math.random() * EXERCISE_TYPES.length)].id : null,
+      periodDay: isPeriodDay ? cycleDay + 1 : null,
+      isPeriodStart: cycleDay === 0,
+      pmsWindow: isPmsWindow,
+      symptomsReported: daySymptoms,
+      waterCups: Math.floor(Math.random() * 10) + 2,
+    });
+  }
+  return days;
+};

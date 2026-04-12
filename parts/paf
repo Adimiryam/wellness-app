@@ -1,80 +1,60 @@
-  // לב וכלי דם
-  { id: "palpitations", label: "דפיקות לב", icon: "💓", group: "לב וכלי דם" },
-  { id: "rapid_heartbeat", label: "דופק מהיר", icon: "💗", group: "לב וכלי דם" },
-  { id: "high_bp_symptoms", label: "תסמיני לחץ דם גבוה", icon: "📈", group: "לב וכלי דם" },
-  { id: "low_bp_symptoms", label: "תסמיני לחץ דם נמוך", icon: "📉", group: "לב וכלי דם" },
-  { id: "cold_hands_feet", label: "ידיים/רגליים קרות", icon: "🥶", group: "לב וכלי דם" },
-  { id: "swollen_legs", label: "רגליים נפוחות", icon: "🦶", group: "לב וכלי דם" },
-  { id: "numbness", label: "נימול/חוסר תחושה", icon: "🫠", group: "לב וכלי דם", needsBodyPart: true },
-  { id: "tingling", label: "עקצוץ/נמלול", icon: "⚡", group: "לב וכלי דם", needsBodyPart: true },
-  // הורמונלי ומטבולי
-  { id: "hot_flashes", label: "גלי חום", icon: "🥵", group: "הורמונלי" },
-  { id: "water_retention", label: "אגירת מים", icon: "💧", group: "הורמונלי" },
-  { id: "weight_gain", label: "עלייה במשקל", icon: "⬆️", group: "הורמונלי" },
-  { id: "weight_loss_symptom", label: "ירידה במשקל", icon: "⬇️", group: "הורמונלי" },
-  { id: "thirst", label: "צמא מוגבר", icon: "🥤", group: "הורמונלי" },
-  { id: "frequent_urination", label: "הטלת שתן תכופה", icon: "🚻", group: "הורמונלי" },
-  { id: "pms", label: "תסמונת קדם-וסתית (PMS)", icon: "📅", group: "הורמונלי" },
-  { id: "breast_tenderness", label: "רגישות בחזה", icon: "💗", group: "הורמונלי" },
-  { id: "libido_changes", label: "שינויים בחשק", icon: "💕", group: "הורמונלי" },
-  // אלרגיה
-  { id: "allergy_eyes", label: "אלרגיה בעיניים", icon: "👁️", group: "אלרגיה" },
-  { id: "allergy_skin", label: "אלרגיה בעור", icon: "🔴", group: "אלרגיה", needsBodyPart: true },
-  { id: "food_reaction", label: "תגובה למזון", icon: "🍽️", group: "אלרגיה" },
-  { id: "allergy_respiratory", label: "אלרגיה נשימתית", icon: "🫁", group: "אלרגיה" },
-  { id: "swollen_lips_tongue", label: "נפיחות שפתיים/לשון", icon: "👅", group: "אלרגיה" },
-  // אחר
-  { id: "vertigo", label: "ורטיגו", icon: "🌀", group: "אחר" },
-  { id: "tremor", label: "רעד", icon: "🫨", group: "אחר" },
-  { id: "stiffness", label: "נוקשות/קשיחות", icon: "🧊", group: "אחר" },
-  { id: "balance_issues", label: "בעיות שיווי משקל", icon: "🤸", group: "אחר" },
-  { id: "snoring", label: "נחירות", icon: "😴", group: "אחר" },
-  { id: "teeth_grinding", label: "חריקת שיניים", icon: "😬", group: "אחר" },
-  { id: "bleeding_gums", label: "דימום חניכיים", icon: "🩸", group: "אחר" },
-  { id: "nosebleed", label: "דימום מהאף", icon: "👃", group: "אחר" },
-  { id: "other", label: "אחר", icon: "📝", group: "אחר" },
-];
+// ==================== REUSABLE COMPONENTS ====================
 
-const BODY_PARTS = [
-  { id: "face", label: "פנים", icon: "😊" },
-  { id: "scalp", label: "קרקפת", icon: "🧑" },
-  { id: "forehead", label: "מצח", icon: "🙂" },
-  { id: "neck", label: "צוואר", icon: "🦒" },
-  { id: "shoulders", label: "כתפיים", icon: "🤷" },
-  { id: "upper_back", label: "גב עליון", icon: "🔙" },
-  { id: "lower_back", label: "גב תחתון", icon: "⬇️" },
-  { id: "chest", label: "חזה", icon: "🫁" },
-  { id: "stomach_area", label: "בטן", icon: "🤰" },
-  { id: "ribs", label: "צלעות", icon: "🩻" },
-  { id: "arms_upper", label: "זרועות", icon: "💪" },
-  { id: "elbows", label: "מרפקים", icon: "🦾" },
-  { id: "forearms", label: "אמות", icon: "🤲" },
-  { id: "hands", label: "כפות ידיים", icon: "✋" },
-  { id: "fingers", label: "אצבעות ידיים", icon: "🖐️" },
-  { id: "hips", label: "ירכיים/אגן", icon: "🦿" },
-  { id: "thighs", label: "ירכיים", icon: "🦵" },
-  { id: "knees", label: "ברכיים", icon: "🦵" },
-  { id: "calves", label: "שוקיים", icon: "🦿" },
-  { id: "ankles", label: "קרסוליים", icon: "🦶" },
-  { id: "feet", label: "כפות רגליים", icon: "🦶" },
-  { id: "toes", label: "אצבעות רגליים", icon: "🦶" },
-  { id: "groin", label: "מפשעה", icon: "🩲" },
-  { id: "joints_general", label: "מפרקים (כללי)", icon: "🦴" },
-  { id: "left_side", label: "צד שמאל", icon: "⬅️" },
-  { id: "right_side", label: "צד ימין", icon: "➡️" },
-  { id: "all_over", label: "כל הגוף", icon: "🧍" },
-];
+const RatingInput = ({ value, onChange, label, icon: Icon, color = "#f59e0b" }) => (
+  <div style={{ marginBottom: 16 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, justifyContent: "flex-end" }}>
+      {Icon && <Icon size={18} color={color} />}
+      <span style={{ fontWeight: 600, fontSize: 14, color: "#1e293b" }}>{label}</span>
+    </div>
+    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", direction: "ltr" }}>
+      {[1, 2, 3, 4, 5].map(star => (
+        <button key={star} onClick={() => onChange(star)}
+          style={{
+            width: 40, height: 40, borderRadius: 10, border: "none", cursor: "pointer",
+            background: value >= star ? color : "#f1f5f9",
+            color: value >= star ? "#fff" : "#94a3b8",
+            fontWeight: 700, fontSize: 16, transition: "all 0.2s"
+          }}>
+          {star}
+        </button>
+      ))}
+    </div>
+  </div>
+);
 
-const SYMPTOM_GROUPS = [...new Set(SYMPTOM_TYPES.map(s => s.group))];
+const PillToggle = ({ items, selected, onToggle, multi = true }) => (
+  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" }}>
+    {items.map(item => {
+      const isSelected = multi ? selected.includes(item.id) : selected === item.id;
+      return (
+        <button key={item.id} onClick={() => onToggle(item.id)}
+          style={{
+            padding: "8px 14px", borderRadius: 20, border: "2px solid",
+            borderColor: isSelected ? (item.color || "#6366f1") : "#e2e8f0",
+            background: isSelected ? `${item.color || "#6366f1"}15` : "#fff",
+            color: isSelected ? (item.color || "#6366f1") : "#64748b",
+            cursor: "pointer", fontSize: 14, fontWeight: 500,
+            display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s"
+          }}>
+          <span>{item.label}</span>
+          {item.icon && typeof item.icon === "string" && <span>{item.icon}</span>}
+        </button>
+      );
+    })}
+  </div>
+);
 
-const DIET_TYPES = [
-  { id: "regular", label: "רגילה", icon: "🍽️", color: "#6366f1" },
-  { id: "vegetarian", label: "צמחונית", icon: "🥬", color: "#22c55e" },
-  { id: "vegan", label: "טבעונית", icon: "🌱", color: "#16a34a" },
-  { id: "keto", label: "קיטו", icon: "🥑", color: "#f59e0b" },
-  { id: "paleo", label: "פליאו", icon: "🥩", color: "#dc2626" },
-  { id: "mediterranean", label: "ים תיכונית", icon: "🫒", color: "#0ea5e9" },
-  { id: "gluten_free", label: "ללא גלוטן", icon: "🚫", color: "#a855f7" },
-  { id: "lactose_free", label: "ללא לקטוז", icon: "🥛", color: "#ec4899" },
-  { id: "other", label: "אחר", icon: "✨", color: "#64748b" },
-];
+const ProgressBar = ({ value, max, color, label, unit = "" }) => {
+  const pct = Math.min((value / max) * 100, 100);
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 13 }}>
+        <span style={{ color: "#64748b" }}>{Math.round(value)}{unit} / {max}{unit}</span>
+        <span style={{ fontWeight: 600, color: "#1e293b" }}>{label}</span>
+      </div>
+      <div style={{ height: 8, borderRadius: 4, background: "#f1f5f9", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${pct}%`, borderRadius: 4, background: color, transition: "width 0.5s" }} />
+      </div>
+    </div>
+  );
+};
