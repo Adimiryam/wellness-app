@@ -162,6 +162,54 @@ source = source.replace(
   '<div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>\uD83C\uDFAF \u05D4\u05D9\u05E2\u05D3\u05D9\u05DD \u05E9\u05DC\u05D9</div>' + PROFILE_SECTION
 );
 
+// Patch 8: Enhance BMI card — replace bottom info line with kg-to-healthy-weight indicator
+source = source.replace(
+  `<div style={{ fontSize: 11, color: "#64748b", display: "flex", gap: 12 }}>
+        <span>{"\u05D2\u05D5\u05D1\u05D4: " + profile.height + " \u05E1\u05F4\u05DE"}</span>
+        <span>{"\u05DE\u05E9\u05E7\u05DC: " + w + " \u05E7\u05F4\u05D2"}</span>
+        {morningWeight && <span style={{ color: info.color, fontWeight: 600 }}>(\u05DE\u05E9\u05E7\u05DC \u05D1\u05D5\u05E7\u05E8)</span>}
+      </div>`,
+  `<div style={{ fontSize: 11, color: "#64748b", display: "flex", gap: 12, marginBottom: bmiVal >= 25 || bmiVal < 18.5 ? 10 : 0 }}>
+        <span>{"\u05D2\u05D5\u05D1\u05D4: " + profile.height + " \u05E1\u05F4\u05DE"}</span>
+        <span>{"\u05DE\u05E9\u05E7\u05DC: " + w + " \u05E7\u05F4\u05D2"}</span>
+        {morningWeight && <span style={{ color: info.color, fontWeight: 600 }}>(\u05DE\u05E9\u05E7\u05DC \u05D1\u05D5\u05E7\u05E8)</span>}
+      </div>
+      {(() => {
+        const healthyMax = 24.9 * h * h;
+        const healthyMin = 18.5 * h * h;
+        if (bmiVal >= 25) {
+          const toHealthy = (w - healthyMax).toFixed(1);
+          const pctDone = Math.max(0, Math.min(100, ((w - healthyMax) > 20 ? 0 : (1 - (w - healthyMax) / 20) * 100)));
+          return (
+            <div style={{ background: "#fff7ed", borderRadius: 10, padding: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#ea580c" }}>{toHealthy} \u05E7\u05F4\u05D2 \u05DC\u05D4\u05D5\u05E8\u05D9\u05D3</span>
+                <span style={{ fontSize: 11, color: "#64748b" }}>\u05E2\u05D3 \u05DE\u05E9\u05E7\u05DC \u05EA\u05E7\u05D9\u05DF ({healthyMax.toFixed(1)} \u05E7\u05F4\u05D2)</span>
+              </div>
+              <div style={{ height: 6, borderRadius: 3, background: "#fed7aa", overflow: "hidden" }}>
+                <div style={{ height: "100%", width: pctDone + "%", borderRadius: 3, background: "linear-gradient(90deg, #f97316, #22c55e)", transition: "width 0.5s" }} />
+              </div>
+            </div>
+          );
+        } else if (bmiVal < 18.5) {
+          const toHealthy = (healthyMin - w).toFixed(1);
+          return (
+            <div style={{ background: "#eff6ff", borderRadius: 10, padding: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#2563eb" }}>{toHealthy} \u05E7\u05F4\u05D2 \u05DC\u05D4\u05E2\u05DC\u05D5\u05EA</span>
+                <span style={{ fontSize: 11, color: "#64748b" }}>\u05E2\u05D3 \u05DE\u05E9\u05E7\u05DC \u05EA\u05E7\u05D9\u05DF ({healthyMin.toFixed(1)} \u05E7\u05F4\u05D2)</span>
+              </div>
+            </div>
+          );
+        }
+        return (
+          <div style={{ background: "#f0fdf4", borderRadius: 10, padding: 8, textAlign: "center" }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#16a34a" }}>\u2705 \u05DE\u05E9\u05E7\u05DC \u05EA\u05E7\u05D9\u05DF! (\u05D8\u05D5\u05D5\u05D7: {healthyMin.toFixed(1)}-{healthyMax.toFixed(1)} \u05E7\u05F4\u05D2)</span>
+          </div>
+        );
+      })()}`
+);
+
 fs.mkdirSync("src", { recursive: true });
 fs.writeFileSync("src/App.jsx", source);
 console.log("Wrote src/App.jsx (" + source.length + " bytes from " + chunks.length + " encoded chunks)");
