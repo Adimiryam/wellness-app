@@ -1,0 +1,55 @@
+      setShowAddWeightForm(false);
+    };
+
+    const createDietProject = () => {
+      if (!dietProjectName || !dietProjectTarget) return;
+      setDietProject({
+        name: dietProjectName,
+        targetWeight: parseFloat(dietProjectTarget),
+        deadline: dietProjectDeadline || null,
+        startWeight: currentW,
+        startDate: new Date().toISOString().split("T")[0],
+      });
+      setShowDietProjectForm(false);
+      setDietProjectName("");
+      setDietProjectTarget("");
+      setDietProjectDeadline("");
+    };
+
+    return (
+      <div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+          <Weight size={20} style={{ verticalAlign: "middle", marginLeft: 6 }} />
+          מעקב משקל
+        </div>
+
+        {/* Current Weight Display */}
+        {currentW && (
+          <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", borderRadius: 16, padding: 18, marginBottom: 14, color: "#fff", textAlign: "center" }}>
+            <div style={{ fontSize: 13, opacity: 0.85 }}>משקל נוכחי</div>
+            <div style={{ fontSize: 36, fontWeight: 800 }}>{currentW} <span style={{ fontSize: 16 }}>ק"ג</span></div>
+            {dietProject && (
+              <div style={{ fontSize: 12, opacity: 0.8, marginTop: 4 }}>יעד: {dietProject.targetWeight} ק"ג</div>
+            )}
+          </div>
+        )}
+
+        {/* BMI Card */}
+        <BmiCard profile={userProfile} morningWeight={currentW} />
+
+        {/* Time Period Buttons */}
+        <div style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap", justifyContent: "center" }}>
+          {periods.map(p => (
+            <button key={p.id} onClick={() => setWeightTimePeriod(p.id)} style={{
+              padding: "6px 12px", borderRadius: 20, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer",
+              background: weightTimePeriod === p.id ? "#6366f1" : "#f1f5f9",
+              color: weightTimePeriod === p.id ? "#fff" : "#64748b",
+            }}>{p.label}</button>
+          ))}
+        </div>
+
+        {/* SVG Weight Graph */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#374151", marginBottom: 8, textAlign: "right" }}>
+            גרף משקל - {periods.find(p => p.id === weightTimePeriod)?.label}
+          </div>

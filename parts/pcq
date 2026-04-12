@@ -1,0 +1,55 @@
+      </div>
+    );
+  };
+
+  // --- PREDICTIONS ---
+  const renderPredictions = () => {
+    const latestData = sampleData[sampleData.length - 1];
+    if (!latestData && weightHistory.length === 0) return <div style={{ padding: 20, textAlign: "right", color: "#94a3b8" }}>אין מספיק נתונים להצגת תחזיות. התחל/י להוסיף משקל בטבTab "משקל"</div>;
+    return (
+      <div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 6, textAlign: "right" }}>🔮 תחזיות והמלצות</div>
+        <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>מבוסס על הנתונים שצברת עד כה</div>
+
+        {/* PMS / CYCLE PATTERN DETECTION */}
+        {(() => {
+          // Combine reported period dates + sample data period starts
+          const periodStarts = [];
+          sampleData.forEach(d => { if (d.isPeriodStart) periodStarts.push(d.date); });
+          periodLog.forEach(d => { if (!periodStarts.includes(d)) periodStarts.push(d); });
+          if (periodStarts.length < 2) return null;
+
+          // For each period start, look at the 3 days before it and collect symptoms
+          const PMS_WINDOW_DAYS = 3;
+          const symptomsByTypeInPms = {}; // typeId -> { count, text, icon, cycles: [date] }
+          periodStarts.forEach(pStart => {
+            const pDate = new Date(pStart);
+            for (let back = 1; back <= PMS_WINDOW_DAYS; back++) {
+              const d = new Date(pDate);
+              d.setDate(d.getDate() - back);
+              const dStr = d.toISOString().split("T")[0];
+              const dayData = sampleData.find(sd => sd.date === dStr);
+              const daySymptoms = dayData?.symptomsReported || [];
+              // Also include current symptoms if they match today in PMS window
+              const todayStr = new Date().toISOString().split("T")[0];
+              if (dStr === todayStr) {
+                symptoms.forEach(s => daySymptoms.push({ typeId: s.typeId, text: s.text, icon: s.icon }));
+              }
+              daySymptoms.forEach(s => {
+                if (!s.typeId) return;
+                if (!symptomsByTypeInPms[s.typeId]) {
+                  symptomsByTypeInPms[s.typeId] = { count: 0, text: s.text, icon: s.icon, cycles: new Set() };
+                }
+                symptomsByTypeInPms[s.typeId].cycles.add(pStart);
+                symptomsByTypeInPms[s.typeId].count++;
+              });
+            }
+          });
+
+          // Recurring = appeared in >= 2 cycles
+          const recurring = Object.entries(symptomsByTypeInPms)
+            .filter(([_, v]) => v.cycles.size >= 2)
+            .map(([typeId, v]) => ({ typeId, ...v, cycleCount: v.cycles.size }))
+            .sort((a, b) => b.cycleCount - a.cycleCount);
+
+          // Check if we're currently in PMS window

@@ -1,0 +1,55 @@
+    const startW = filtered.length > 0 ? filtered[0].weight : null;
+    const endW = filtered.length > 0 ? filtered[filtered.length - 1].weight : null;
+    const totalChange = startW && endW ? (endW - startW) : 0;
+    const pctChange = startW ? ((totalChange / startW) * 100) : 0;
+    const dailyRate = days > 0 ? (totalChange / days) : 0;
+    const weeklyRate = dailyRate * 7;
+    const monthlyRate = dailyRate * 30;
+    const allSorted = [...weightHistory].sort((a, b) => a.date.localeCompare(b.date));
+    const currentW = allSorted.length > 0 ? allSorted[allSorted.length - 1].weight : null;
+    const highestW = filtered.length > 0 ? Math.max(...filtered.map(e => e.weight)) : 0;
+    const lowestW = filtered.length > 0 ? Math.min(...filtered.map(e => e.weight)) : 0;
+
+    // SVG Graph
+    const graphW = 340;
+    const graphH = 180;
+    const padL = 40;
+    const padR = 10;
+    const padT = 15;
+    const padB = 30;
+    const innerW = graphW - padL - padR;
+    const innerH = graphH - padT - padB;
+
+    const minW = filtered.length > 0 ? Math.floor(Math.min(...filtered.map(e => e.weight)) - 1) : 60;
+    const maxW = filtered.length > 0 ? Math.ceil(Math.max(...filtered.map(e => e.weight)) + 1) : 80;
+    const wRange = maxW - minW || 1;
+
+    const points = filtered.map((e, i) => {
+      const x = padL + (filtered.length > 1 ? (i / (filtered.length - 1)) * innerW : innerW / 2);
+      const y = padT + innerH - ((e.weight - minW) / wRange) * innerH;
+      return { x, y, ...e };
+    });
+
+    const polyline = points.map(p => p.x + "," + p.y).join(" ");
+
+    // Diet project progress
+    const dpProgress = dietProject && currentW && dietProject.startWeight ? (() => {
+      const lost = dietProject.startWeight - currentW;
+      const goal = dietProject.startWeight - dietProject.targetWeight;
+      const pct = goal > 0 ? Math.min((lost / goal) * 100, 100) : 0;
+      const daysLeft = dietProject.deadline ? Math.max(0, Math.ceil((new Date(dietProject.deadline) - now) / 86400000)) : null;
+      return { lost: lost.toFixed(1), goal: goal.toFixed(1), pct: pct.toFixed(0), daysLeft };
+    })() : null;
+
+    const addWeight = () => {
+      if (!newWeightValue || isNaN(parseFloat(newWeightValue))) return;
+      const entry = { date: newWeightDate, weight: parseFloat(parseFloat(newWeightValue).toFixed(1)) };
+      const existing = weightHistory.findIndex(e => e.date === newWeightDate);
+      if (existing >= 0) {
+        const updated = [...weightHistory];
+        updated[existing] = entry;
+        setWeightHistory(updated);
+      } else {
+        setWeightHistory([...weightHistory, entry]);
+      }
+      setNewWeightValue("");
