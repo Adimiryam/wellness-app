@@ -1,24 +1,75 @@
-const SYMPTOM_TYPES = [
-  // כאבים
-  { id: "headache", label: "כאב ראש", icon: "🤕", group: "כאבים" },
-  { id: "migraine", label: "מיגרנה", icon: "🤯", group: "כאבים" },
-  { id: "stomach", label: "כאב בטן", icon: "🤢", group: "כאבים" },
-  { id: "back_pain", label: "כאב גב תחתון", icon: "💢", group: "כאבים" },
-  { id: "upper_back", label: "כאב גב עליון", icon: "🔙", group: "כאבים" },
-  { id: "neck_pain", label: "כאב צוואר", icon: "😣", group: "כאבים" },
-  { id: "shoulder_pain", label: "כאב כתפיים", icon: "🤷", group: "כאבים" },
-  { id: "chest_pain", label: "כאב חזה", icon: "💗", group: "כאבים" },
-  { id: "joint_pain", label: "כאבי מפרקים", icon: "🦴", group: "כאבים" },
-  { id: "knee_pain", label: "כאב ברכיים", icon: "🦵", group: "כאבים" },
-  { id: "hip_pain", label: "כאב ירכיים/אגן", icon: "🦿", group: "כאבים" },
-  { id: "muscle_pain", label: "כאבי שרירים", icon: "💪", group: "כאבים" },
-  { id: "muscle_cramps", label: "התכווצויות שרירים", icon: "⚡", group: "כאבים" },
-  { id: "menstrual_pain", label: "כאבי מחזור", icon: "🩸", group: "כאבים" },
-  { id: "tooth_pain", label: "כאב שיניים", icon: "🦷", group: "כאבים" },
-  { id: "jaw_pain", label: "כאב לסת", icon: "😬", group: "כאבים" },
-  { id: "ear_pain", label: "כאב אוזניים", icon: "👂", group: "כאבים" },
-  { id: "eye_pain", label: "כאב עיניים", icon: "👁️", group: "כאבים" },
-  { id: "pelvic_pain", label: "כאב אגן", icon: "🩻", group: "כאבים" },
-  { id: "rib_pain", label: "כאב צלעות", icon: "🫁", group: "כאבים" },
-  { id: "nerve_pain", label: "כאב עצבי/נוירופתי", icon: "⚡", group: "כאבים" },
-];
+const MiniChart = ({ data, color, label, height = 100 }) => {
+  const max = Math.max(...data.map(d => d.value), 1);
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>{label}</div>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height, direction: "ltr" }}>
+        {data.slice(-14).map((d, i) => (
+          <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{
+              width: "100%", borderRadius: "3px 3px 0 0",
+              height: `${(d.value / max) * (height - 20)}px`,
+              background: color, opacity: 0.7 + (i / data.length) * 0.3,
+              minHeight: 2, transition: "height 0.3s"
+            }} />
+            {i % 2 === 0 && <span style={{ fontSize: 9, color: "#94a3b8", marginTop: 2 }}>{d.label}</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ==================== ONBOARDING SCREEN ====================
+const OnboardingScreen = ({ onComplete }) => {
+  const [step, setStep] = useState(0);
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [height, setHeight] = useState("");
+  const [currentWeight, setCurrentWeight] = useState("");
+  const [dietType, setDietType] = useState("");
+  const [goalTypes, setGoalTypes] = useState([]);
+  const [conditions, setConditions] = useState([]);
+  const [conditionNotes, setConditionNotes] = useState("");
+  const [currentMeds, setCurrentMeds] = useState("");
+  const [currentSupplements, setCurrentSupplements] = useState([]);
+  const [customSupplement, setCustomSupplement] = useState("");
+  const [trackingChoices, setTrackingChoices] = useState(["calories", "protein", "water", "sleep", "mood"]);
+  const [painAreas, setPainAreas] = useState("");
+  const [allergies, setAllergies] = useState("");
+  const [weightGoalValue, setWeightGoalValue] = useState("");
+  const [calorieGoalValue, setCalorieGoalValue] = useState(1800);
+  const [proteinGoalValue, setProteinGoalValue] = useState(80);
+  const [stepsGoalValue, setStepsGoalValue] = useState(8000);
+
+  const totalSteps = 6;
+
+  const toggleCondition = (id) => {
+    if (id === "none") { setConditions(["none"]); return; }
+    setConditions(prev => {
+      const filtered = prev.filter(c => c !== "none");
+      return filtered.includes(id) ? filtered.filter(c => c !== id) : [...filtered, id];
+    });
+  };
+
+  const toggleSupplement = (name) => {
+    setCurrentSupplements(prev =>
+      prev.includes(name) ? prev.filter(s => s !== name) : [...prev, name]
+    );
+  };
+
+  const toggleTracking = (id) => {
+    setTrackingChoices(prev =>
+      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
+    );
+  };
+
+  const canProceed = () => {
+    switch(step) {
+      case 0: return name.trim().length > 0;
+      case 1: return dietType !== "";
+      case 2: return goalTypes.length > 0;
+      case 3: return conditions.length > 0;
+      case 4: return true;
+      case 5: return trackingChoices.length > 0;

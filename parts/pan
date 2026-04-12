@@ -1,1 +1,166 @@
-// [Content from pan continues in actual file]
+  const searchByBarcode = async (barcode) => {
+    if (!barcode) return;
+    setBarcodeLoading(true);
+    setBarcodeError("");
+    setBarcodeResult(null);
+    try {
+      const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      const data = await res.json();
+      if (data.status === 1 && data.product) {
+        const p = data.product;
+        setBarcodeResult({
+          id: `barcode-${barcode}-${Date.now()}`,
+          name: p.brands ? `${p.product_name || "מוצר"} (${p.brands})` : (p.product_name || "מוצר"),
+          serving: p.serving_size || "100 גרם",
+          calories: Math.round(p.nutriments?.["energy-kcal_100g"] || p.nutriments?.["energy-kcal"] || 0),
+          protein: Math.round((p.nutriments?.proteins_100g || 0) * 10) / 10,
+          carbs: Math.round((p.nutriments?.carbohydrates_100g || 0) * 10) / 10,
+          fat: Math.round((p.nutriments?.fat_100g || 0) * 10) / 10,
+          category: "ברקוד",
+          source: "openfoodfacts",
+          barcode,
+          image: p.image_small_url,
+        });
+      } else {
+        setBarcodeError("המוצר לא נמצא במאגר. נסה/י ברקוד אחר או הזנה ידנית.");
+      }
+    } catch (e) {
+      setBarcodeError("שגיאה בחיבור. בדוק/י את חיבור האינטרנט.");
+    }
+    setBarcodeLoading(false);
+  };
+
+  const addManualFood = () => {
+    if (!manualFood.name || !manualFood.calories) return;
+    const food = {
+      id: `manual-${Date.now()}`,
+      name: manualFood.name,
+      serving: manualFood.serving || "1 מנה",
+      calories: parseInt(manualFood.calories) || 0,
+      protein: parseFloat(manualFood.protein) || 0,
+      carbs: parseFloat(manualFood.carbs) || 0,
+      fat: parseFloat(manualFood.fat) || 0,
+      category: "הזנה ידנית",
+    };
+    addFood(food);
+    setManualFood({ name: "", serving: "", calories: "", protein: "", carbs: "", fat: "" });
+  };
+
+  const saveToMyFoods = (food) => {
+    const exists = myFoods.some(f => f.name === food.name);
+    if (!exists) {
+      setMyFoods(prev => [{ ...food, id: `my-${Date.now()}`, savedAt: Date.now() }, ...prev]);
+    }
+  };
+
+  const removeFromMyFoods = (id) => {
+    setMyFoods(prev => prev.filter(f => f.id !== id));
+  };
+
+  const isInMyFoods = (foodName) => myFoods.some(f => f.name === foodName);
+
+  const toggleFeeling = (id) => {
+    setEveningFeelings(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+  };
+
+  const toggleSupplement = (name) => {
+    setTodaySupplements(prev => {
+      if (prev.includes(name)) {
+        setSupplementLog(log => log.filter(l => l.name !== name));
+        return prev.filter(s => s !== name);
+      } else {
+        const now = new Date();
+        setSupplementLog(log => [...log, {
+          id: Date.now(),
+          name,
+          time: now.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }),
+          timestamp: now.getTime()
+        }]);
+        return [...prev, name];
+      }
+    });
+  };
+
+  // ==================== RENDER SECTIONS ====================
+
+  // --- HOME ---
+  const renderHome = () => (
+    <div>
+      {/* Welcome */}
+      {userProfile && (
+        <div style={{ marginBottom: 12, textAlign: "right" }}>
+          <button onClick={() => setShowProfileMenu(true)} style={{
+            background: "none", border: "none", padding: 0, cursor: "pointer",
+            fontSize: 15, color: "#64748b", fontWeight: 500,
+            display: "inline-flex", alignItems: "center", gap: 6,
+          }}>
+            שלום {userProfile.name}! 👋
+            <ChevronDown size={14} />
+          </button>
+        </div>
+      )}
+
+      {showProfileMenu && (
+        <div onClick={() => setShowProfileMenu(false)} style={{
+          position: "fixed", inset: 0, background: "rgba(15,23,42,0.55)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 1000, padding: 20,
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: "#fff", borderRadius: 20, padding: 24, width: "100%",
+            maxWidth: 360, boxShadow: "0 20px 50px rgba(0,0,0,0.3)", textAlign: "right",
+          }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>
+              שלום {userProfile.name}
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20 }}>
+              ניהול הפרופיל שלך
+            </div>
+            <button onClick={() => { setShowProfileMenu(false); setOnboardingDone(false); }} style={{
+              width: "100%", padding: "14px 16px", borderRadius: 14, border: "none",
+              background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff",
+              fontSize: 15, fontWeight: 700, cursor: "pointer", marginBottom: 10,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            }}>
+              <Edit3 size={16} />
+              עדכון/הזנת פרטים אישיים
+            </button>
+            <button onClick={() => {
+              if (window.confirm("להתנתק ולמחוק את כל הנתונים מהמכשיר? פעולה זו לא ניתנת לשחזור.")) {
+                try {
+                  localStorage.clear();
+                  sessionStorage.clear();
+                } catch (e) {}
+                window.location.reload();
+              }
+            }} style={{
+              width: "100%", padding: "12px 16px", borderRadius: 14, border: "2px solid #fecaca",
+              background: "#fff", color: "#dc2626",
+              fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 10,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            }}>
+              <Trash2 size={16} />
+              התנתקות ומחיקת כל הנתונים
+            </button>
+            <button onClick={() => setShowProfileMenu(false)} style={{
+              width: "100%", padding: "10px 16px", borderRadius: 14, border: "none",
+              background: "#f1f5f9", color: "#475569",
+              fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}>
+              ביטול
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Rest of renderHome... */}
+    </div>
+  );
+
+  return (
+    <div style={{ direction: "rtl", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", maxWidth: 480, margin: "0 auto", background: "#f8fafc", minHeight: "100vh", position: "relative" }}>
+      {/* Content stub */}
+      <div>App content here</div>
+    </div>
+  );
+}

@@ -1,1 +1,51 @@
-// [Content from pae continues in actual file]
+        {/* Step 0: Personal Info */}
+        {step === 0 && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              👋 שלום! ספר/י לנו קצת עליך
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              המידע הזה יעזור לנו להתאים לך את החוויה
+            </div>
+
+            <div style={cardStyle}>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>שם *</label>
+                <input type="text" placeholder="איך קוראים לך?" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>גיל</label>
+                  <input type="number" placeholder="גיל" value={age} onChange={e => setAge(e.target.value)} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>מין</label>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {[{ id: "female", label: "נקבה" }, { id: "male", label: "זכר" }].map(g => (
+                      <button key={g.id} onClick={() => setGender(g.id)}
+                        style={{
+                          flex: 1, padding: "10px 4px", borderRadius: 10, border: "2px solid",
+                          borderColor: gender === g.id ? "#6366f1" : "#e2e8f0",
+                          background: gender === g.id ? "#eef2ff" : "#fff",
+                          color: gender === g.id ? "#6366f1" : "#64748b",
+                          cursor: "pointer", fontSize: 13, fontWeight: 600
+                        }}>{g.label}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>גובה (ס״מ)</label>
+                  <input type="number" placeholder="170" value={height} onChange={e => setHeight(e.target.value)} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>משקל נוכחי (ק״ג)</label>
+                  <input type="number" placeholder="68" value={currentWeight} onChange={e => setCurrentWeight(e.target.value)} style={inputStyle} />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}

@@ -1,1 +1,58 @@
-// [Content from pah continues in actual file]
+        {/* Step 3: Health Conditions */}
+        {step === 3 && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>
+              🏥 מצב בריאותי
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20, textAlign: "right" }}>
+              יש לך מחלות, מיחושים או כאבים כרוניים? (ניתן לבחור כמה)
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16, justifyContent: "flex-end" }}>
+              {HEALTH_CONDITIONS.map(c => {
+                const isSelected = conditions.includes(c.id);
+                return (
+                  <button key={c.id} onClick={() => toggleCondition(c.id)}
+                    style={{
+                      padding: "10px 14px", borderRadius: 20, border: "2px solid",
+                      borderColor: isSelected ? "#6366f1" : "#e2e8f0",
+                      background: isSelected ? "#eef2ff" : "#fff",
+                      color: isSelected ? "#6366f1" : "#64748b",
+                      cursor: "pointer", fontSize: 13, fontWeight: 500,
+                      display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s"
+                    }}>
+                    <span>{c.label}</span>
+                    <span>{c.icon}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {!conditions.includes("none") && conditions.length > 0 && (
+              <div style={cardStyle}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                  פרטים נוספים על המצב הבריאותי (אופציונלי)
+                </label>
+                <textarea placeholder="למשל: יש לי מיגרנות פעם בשבוע, כאבי גב תחתון כרוניים..."
+                  value={conditionNotes} onChange={e => setConditionNotes(e.target.value)}
+                  rows={3} style={{ ...inputStyle, resize: "vertical" }} />
+              </div>
+            )}
+
+            <div style={cardStyle}>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                אלרגיות ורגישויות למזון (אופציונלי)
+              </label>
+              <input type="text" placeholder="למשל: בוטנים, סויה, גלוטן..."
+                value={allergies} onChange={e => setAllergies(e.target.value)} style={inputStyle} />
+            </div>
+
+            <div style={cardStyle}>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                כאבים או מיחושים שחוזרים (אופציונלי)
+              </label>
+              <input type="text" placeholder="למשל: כאבי בטן, פריחה, כאב ראש..."
+                value={painAreas} onChange={e => setPainAreas(e.target.value)} style={inputStyle} />
+            </div>
+          </div>
+        )}

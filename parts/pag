@@ -1,1 +1,54 @@
-// [Content from pag continues in actual file]
+            {goalTypes.length > 0 && (
+              <div style={{ background: "#f0fdf4", borderRadius: 12, padding: 12, marginBottom: 16, textAlign: "right" }}>
+                <span style={{ fontSize: 13, color: "#166534", fontWeight: 600 }}>\u05e0\u05d1\u05d7\u05e8\u05d5 {goalTypes.length} \u05de\u05d8\u05e8\u05d5\u05ea: </span>
+                <span style={{ fontSize: 13, color: "#166534" }}>{goalTypes.map(g => DIET_GOALS.find(d => d.id === g)?.label).join(", ")}</span>
+              </div>
+            )}
+
+            {(goalTypes.includes("weight_loss") || goalTypes.includes("weight_gain")) && (
+              <div style={cardStyle}>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                    \u05de\u05e9\u05e7\u05dc \u05d9\u05e2\u05d3 (\u05e7\u05f4\u05d2)
+                  </label>
+                  <input type="number" placeholder="\u05dc\u05de\u05e9\u05dc: 65" value={weightGoalValue} onChange={e => setWeightGoalValue(e.target.value)} style={inputStyle} />
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                    \ud83d\udd25 \u05d9\u05e2\u05d3 \u05e7\u05dc\u05d5\u05e8\u05d9\u05d5\u05ea \u05d9\u05d5\u05de\u05d9
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>\u05e7\u05e7\u05f4\u05dc</span>
+                    <input type="number" min="1000" max="5000" value={calorieGoalValue === 0 ? "" : calorieGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setCalorieGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setCalorieGoalValue(Math.min(5000, Math.max(0, v))); }}
+                      onBlur={e => { const v = parseInt(e.target.value) || 1800; setCalorieGoalValue(Math.min(5000, Math.max(1000, v))); }}
+                      style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#6366f1", boxSizing: "border-box" }} />
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>\u05d1\u05d9\u05df 1,000 \u05dc-5,000 \u05e7\u05e7\u05f4\u05dc</div>
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                    \ud83e\udd69 \u05d9\u05e2\u05d3 \u05d7\u05dc\u05d1\u05d5\u05df \u05d9\u05d5\u05de\u05d9 (\u05d2\u05e8\u05dd)
+                  </label>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>\u05d2\u05e8\u05dd</span>
+                    <input type="number" min="0" max="700" value={proteinGoalValue === 0 ? "" : proteinGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setProteinGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
+                      onBlur={e => { const v = parseInt(e.target.value) || 80; setProteinGoalValue(Math.min(700, Math.max(0, v))); }}
+                      style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#f59e0b", boxSizing: "border-box" }} />
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>\u05d1\u05d9\u05df 0 \u05dc-700 \u05d2\u05e8\u05dd</div>
+                </div>
+              </div>
+            )}
+
+            {trackingChoices.includes("steps") && (
+              <div style={cardStyle}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                  \ud83d\udc5f \u05d9\u05e2\u05d3 \u05e6\u05e2\u05d3\u05d9\u05dd \u05d9\u05d5\u05de\u05d9
+                </label>
+                <input type="number" min="1000" max="50000" placeholder="\u05dc\u05de\u05e9\u05dc: 8000" value={stepsGoalValue === 0 ? "" : stepsGoalValue} onChange={e => { const s = e.target.value; if (s === "") { setStepsGoalValue(""); return; } const v = parseInt(s); if (!isNaN(v)) setStepsGoalValue(Math.min(50000, Math.max(1000, v))); }}
+                  style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 18, fontWeight: 700, textAlign: "center", color: "#22c55e", boxSizing: "border-box" }} />
+                <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>\u05d1\u05d9\u05df 1,000 \u05dc-50,000 \u05e6\u05e2\u05d3\u05d9\u05dd</div>
+              </div>
+            )}
+          </div>
+        )}

@@ -1,1 +1,88 @@
-// [Content from pal continues in actual file]
+  // ===== Persistence (localStorage) =====
+  const PERSIST_KEY = "wellness-app-v1";
+  const [_loaded, _setLoaded] = useState(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(PERSIST_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.onboardingDone !== undefined) setOnboardingDone(d.onboardingDone);
+        if (d.userProfile) setUserProfile(d.userProfile);
+        if (d.todayFoods) setTodayFoods(d.todayFoods);
+        if (d.recentFoods) setRecentFoods(d.recentFoods);
+        if (d.myFoods) setMyFoods(d.myFoods);
+        if (d.waterCups !== undefined) setWaterCups(d.waterCups);
+        if (d.homeModules) setHomeModules(d.homeModules);
+        if (d.todayExercise !== undefined) setTodayExercise(d.todayExercise);
+        if (d.todaySteps !== undefined) setTodaySteps(d.todaySteps);
+        if (d.todaySupplements) setTodaySupplements(d.todaySupplements);
+        if (d.supplementLog) setSupplementLog(d.supplementLog);
+        if (d.selectedGoals) setSelectedGoals(d.selectedGoals);
+        if (d.calorieGoal !== undefined) setCalorieGoal(d.calorieGoal);
+        if (d.proteinGoal !== undefined) setProteinGoal(d.proteinGoal);
+        if (d.weightGoal !== undefined) setWeightGoal(d.weightGoal);
+        if (d.stepsGoal !== undefined) setStepsGoal(d.stepsGoal);
+        if (d.weightHistory) setWeightHistory(d.weightHistory);
+        if (d.dietProject !== undefined) setDietProject(d.dietProject);
+        if (d.symptoms) setSymptoms(d.symptoms);
+        if (d.healthReports) setHealthReports(d.healthReports);
+        if (d.periodLog) setPeriodLog(d.periodLog);
+        if (d.periodDayLogs) setPeriodDayLogs(d.periodDayLogs);
+        if (d.morningDone !== undefined) setMorningDone(d.morningDone);
+        if (d.eveningDone !== undefined) setEveningDone(d.eveningDone);
+      }
+    } catch (e) { console.error("load failed", e); }
+    // Load MFP food diary from separate key
+    try {
+      const mfpRaw = localStorage.getItem("mfp-food-diary");
+      if (mfpRaw) setMfpFoodDiary(JSON.parse(mfpRaw));
+    } catch (e) { console.error("mfp diary load failed", e); }
+    _setLoaded(true);
+  }, []);
+  useEffect(() => {
+    if (!_loaded) return;
+    try {
+      localStorage.setItem(PERSIST_KEY, JSON.stringify({
+        onboardingDone, userProfile, todayFoods, recentFoods, myFoods,
+        waterCups, homeModules, todayExercise, todaySteps,
+        todaySupplements, supplementLog, selectedGoals,
+        calorieGoal, proteinGoal, weightGoal, stepsGoal, weightHistory, dietProject,
+        symptoms, healthReports, periodLog, periodDayLogs,
+        morningDone, eveningDone,
+      }));
+    } catch (e) {}
+  }, [_loaded, onboardingDone, userProfile, todayFoods, recentFoods, myFoods, waterCups, homeModules, todayExercise, todaySteps, todaySupplements, supplementLog, selectedGoals, calorieGoal, proteinGoal, weightGoal, stepsGoal, weightHistory, dietProject, symptoms, healthReports, periodLog, periodDayLogs, morningDone, eveningDone]);
+
+  // Computed
+  const todayTotals = useMemo(() => {
+    return todayFoods.reduce((acc, entry) => ({
+      calories: acc.calories + Math.round(entry.food.calories * entry.servings),
+      protein: acc.protein + Math.round(entry.food.protein * entry.servings),
+      carbs: acc.carbs + Math.round(entry.food.carbs * entry.servings),
+      fat: acc.fat + Math.round(entry.food.fat * entry.servings),
+    }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+  }, [todayFoods]);
+
+  const filteredFoods = useMemo(() => {
+    let foods = FOOD_DATABASE;
+    if (foodCategoryFilter !== "all") {
+      foods = foods.filter(f => f.category === foodCategoryFilter);
+    }
+    if (foodSearch) {
+      foods = foods.filter(f => f.name.includes(foodSearch) || f.category.includes(foodSearch));
+    }
+    return foods;
+  }, [foodSearch, foodCategoryFilter]);
+
+  const popularFoods = useMemo(() => FOOD_DATABASE.filter(f => f.popular), []);
+  const recentFoodItems = useMemo(() => recentFoods.map(id => FOOD_DATABASE.find(f => f.id === id)).filter(Boolean), [recentFoods]);
+
+  const handleOnboardingComplete = (profile) => {
+    setUserProfile(profile);
+    setOnboardingDone(true);
+    if (profile.goalTypes?.length > 0) setSelectedGoals(profile.goalTypes);
+    if (profile.calorieGoal) setCalorieGoal(profile.calorieGoal);
+    if (profile.proteinGoal) setProteinGoal(profile.proteinGoal);
+    if (profile.weightGoal) setWeightGoal(profile.weightGoal);
+    if (profile.stepsGoal) setStepsGoal(profile.stepsGoal);
+  };
