@@ -318,6 +318,42 @@ source = source.replace(
         })()}`
 );
 
+// Patch 10: Add weight stats card (highest, lowest, most frequent) before weighings list
+const WEIGHT_STATS_SECTION = `
+        {/* Weight Stats for Period */}
+        {filtered.length > 0 && (() => {
+          const wCounts = {};
+          filtered.forEach(e => { wCounts[e.weight] = (wCounts[e.weight] || 0) + 1; });
+          const mostFreq = Object.entries(wCounts).sort((a, b) => b[1] - a[1])[0];
+          const mostFreqW = mostFreq ? parseFloat(mostFreq[0]) : 0;
+          const mostFreqCount = mostFreq ? mostFreq[1] : 0;
+          return (
+            <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+              <div style={{ flex: 1, background: "#fef2f2", borderRadius: 12, padding: 10, textAlign: "center" }}>
+                <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2 }}>{"\u05D4\u05DB\u05D9 \u05D2\u05D1\u05D5\u05D4"}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#ef4444" }}>{highestW}</div>
+                <div style={{ fontSize: 10, color: "#94a3b8" }}>{"\u05E7\\"\u05D2"}</div>
+              </div>
+              <div style={{ flex: 1, background: "#f0fdf4", borderRadius: 12, padding: 10, textAlign: "center" }}>
+                <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2 }}>{"\u05D4\u05DB\u05D9 \u05E0\u05DE\u05D5\u05DA"}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#22c55e" }}>{lowestW}</div>
+                <div style={{ fontSize: 10, color: "#94a3b8" }}>{"\u05E7\\"\u05D2"}</div>
+              </div>
+              <div style={{ flex: 1, background: "#f5f3ff", borderRadius: 12, padding: 10, textAlign: "center" }}>
+                <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2 }}>{"\u05D4\u05DB\u05D9 \u05E0\u05E4\u05D5\u05E5"}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#7c3aed" }}>{mostFreqW}</div>
+                <div style={{ fontSize: 10, color: "#94a3b8" }}>{mostFreqCount}x</div>
+              </div>
+            </div>
+          );
+        })()}
+`;
+
+source = source.replace(
+  '{/* All Weighings with search & period markers */',
+  WEIGHT_STATS_SECTION + '{/* All Weighings with search & period markers */'
+);
+
 fs.mkdirSync("src", { recursive: true });
 fs.writeFileSync("src/App.jsx", source);
 console.log("Wrote src/App.jsx (" + source.length + " bytes from " + chunks.length + " encoded chunks)");
