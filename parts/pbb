@@ -1,0 +1,55 @@
+            <button onClick={() => { setShowProfileMenu(false); setOnboardingDone(false); }} style={{
+              width: "100%", padding: "14px 16px", borderRadius: 14, border: "none",
+              background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff",
+              fontSize: 15, fontWeight: 700, cursor: "pointer", marginBottom: 10,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            }}>
+              <Edit3 size={16} />
+              עדכון/הזנת פרטים אישיים
+            </button>
+            <button onClick={() => {
+              if (window.confirm("להתנתק ולמחוק את כל הנתונים מהמכשיר? פעולה זו לא ניתנת לשחזור.")) {
+                try {
+                  localStorage.clear();
+                  sessionStorage.clear();
+                } catch (e) {}
+                window.location.reload();
+              }
+            }} style={{
+              width: "100%", padding: "12px 16px", borderRadius: 14, border: "2px solid #fecaca",
+              background: "#fff", color: "#dc2626",
+              fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 10,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            }}>
+              <Trash2 size={16} />
+              התנתקות ומחיקת כל הנתונים
+            </button>
+            <button onClick={() => setShowProfileMenu(false)} style={{
+              width: "100%", padding: "10px 16px", borderRadius: 14, border: "none",
+              background: "#f1f5f9", color: "#475569",
+              fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}>
+              ביטול
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* BIG ADD FOOD BUTTON - the main action */}
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => { setFoodModalTab("search"); setShowFoodSearch(true); }} style={{
+          width: "100%", padding: "18px 20px", borderRadius: 20, border: "none",
+          background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff",
+          fontSize: 17, fontWeight: 700, cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+          boxShadow: "0 8px 20px rgba(99,102,241,0.35)",
+          direction: "rtl",
+        }}>
+          <Plus size={24} strokeWidth={3} />
+          הוספת מזון
+        </button>
+        {/* Quick access to the 4 methods */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 6, marginTop: 8 }}>
+          <button onClick={() => { setFoodModalTab("search"); setShowFoodSearch(true); }} style={{
+            padding: "10px 4px", borderRadius: 12, border: "2px solid #e0e7ff", background: "#fff",
+            cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,

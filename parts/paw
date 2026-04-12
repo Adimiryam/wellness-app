@@ -1,0 +1,54 @@
+    _setLoaded(true);
+  }, []);
+  useEffect(() => {
+    if (!_loaded) return;
+    try {
+      localStorage.setItem(PERSIST_KEY, JSON.stringify({
+        onboardingDone, userProfile, todayFoods, recentFoods, myFoods,
+        waterCups, homeModules, todayExercise, todaySteps,
+        todaySupplements, supplementLog, selectedGoals,
+        calorieGoal, proteinGoal, weightGoal, stepsGoal, weightHistory, dietProject,
+        symptoms, healthReports, periodLog, periodDayLogs,
+        morningDone, eveningDone,
+      }));
+    } catch (e) {}
+  }, [_loaded, onboardingDone, userProfile, todayFoods, recentFoods, myFoods, waterCups, homeModules, todayExercise, todaySteps, todaySupplements, supplementLog, selectedGoals, calorieGoal, proteinGoal, weightGoal, stepsGoal, weightHistory, dietProject, symptoms, healthReports, periodLog, periodDayLogs, morningDone, eveningDone]);
+
+  // Computed
+  const todayTotals = useMemo(() => {
+    return todayFoods.reduce((acc, entry) => ({
+      calories: acc.calories + Math.round(entry.food.calories * entry.servings),
+      protein: acc.protein + Math.round(entry.food.protein * entry.servings),
+      carbs: acc.carbs + Math.round(entry.food.carbs * entry.servings),
+      fat: acc.fat + Math.round(entry.food.fat * entry.servings),
+    }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+  }, [todayFoods]);
+
+  const filteredFoods = useMemo(() => {
+    let foods = FOOD_DATABASE;
+    if (foodCategoryFilter !== "all") {
+      foods = foods.filter(f => f.category === foodCategoryFilter);
+    }
+    if (foodSearch) {
+      foods = foods.filter(f => f.name.includes(foodSearch) || f.category.includes(foodSearch));
+    }
+    return foods;
+  }, [foodSearch, foodCategoryFilter]);
+
+  const popularFoods = useMemo(() => FOOD_DATABASE.filter(f => f.popular), []);
+  const recentFoodItems = useMemo(() => recentFoods.map(id => FOOD_DATABASE.find(f => f.id === id)).filter(Boolean), [recentFoods]);
+
+  const handleOnboardingComplete = (profile) => {
+    setUserProfile(profile);
+    setOnboardingDone(true);
+    if (profile.goalTypes?.length > 0) setSelectedGoals(profile.goalTypes);
+    if (profile.calorieGoal) setCalorieGoal(profile.calorieGoal);
+    if (profile.proteinGoal) setProteinGoal(profile.proteinGoal);
+    if (profile.weightGoal) setWeightGoal(profile.weightGoal);
+    if (profile.stepsGoal) setStepsGoal(profile.stepsGoal);
+  };
+
+  // --- Show onboarding if not done ---
+  if (!onboardingDone) {
+    return <OnboardingScreen onComplete={handleOnboardingComplete} />;
+  }

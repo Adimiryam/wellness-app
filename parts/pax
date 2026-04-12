@@ -1,0 +1,55 @@
+  // --- Handlers ---
+  const addFood = (food, servings = 1) => {
+    const now = new Date();
+    setTodayFoods(prev => [...prev, {
+      id: Date.now(), food, servings,
+      time: now.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }),
+      timestamp: now.getTime()
+    }]);
+    // Add to recent
+    setRecentFoods(prev => {
+      const filtered = prev.filter(id => id !== food.id);
+      return [food.id, ...filtered].slice(0, 10);
+    });
+    setShowFoodSearch(false);
+    setFoodSearch("");
+    setFoodCategoryFilter("all");
+    setFoodModalTab("search");
+    setApiSearchResults([]);
+    setBarcodeResult(null);
+    setBarcodeInput("");
+    setBarcodeError("");
+  };
+
+  const removeFood = (id) => setTodayFoods(prev => prev.filter(m => m.id !== id));
+
+  const updateServings = (id, newServings) => {
+    if (newServings <= 0) return;
+    setTodayFoods(prev => prev.map(e => e.id === id ? { ...e, servings: newServings } : e));
+  };
+
+  const quickAddCalories = () => {
+    if (!quickAddCals || isNaN(quickAddCals)) return;
+    const cal = parseInt(quickAddCals);
+    setTodayFoods(prev => [...prev, {
+      id: Date.now(),
+      food: { id: 999, name: `הוספה מהירה (${cal} קק״ל)`, serving: "—", calories: cal, protein: 0, carbs: 0, fat: 0, category: "אחר" },
+      servings: 1,
+      time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })
+    }]);
+    setQuickAddCals("");
+    setShowFoodSearch(false);
+  };
+
+  // --- USDA FoodData Central API (primary) + Open Food Facts (secondary) ---
+  const USDA_API_KEY = "DEMO_KEY"; // Free USDA key — works for moderate usage
+
+  const searchFoodDatabase = async (query) => {
+    if (!query || query.length < 2) { setApiSearchResults([]); return; }
+    setApiSearchLoading(true);
+    let allResults = [];
+
+    // 1) USDA FoodData Central — accurate, science-backed nutrition data
+    try {
+      const usdaRes = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${USDA_API_KEY}&query=${encodeURIComponent(query)}&pageSize=15&dataType=Foundation,SR%20Legacy`);
+      const usdaData = await usdaRes.json();

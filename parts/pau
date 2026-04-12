@@ -1,0 +1,55 @@
+    exercise: true,
+    sleep: true,
+    mood: true,
+    steps: true,
+  });
+
+  // Exercise
+  const [todayExercise, setTodayExercise] = useState(null);
+  const [todaySteps, setTodaySteps] = useState("");
+
+  // Supplements
+  const [todaySupplements, setTodaySupplements] = useState([]);
+  const [supplementLog, setSupplementLog] = useState([]); // timestamped entries
+  const [showSupplementPicker, setShowSupplementPicker] = useState(false);
+  const [supplementSearch, setSupplementSearch] = useState("");
+  const [customSupplementInput, setCustomSupplementInput] = useState("");
+
+  // Goals
+  const [selectedGoals, setSelectedGoals] = useState([]);
+  const [calorieGoal, setCalorieGoal] = useState(1800);
+  const [proteinGoal, setProteinGoal] = useState(80);
+  const [weightGoal, setWeightGoal] = useState("");
+  const [stepsGoal, setStepsGoal] = useState(8000);
+
+  // Weight tracking
+  const [weightHistory, setWeightHistory] = useState(() => {
+    // Generate 90 days of sample weight history
+    const hist = [];
+    const today = new Date();
+    for (let i = 90; i >= 0; i--) {
+      const d = new Date(today); d.setDate(d.getDate() - i);
+      hist.push({ date: d.toISOString().split("T")[0], weight: parseFloat((72 - (i * 0.04) + (Math.random() * 0.6 - 0.3)).toFixed(1)) });
+    }
+    return hist;
+  });
+  const [weightTimePeriod, setWeightTimePeriod] = useState("month");
+  const [newWeightValue, setNewWeightValue] = useState("");
+  const [newWeightDate, setNewWeightDate] = useState(new Date().toISOString().split("T")[0]);
+  const [showAddWeightForm, setShowAddWeightForm] = useState(false);
+  const [dietProject, setDietProject] = useState(null);
+  const [showDietProjectForm, setShowDietProjectForm] = useState(false);
+  const [dietProjectName, setDietProjectName] = useState("");
+  const [dietProjectTarget, setDietProjectTarget] = useState("");
+  const [dietProjectDeadline, setDietProjectDeadline] = useState("");
+
+  // Health symptoms
+  const [symptoms, setSymptoms] = useState([]);
+  const [newSymptom, setNewSymptom] = useState("");
+  const [showSymptomPicker, setShowSymptomPicker] = useState(false);
+  const [homeSymptomSearch, setHomeSymptomSearch] = useState("");
+
+  // Free-style health reports (with time, severity, description)
+  const [healthReports, setHealthReports] = useState([]);
+  const [newReportTypes, setNewReportTypes] = useState([]);
+  const [newReportSeverity, setNewReportSeverity] = useState(3);
