@@ -1,0 +1,55 @@
+            <p>⚖️ עוד שבוע המשקל הצפוי: <strong>{((latestData?.weight ?? weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : userProfile?.currentWeight ?? 0) - 0.4).toFixed(1)} ק״ג</strong></p>
+            <p>⚖️ עוד חודש: <strong>{((latestData?.weight ?? weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : userProfile?.currentWeight ?? 0) - 1.6).toFixed(1)} ק״ג</strong></p>
+            {weightGoal && <p>🎯 תגיע/י ליעד {weightGoal} ק״ג בעוד כ-{Math.ceil(((latestData?.weight ?? weightHistory.length > 0 ? weightHistory[weightHistory.length - 1].weight : userProfile?.currentWeight ?? 0) - parseFloat(weightGoal)) / 0.4)} שבועות</p>}
+          </div>
+        </div>
+
+        {/* Health pattern insights */}
+        <div style={{ background: "linear-gradient(135deg, #fce7f3, #fdf2f8)", borderRadius: 16, padding: 20, marginBottom: 16 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#9d174d", marginBottom: 12, textAlign: "right" }}>
+            🩺 תובנות בריאותיות מדיווחים
+          </div>
+
+          {[
+            { icon: "🤕", title: "כאב ראש", insight: "ב-92% מהפעמים שדיווחת על כאב ראש, אכלת מוצרי חלב עד שעתיים לפני. ב-89% מהמקרים לא לקחת ברזל ביומיים שלפני.", rec: "נסה/י להימנע מחלב ולקחת ברזל באופן קבוע.", bg: "#fff0f6" },
+            { icon: "🫧", title: "נפיחות", insight: "ב-78% מהדיווחים על נפיחות, אכלת לחם/פסטה באותו יום. ב-65% מהם גם ישנת פחות מ-7 שעות.", rec: "שים/י לב לצריכת גלוטן ולשינה.", bg: "#fef0f5" },
+            { icon: "😴", title: "עייפות", insight: "בימים שלא לקחת ברזל + ישנת פחות מ-7 שעות, דירגת עייפות 4+ ב-95% מהמקרים. בימים עם ברזל + 7+ שעות שינה, הדירוג ירד ל-2 בממוצע.", rec: "ברזל + שינה = הקומבו שלך!", bg: "#fff5f0" },
+            { icon: "🔴", title: "פריחה", insight: "85% מדיווחי הפריחה היו תוך 24 שעות מאכילת צנון. בימים בלי צנון — פריחה ב-12% בלבד.", rec: "יש לך כנראה רגישות לצנון. שווה לבדוק עם אלרגולוג/ית.", bg: "#f0f5ff" },
+          ].map((item, i) => (
+            <div key={i} style={{ background: item.bg, borderRadius: 12, padding: 14, marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", marginBottom: 6 }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>{item.title}</span>
+                <span style={{ fontSize: 18 }}>{item.icon}</span>
+              </div>
+              <div style={{ fontSize: 12, color: "#475569", textAlign: "right", lineHeight: 1.7, marginBottom: 6 }}>{item.insight}</div>
+              <div style={{ fontSize: 12, color: "#6366f1", fontWeight: 600, textAlign: "right" }}>💡 {item.rec}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // ==================== FOOD DIARY (MFP HISTORY) ====================
+  const renderFoodDiary = () => {
+    const MEAL_NAMES = { B: "ארוחת בוקר", L: "ארוחת צהריים", D: "ארוחת ערב", S: "חטיפים" };
+    const MEAL_ICONS = { B: "🌅", L: "☀️", D: "🌙", S: "🍿" };
+    const MEAL_COLORS = { B: "#f59e0b", L: "#22c55e", D: "#6366f1", S: "#ec4899" };
+
+    // Parse a food entry "name|calories|carbs|fat|protein"
+    const parseFood = (str) => {
+      const parts = str.split("|");
+      return {
+        name: parts[0] || "",
+        calories: parseInt(parts[1]) || 0,
+        carbs: parseInt(parts[2]) || 0,
+        fat: parseInt(parts[3]) || 0,
+        protein: parseInt(parts[4]) || 0,
+      };
+    };
+
+    // Get totals for a day entry
+    const getDayTotals = (entry) => {
+      const totals = { calories: 0, carbs: 0, fat: 0, protein: 0 };
+      const meals = {};
+      for (const key of ["B", "L", "D", "S"]) {

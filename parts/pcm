@@ -1,0 +1,55 @@
+          {filtered.length > 1 ? (
+            <svg width={graphW} height={graphH} viewBox={"0 0 " + graphW + " " + graphH} style={{ width: "100%", height: "auto" }}>
+              <defs>
+                <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#6366f1" stopOpacity="0.02" />
+                </linearGradient>
+              </defs>
+              {/* Grid lines */}
+              {[0, 0.25, 0.5, 0.75, 1].map((frac, i) => {
+                const yPos = padT + innerH * (1 - frac);
+                const val = (minW + wRange * frac).toFixed(1);
+                return (
+                  <g key={i}>
+                    <line x1={padL} y1={yPos} x2={graphW - padR} y2={yPos} stroke="#e5e7eb" strokeWidth="1" />
+                    <text x={padL - 4} y={yPos + 4} textAnchor="end" fontSize="9" fill="#94a3b8">{val}</text>
+                  </g>
+                );
+              })}
+              {/* Area fill */}
+              <polygon points={padL + "," + (padT + innerH) + " " + polyline + " " + (padL + innerW) + "," + (padT + innerH)} fill="url(#weightGrad)" />
+              {/* Line */}
+              <polyline points={polyline} fill="none" stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              {/* Diet project target line */}
+              {dietProject && dietProject.targetWeight >= minW && dietProject.targetWeight <= maxW && (
+                <line x1={padL} y1={padT + innerH - ((dietProject.targetWeight - minW) / wRange) * innerH}
+                  x2={graphW - padR} y2={padT + innerH - ((dietProject.targetWeight - minW) / wRange) * innerH}
+                  stroke="#ef4444" strokeWidth="1.5" strokeDasharray="6,4" />
+              )}
+              {/* Data points */}
+              {points.map((p, i) => (
+                <circle key={i} cx={p.x} cy={p.y} r="3" fill="#6366f1" stroke="#fff" strokeWidth="1.5" />
+              ))}
+              {/* X-axis labels */}
+              {points.filter((_, i) => {
+                const step = Math.max(1, Math.floor(points.length / 5));
+                return i === 0 || i === points.length - 1 || i % step === 0;
+              }).map((p, i) => (
+                <text key={i} x={p.x} y={graphH - 4} textAnchor="middle" fontSize="8" fill="#94a3b8">
+                  {p.date.slice(5)}
+                </text>
+              ))}
+            </svg>
+          ) : (
+            <div style={{ textAlign: "center", padding: 30, color: "#94a3b8", fontSize: 13 }}>
+              אין מספיק נתונים לתקופה זו
+            </div>
+          )}
+        </div>
+
+        {/* Weight Statistics Cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
+          <div style={{ background: totalChange <= 0 ? "#f0fdf4" : "#fef2f2", borderRadius: 12, padding: 12, textAlign: "center" }}>
+            <div style={{ fontSize: 11, color: "#64748b" }}>שינוי בתקופה</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: totalChange <= 0 ? "#16a34a" : "#dc2626" }}>

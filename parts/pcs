@@ -1,0 +1,55 @@
+                </div>
+              ) : (
+                <div style={{ fontSize: 12, color: "#94a3b8", textAlign: "right", padding: 10 }}>
+                  עדיין אין מספיק נתונים לזיהוי דפוסי PMS חוזרים. המשיכי להזין תסמינים ותאריכי מחזור.
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* LIVE CORRELATION ANALYSIS - based on actual timestamped data */}
+        {symptoms.length > 0 && (todayFoods.length > 0 || supplementLog.length > 0) && (() => {
+          const WINDOW_MS = 3 * 60 * 60 * 1000; // 3 hours before symptom
+          const correlations = [];
+          symptoms.forEach(sym => {
+            if (!sym.timestamp) return;
+            const precedingFoods = todayFoods.filter(f => f.timestamp && sym.timestamp - f.timestamp > 0 && sym.timestamp - f.timestamp <= WINDOW_MS);
+            const precedingSupps = supplementLog.filter(s => s.timestamp && sym.timestamp - s.timestamp > 0 && sym.timestamp - s.timestamp <= WINDOW_MS);
+            if (precedingFoods.length > 0 || precedingSupps.length > 0) {
+              correlations.push({ sym, precedingFoods, precedingSupps });
+            }
+          });
+          if (correlations.length === 0) return null;
+          return (
+            <div style={{ background: "#fff", borderRadius: 16, padding: 16, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "2px solid #fbbf2433" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", marginBottom: 10, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
+                <span>קורלציות מהיום</span>
+                <span>⏱️</span>
+              </div>
+              <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "right", marginBottom: 10 }}>מה צרכת עד 3 שעות לפני כל מיחוש</div>
+              {correlations.map((c, i) => (
+                <div key={i} style={{ background: "#fffbeb", borderRadius: 10, padding: 10, marginBottom: 8 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#92400e", textAlign: "right", marginBottom: 6 }}>
+                    {c.sym.icon} {c.sym.text} <span style={{ fontSize: 11, color: "#d97706" }}>ב-{c.sym.time}</span>
+                  </div>
+                  {c.precedingFoods.length > 0 && (
+                    <div style={{ fontSize: 11, color: "#78350f", textAlign: "right", marginBottom: 4 }}>
+                      🍽️ {c.precedingFoods.map(f => {
+                        const mins = Math.round((c.sym.timestamp - f.timestamp) / 60000);
+                        const timeAgo = mins >= 60 ? Math.floor(mins / 60) + "ש' " + (mins % 60) + "ד'" : mins + " דקות";
+                        return f.food.name + " (" + timeAgo + " לפני)";
+                      }).join(" • ")}
+                    </div>
+                  )}
+                  {c.precedingSupps.length > 0 && (
+                    <div style={{ fontSize: 11, color: "#78350f", textAlign: "right" }}>
+                      💊 {c.precedingSupps.map(s => {
+                        const mins = Math.round((c.sym.timestamp - s.timestamp) / 60000);
+                        const timeAgo = mins >= 60 ? Math.floor(mins / 60) + "ש' " + (mins % 60) + "ד'" : mins + " דקות";
+                        return s.name + " (" + timeAgo + " לפני)";
+                      }).join(" • ")}
+                    </div>
+                  )}
+                </div>
+              ))}

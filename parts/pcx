@@ -1,0 +1,55 @@
+      const carbCal = carbs * 4, fatCal = fat * 9, protCal = protein * 4;
+      const total = carbCal + fatCal + protCal || 1;
+      const slices = [
+        { pct: carbCal / total, color: "#3b82f6", label: "פחמימות" },
+        { pct: fatCal / total, color: "#f59e0b", label: "שומן" },
+        { pct: protCal / total, color: "#ef4444", label: "חלבון" },
+      ];
+      let cumAngle = 0;
+      const r = 50, cx = 60, cy = 60;
+      const paths = slices.map((s, i) => {
+        const startAngle = cumAngle;
+        const angle = s.pct * 360;
+        cumAngle += angle;
+        const endAngle = startAngle + angle;
+        const sr = (startAngle * Math.PI) / 180;
+        const er = (endAngle * Math.PI) / 180;
+        const x1 = cx + r * Math.cos(sr), y1 = cy + r * Math.sin(sr);
+        const x2 = cx + r * Math.cos(er), y2 = cy + r * Math.sin(er);
+        const large = angle > 180 ? 1 : 0;
+        return <path key={i} d={`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`} fill={s.color} opacity="0.85" />;
+      });
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center" }}>
+          <svg width="120" height="120" viewBox="0 0 120 120">{paths}</svg>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {slices.map((s, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
+                <div style={{ width: 10, height: 10, borderRadius: 2, background: s.color }} />
+                <span style={{ color: "#475569" }}>{s.label} {Math.round(s.pct * 100)}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+          <BookOpen size={20} style={{ verticalAlign: "middle", marginLeft: 6 }} />
+          יומן מזון
+        </div>
+
+        {/* View Mode Toggle */}
+        <div style={{ display: "flex", gap: 6, marginBottom: 14, justifyContent: "center" }}>
+          {[{ id: "day", label: "תצוגה יומית" }, { id: "trends", label: "מגמות" }].map(v => (
+            <button key={v.id} onClick={() => setDiaryViewMode(v.id)} style={{
+              padding: "8px 20px", borderRadius: 20, border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer",
+              background: diaryViewMode === v.id ? "#6366f1" : "#f1f5f9",
+              color: diaryViewMode === v.id ? "#fff" : "#64748b",
+            }}>{v.label}</button>
+          ))}
+        </div>
+
+        {diaryViewMode === "day" ? (

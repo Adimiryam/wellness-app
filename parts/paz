@@ -1,0 +1,55 @@
+      if (data.status === 1 && data.product) {
+        const p = data.product;
+        setBarcodeResult({
+          id: `barcode-${barcode}-${Date.now()}`,
+          name: p.brands ? `${p.product_name || "מוצר"} (${p.brands})` : (p.product_name || "מוצר"),
+          serving: p.serving_size || "100 גרם",
+          calories: Math.round(p.nutriments?.["energy-kcal_100g"] || p.nutriments?.["energy-kcal"] || 0),
+          protein: Math.round((p.nutriments?.proteins_100g || 0) * 10) / 10,
+          carbs: Math.round((p.nutriments?.carbohydrates_100g || 0) * 10) / 10,
+          fat: Math.round((p.nutriments?.fat_100g || 0) * 10) / 10,
+          category: "ברקוד",
+          source: "openfoodfacts",
+          barcode,
+          image: p.image_small_url,
+        });
+      } else {
+        setBarcodeError("המוצר לא נמצא במאגר. נסה/י ברקוד אחר או הזנה ידנית.");
+      }
+    } catch (e) {
+      setBarcodeError("שגיאה בחיבור. בדוק/י את חיבור האינטרנט.");
+    }
+    setBarcodeLoading(false);
+  };
+
+  const addManualFood = () => {
+    if (!manualFood.name || !manualFood.calories) return;
+    const food = {
+      id: `manual-${Date.now()}`,
+      name: manualFood.name,
+      serving: manualFood.serving || "1 מנה",
+      calories: parseInt(manualFood.calories) || 0,
+      protein: parseFloat(manualFood.protein) || 0,
+      carbs: parseFloat(manualFood.carbs) || 0,
+      fat: parseFloat(manualFood.fat) || 0,
+      category: "הזנה ידנית",
+    };
+    addFood(food);
+    setManualFood({ name: "", serving: "", calories: "", protein: "", carbs: "", fat: "" });
+  };
+
+  const saveToMyFoods = (food) => {
+    const exists = myFoods.some(f => f.name === food.name);
+    if (!exists) {
+      setMyFoods(prev => [{ ...food, id: `my-${Date.now()}`, savedAt: Date.now() }, ...prev]);
+    }
+  };
+
+  const removeFromMyFoods = (id) => {
+    setMyFoods(prev => prev.filter(f => f.id !== id));
+  };
+
+  const isInMyFoods = (foodName) => myFoods.some(f => f.name === foodName);
+
+  const toggleFeeling = (id) => {
+    setEveningFeelings(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);

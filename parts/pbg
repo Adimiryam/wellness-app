@@ -1,0 +1,55 @@
+            </div>
+          </div>
+        )}
+
+        {todayFoods.length === 0 && (
+          <div style={{ textAlign: "center", padding: 20, color: "#94a3b8" }}>
+            <UtensilsCrossed size={28} style={{ marginBottom: 6, opacity: 0.4 }} />
+            <div style={{ fontSize: 13 }}>עוד לא הזנת מאכלים היום</div>
+            <div style={{ fontSize: 11 }}>לחצ/י למעלה כדי להוסיף</div>
+          </div>
+        )}
+      </div>
+      )}
+
+      {/* Supplements */}
+      {homeModules.supplements && (
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+          <span>ויטמינים ותוספים</span>
+          <Pill size={20} color="#f59e0b" />
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "flex-end" }}>
+          {(userProfile?.currentSupplements?.length > 0 ? userProfile.currentSupplements : SUPPLEMENTS).map(sup => {
+            const taken = todaySupplements.includes(sup);
+            const logEntry = supplementLog.find(l => l.name === sup);
+            return (
+              <button key={sup} onClick={() => toggleSupplement(sup)}
+                style={{
+                  padding: "8px 14px", borderRadius: 20, border: "2px solid",
+                  borderColor: taken ? "#22c55e" : "#e2e8f0",
+                  background: taken ? "#f0fdf4" : "#fff",
+                  color: taken ? "#166534" : "#64748b",
+                  cursor: "pointer", fontSize: 13, fontWeight: 500,
+                  display: "flex", alignItems: "center", gap: 4
+                }}>
+                <span>{sup}</span>
+                {taken && <Check size={14} />}
+                {taken && logEntry && <span style={{ fontSize: 10, color: "#15803d", opacity: 0.8 }}>🕐{logEntry.time}</span>}
+              </button>
+            );
+          })}
+          {/* "אחר" button to open full supplement picker */}
+          <button onClick={() => setShowSupplementPicker(true)}
+            style={{
+              padding: "8px 14px", borderRadius: 20, border: "2px dashed #f59e0b",
+              background: "#fffbeb", color: "#d97706",
+              cursor: "pointer", fontSize: 13, fontWeight: 600,
+              display: "flex", alignItems: "center", gap: 4
+            }}>
+            <Plus size={14} />
+            <span>תוסף אחר</span>
+          </button>
+        </div>
+        {/* Extra supplements taken that aren't in the default list */}
+        {todaySupplements.filter(s => !(userProfile?.currentSupplements?.length > 0 ? userProfile.currentSupplements : SUPPLEMENTS).includes(s)).length > 0 && (

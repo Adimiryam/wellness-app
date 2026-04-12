@@ -1,0 +1,55 @@
+          <div style={{ fontSize: 12, color: "#64748b", marginBottom: 6, textAlign: "right" }}>תסמיני מחזור:</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, flexDirection: "row-reverse" }}>
+            {[
+              { id: "cramps", label: "כאבי בטן/התכווצויות", icon: "😣" },
+              { id: "back_pain", label: "כאבי גב", icon: "🦴" },
+              { id: "headache", label: "כאב ראש/מיגרנה", icon: "🤕" },
+              { id: "breast_tender", label: "רגישות בחזה", icon: "💗" },
+              { id: "bloating", label: "נפיחות", icon: "🫧" },
+              { id: "nausea", label: "בחילה", icon: "🤢" },
+              { id: "fatigue", label: "עייפות", icon: "😴" },
+              { id: "mood_swings", label: "מצבי רוח", icon: "🎭" },
+              { id: "acne", label: "פצעונים", icon: "🔴" },
+              { id: "cravings", label: "חשק למתוק", icon: "🍫" },
+              { id: "diarrhea", label: "שלשול", icon: "💧" },
+              { id: "insomnia", label: "נדודי שינה", icon: "🌙" },
+            ].map(sym => {
+              const active = periodDayLogs[todayStr]?.symptoms?.includes(sym.id);
+              return (
+                <button key={sym.id} onClick={() => setPeriodDayLogs(prev => {
+                  const cur = prev[todayStr] || { symptoms: [] };
+                  const syms = cur.symptoms || [];
+                  return {
+                    ...prev,
+                    [todayStr]: {
+                      ...cur,
+                      symptoms: syms.includes(sym.id) ? syms.filter(s => s !== sym.id) : [...syms, sym.id]
+                    }
+                  };
+                })} style={{
+                  padding: "6px 10px", borderRadius: 20, border: "2px solid",
+                  borderColor: active ? "#ec4899" : "#e2e8f0",
+                  background: active ? "#fdf2f8" : "#fff",
+                  color: active ? "#9f1239" : "#64748b",
+                  fontSize: 11, fontWeight: 500, cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 3,
+                }}>
+                  {active && <Check size={10} />}
+                  <span>{sym.icon}</span>
+                  <span>{sym.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Add period date form */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+            הוסיפי תאריך תחילת מחזור
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input type="date" defaultValue={todayStr} id="cycle-date-input"
+              style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 14, boxSizing: "border-box" }} />
+            <button onClick={() => {
+              const el = document.getElementById("cycle-date-input");

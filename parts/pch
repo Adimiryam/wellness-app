@@ -1,0 +1,55 @@
+              if (el && el.value) addPeriodDate(el.value);
+            }} style={{
+              padding: "10px 16px", borderRadius: 10, border: "none", background: "#ec4899", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}>
+              <Plus size={14} /> הוסף
+            </button>
+          </div>
+        </div>
+
+        {/* Recent period dates */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+            📅 תאריכי מחזור אחרונים
+          </div>
+          {recentStarts.length > 0 ? recentStarts.map((d, i) => {
+            const isFromLog = periodLog.includes(d);
+            const date = new Date(d);
+            const endDate = new Date(date);
+            endDate.setDate(endDate.getDate() + PERIOD_LEN - 1);
+            const prevStart = sortedStarts[sortedStarts.length - recentStarts.indexOf(d) - 2];
+            const cycleLen = prevStart ? Math.round((date - new Date(prevStart)) / 86400000) : null;
+            return (
+              <div key={i} style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                padding: "10px 0", borderBottom: i < recentStarts.length - 1 ? "1px solid #f1f5f9" : "none", direction: "rtl",
+              }}>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>
+                    🩸 {d} — {endDate.toISOString().split("T")[0]}
+                  </div>
+                  {cycleLen && (
+                    <div style={{ fontSize: 11, color: "#94a3b8" }}>אורך מחזור: {cycleLen} ימים</div>
+                  )}
+                </div>
+                {isFromLog && (
+                  <button onClick={() => removePeriodDate(d)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}>
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
+            );
+          }) : (
+            <div style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", padding: 20 }}>
+              עדיין לא נרשמו תאריכי מחזור
+            </div>
+          )}
+        </div>
+
+        {/* Forecast */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+            🔮 צפי מחזורים קדימה
+          </div>
+          {predictions.length > 0 ? predictions.map((p, i) => {
+            const d = new Date(p.start);

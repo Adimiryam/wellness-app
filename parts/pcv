@@ -1,0 +1,55 @@
+        if (entry[key] && Array.isArray(entry[key])) {
+          const mealTotals = { calories: 0, carbs: 0, fat: 0, protein: 0 };
+          entry[key].forEach(f => {
+            const p = parseFood(f);
+            mealTotals.calories += p.calories;
+            mealTotals.carbs += p.carbs;
+            mealTotals.fat += p.fat;
+            mealTotals.protein += p.protein;
+          });
+          totals.calories += mealTotals.calories;
+          totals.carbs += mealTotals.carbs;
+          totals.fat += mealTotals.fat;
+          totals.protein += mealTotals.protein;
+          meals[key] = mealTotals;
+        }
+      }
+      return { totals, meals };
+    };
+
+    // Get all daily totals for trend calculations
+    const allDayTotals = useMemo(() => {
+      return mfpFoodDiary.map(entry => {
+        const { totals } = getDayTotals(entry);
+        return { date: entry.date, ...totals };
+      }).sort((a, b) => a.date.localeCompare(b.date));
+    }, [mfpFoodDiary]);
+
+    // Selected day entry
+    const dayEntry = mfpFoodDiary.find(e => e.date === diarySelectedDate);
+    const dayData = dayEntry ? getDayTotals(dayEntry) : null;
+
+    // Navigate dates
+    const changeDate = (delta) => {
+      const d = new Date(diarySelectedDate);
+      d.setDate(d.getDate() + delta);
+      setDiarySelectedDate(d.toISOString().split("T")[0]);
+    };
+
+    const formatDate = (dateStr) => {
+      const d = new Date(dateStr + "T00:00:00");
+      const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+      const months = ["ינו׳", "פבר׳", "מרץ", "אפר׳", "מאי", "יוני", "יולי", "אוג׳", "ספט׳", "אוק׳", "נוב׳", "דצמ׳"];
+      return `יום ${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    };
+
+    // Trend data filtering
+    const trendPeriodDays = { week: 7, month: 30, "3months": 90, all: 9999 };
+    const trendDays = trendPeriodDays[diaryTrendPeriod] || 30;
+    const trendCutoff = new Date();
+    trendCutoff.setDate(trendCutoff.getDate() - trendDays);
+    const trendCutoffStr = trendCutoff.toISOString().split("T")[0];
+    const trendData = allDayTotals.filter(d => d.date >= trendCutoffStr && d.calories > 0);
+
+    // Trend stats
+    const avgCalories = trendData.length > 0 ? Math.round(trendData.reduce((s, d) => s + d.calories, 0) / trendData.length) : 0;

@@ -1,0 +1,55 @@
+              {totalChange > 0 ? "+" : ""}{totalChange.toFixed(1)} ק"ג
+            </div>
+            <div style={{ fontSize: 11, color: totalChange <= 0 ? "#16a34a" : "#dc2626" }}>
+              {pctChange > 0 ? "+" : ""}{pctChange.toFixed(1)}% ממשקל הגוף
+            </div>
+          </div>
+          <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 12, textAlign: "center" }}>
+            <div style={{ fontSize: 11, color: "#64748b" }}>טווח בתקופה</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#0369a1" }}>{lowestW}-{highestW}</div>
+            <div style={{ fontSize: 11, color: "#64748b" }}>ק"ג</div>
+          </div>
+          <div style={{ background: "#faf5ff", borderRadius: 12, padding: 12, textAlign: "center" }}>
+            <div style={{ fontSize: 11, color: "#64748b" }}>ירידה יומית ממוצעת</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#7c3aed" }}>{Math.abs(dailyRate * 1000).toFixed(0)} גרם</div>
+          </div>
+          <div style={{ background: "#faf5ff", borderRadius: 12, padding: 12, textAlign: "center" }}>
+            <div style={{ fontSize: 11, color: "#64748b" }}>ירידה שבועית ממוצעת</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#7c3aed" }}>{Math.abs(weeklyRate).toFixed(2)} ק"ג</div>
+          </div>
+          <div style={{ background: "#fffbeb", borderRadius: 12, padding: 12, textAlign: "center" }}>
+            <div style={{ fontSize: 11, color: "#64748b" }}>ירידה חודשית ממוצעת</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#d97706" }}>{Math.abs(monthlyRate).toFixed(1)} ק"ג</div>
+          </div>
+          <div style={{ background: "#f0fdf4", borderRadius: 12, padding: 12, textAlign: "center" }}>
+            <div style={{ fontSize: 11, color: "#64748b" }}>סה"כ שקילות</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#16a34a" }}>{weightHistory.length}</div>
+          </div>
+        </div>
+
+        {/* Diet Project */}
+        {dietProject ? (
+          <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)", border: "2px solid #6366f133" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <button onClick={() => setDietProject(null)} style={{ background: "none", border: "none", color: "#ef4444", fontSize: 12, cursor: "pointer" }}>
+                <Trash2 size={14} /> מחק
+              </button>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>
+                <Target size={16} style={{ verticalAlign: "middle", marginLeft: 4 }} />
+                {dietProject.name}
+              </div>
+            </div>
+            {/* Progress bar */}
+            {dpProgress && (
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#64748b", marginBottom: 4, direction: "rtl" }}>
+                  <span>התחלה: {dietProject.startWeight} ק"ג</span>
+                  <span>יעד: {dietProject.targetWeight} ק"ג</span>
+                </div>
+                <div style={{ background: "#e5e7eb", borderRadius: 8, height: 14, overflow: "hidden", marginBottom: 8 }}>
+                  <div style={{
+                    width: dpProgress.pct + "%", height: "100%", borderRadius: 8,
+                    background: "linear-gradient(90deg, #6366f1, #8b5cf6)",
+                    transition: "width 0.5s ease",
+                  }} />
+                </div>

@@ -1,131 +1,55 @@
-  { id: "snoring", label: "נחירות", icon: "😴", group: "אחר" },
-  { id: "teeth_grinding", label: "חריקת שיניים", icon: "😬", group: "אחר" },
-  { id: "bleeding_gums", label: "דימום חניכיים", icon: "🩸", group: "אחר" },
-  { id: "nosebleed", label: "דימום מהאף", icon: "👃", group: "אחר" },
-  { id: "other", label: "אחר", icon: "📝", group: "אחר" },
-];
+import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  UtensilsCrossed, Activity, Target, BarChart3, Sun, Moon,
+  Plus, X, Search, ChevronLeft, ChevronRight, Check,
+  Droplets, Pill, Heart, Brain, Flame, TrendingDown,
+  TrendingUp, AlertTriangle, Smile, Frown, Meh, Coffee,
+  Apple, Beef, Wheat, Fish, Egg, Milk, Clock, Weight,
+  Footprints, BedDouble, Sparkles, ArrowRight, Trash2, Edit3,
+  User, Settings, ChevronDown, Zap, Eye, Stethoscope,
+  Camera, BookOpen, Star, Bookmark
+} from "lucide-react";
 
-const BODY_PARTS = [
-  { id: "face", label: "פנים", icon: "😊" },
-  { id: "scalp", label: "קרקפת", icon: "🧑" },
-  { id: "forehead", label: "מצח", icon: "🙂" },
-  { id: "neck", label: "צוואר", icon: "🦒" },
-  { id: "shoulders", label: "כתפיים", icon: "🤷" },
-  { id: "upper_back", label: "גב עליון", icon: "🔙" },
-  { id: "lower_back", label: "גב תחתון", icon: "⬇️" },
-  { id: "chest", label: "חזה", icon: "🫁" },
-  { id: "stomach_area", label: "בטן", icon: "🤰" },
-  { id: "ribs", label: "צלעות", icon: "🩻" },
-  { id: "arms_upper", label: "זרועות", icon: "💪" },
-  { id: "elbows", label: "מרפקים", icon: "🦾" },
-  { id: "forearms", label: "אמות", icon: "🤲" },
-  { id: "hands", label: "כפות ידיים", icon: "✋" },
-  { id: "fingers", label: "אצבעות ידיים", icon: "🖐️" },
-  { id: "hips", label: "ירכיים/אגן", icon: "🦿" },
-  { id: "thighs", label: "ירכיים", icon: "🦵" },
-  { id: "knees", label: "ברכיים", icon: "🦵" },
-  { id: "calves", label: "שוקיים", icon: "🦿" },
-  { id: "ankles", label: "קרסוליים", icon: "🦶" },
-  { id: "feet", label: "כפות רגליים", icon: "🦶" },
-  { id: "toes", label: "אצבעות רגליים", icon: "🦶" },
-  { id: "groin", label: "מפשעה", icon: "🩲" },
-  { id: "joints_general", label: "מפרקים (כללי)", icon: "🦴" },
-  { id: "left_side", label: "צד שמאל", icon: "⬅️" },
-  { id: "right_side", label: "צד ימין", icon: "➡️" },
-  { id: "all_over", label: "כל הגוף", icon: "🧍" },
-];
-
-const SYMPTOM_GROUPS = [...new Set(SYMPTOM_TYPES.map(s => s.group))];
-
-const DIET_TYPES = [
-  { id: "regular", label: "רגילה", icon: "🍽️", color: "#6366f1" },
-  { id: "vegetarian", label: "צמחונית", icon: "🥬", color: "#22c55e" },
-  { id: "vegan", label: "טבעונית", icon: "🌱", color: "#16a34a" },
-  { id: "keto", label: "קיטו", icon: "🥑", color: "#f59e0b" },
-  { id: "paleo", label: "פליאו", icon: "🥩", color: "#dc2626" },
-  { id: "mediterranean", label: "ים תיכונית", icon: "🫒", color: "#0ea5e9" },
-  { id: "gluten_free", label: "ללא גלוטן", icon: "🚫", color: "#a855f7" },
-  { id: "lactose_free", label: "ללא לקטוז", icon: "🥛", color: "#ec4899" },
-  { id: "other", label: "אחר", icon: "✨", color: "#64748b" },
-];
-
-const TRACKING_OPTIONS = [
-  { id: "calories", label: "קלוריות", icon: "🔥", color: "#ef4444" },
-  { id: "protein", label: "חלבון", icon: "🍗", color: "#f59e0b" },
-  { id: "carbs", label: "פחמימות", icon: "🍞", color: "#8b5cf6" },
-  { id: "fat", label: "שומן", icon: "🥑", color: "#22c55e" },
-  { id: "water", label: "מים", icon: "💧", color: "#3b82f6" },
-  { id: "iron", label: "ברזל", icon: "💊", color: "#dc2626" },
-  { id: "steps", label: "צעדים", icon: "👣", color: "#06b6d4" },
-  { id: "sleep", label: "שינה", icon: "😴", color: "#6366f1" },
-  { id: "weight", label: "משקל", icon: "⚖️", color: "#ec4899" },
-  { id: "mood", label: "מצב רוח", icon: "😊", color: "#f97316" },
-  { id: "period", label: "מחזור חודשי", icon: "🩸", color: "#e11d48" },
-  { id: "symptoms", label: "תופעות בריאותיות", icon: "🏥", color: "#7c3aed" },
-];
-
-const HEALTH_CONDITIONS = [
-  { id: "none", label: "אין", icon: "✅" },
-  { id: "diabetes", label: "סוכרת", icon: "💉" },
-  { id: "celiac", label: "צליאק", icon: "🌾" },
-  { id: "ibs", label: "מעי רגיז (IBS)", icon: "🫄" },
-  { id: "thyroid", label: "בלוטת התריס", icon: "🦋" },
-  { id: "anemia", label: "אנמיה", icon: "🩸" },
-  { id: "pcos", label: "PCOS", icon: "♀️" },
-  { id: "allergies", label: "אלרגיות", icon: "🤧" },
-  { id: "migraines", label: "מיגרנות", icon: "🤕" },
-  { id: "skin", label: "בעיות עור", icon: "🔴" },
-  { id: "digestive", label: "בעיות עיכול", icon: "🫃" },
-  { id: "chronic_pain", label: "כאבים כרוניים", icon: "💢" },
-  { id: "other", label: "אחר", icon: "📝" },
-];
-
-// ==================== SAMPLE DATA FOR DEMO ====================
-const generateSampleData = () => {
-  return [];
-  // eslint-disable-next-line no-unreachable
-  const days = [];
-  const today = new Date();
-  for (let i = 90; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split("T")[0];
-    // Cycle: period starts every 28 days at offsets 2, 30, 58, 86
-    const cycleDay = i % 28;
-    const isPeriodDay = cycleDay < 5;
-    const isPmsWindow = cycleDay >= 25; // 3 days before period
-    // Seed recurring migraines and bloating in PMS window for demo
-    const daySymptoms = [];
-    if (isPmsWindow && Math.random() > 0.2) daySymptoms.push({ typeId: "headache", text: "מיגרנה", icon: "🤕" });
-    if (isPmsWindow && Math.random() > 0.35) daySymptoms.push({ typeId: "bloating", text: "נפיחות", icon: "🫧" });
-    if (isPmsWindow && Math.random() > 0.5) daySymptoms.push({ typeId: "anxiety", text: "חרדה/מתח", icon: "😰" });
-    const protein = 40 + Math.floor(Math.random() * 80);
-    const hadRadish = Math.random() > 0.7;
-    const hadRash = hadRadish ? Math.random() > 0.2 : Math.random() > 0.85;
-    days.push({
-      date: dateStr,
-      totalCalories: 1400 + Math.floor(Math.random() * 800),
-      totalProtein: protein,
-      totalCarbs: 100 + Math.floor(Math.random() * 150),
-      totalFat: 30 + Math.floor(Math.random() * 50),
-      weight: 68 - (i * 0.05) + (Math.random() * 0.5 - 0.25),
-      steps: 3000 + Math.floor(Math.random() * 10000),
-      sleepHours: 5 + Math.random() * 4,
-      sleepQuality: Math.floor(Math.random() * 5) + 1,
-      energy: Math.floor(Math.random() * 5) + 1,
-      mood: Math.floor(Math.random() * 5) + 1,
-      bloated: Math.random() > 0.6,
-      hadRadish,
-      hadRash,
-      feelings: FEELINGS.filter(() => Math.random() > 0.7).map(f => f.id),
-      tookIron: Math.random() > 0.3,
-      exercise: Math.random() > 0.4 ? EXERCISE_TYPES[Math.floor(Math.random() * EXERCISE_TYPES.length)].id : null,
-      periodDay: isPeriodDay ? cycleDay + 1 : null,
-      isPeriodStart: cycleDay === 0,
-      pmsWindow: isPmsWindow,
-      symptomsReported: daySymptoms,
-      waterCups: Math.floor(Math.random() * 10) + 2,
-    });
-  }
-  return days;
-};
+// ==================== DATA & CONSTANTS ====================
+const FOOD_DATABASE = [
+  // חלבון
+  { id: 1, name: "ביצה מבושלת", serving: "1 ביצה", calories: 78, protein: 6, carbs: 1, fat: 5, category: "חלבון", popular: true },
+  { id: 2, name: "חזה עוף", serving: "100 גרם", calories: 165, protein: 31, carbs: 0, fat: 3.6, category: "חלבון", popular: true },
+  { id: 3, name: "סלמון", serving: "100 גרם", calories: 208, protein: 20, carbs: 0, fat: 13, category: "חלבון", popular: true },
+  { id: 4, name: "טונה בקופסה", serving: "1 קופסה (100 גרם)", calories: 120, protein: 26, carbs: 0, fat: 1, category: "חלבון", popular: true },
+  { id: 5, name: "שניצל עוף", serving: "1 יחידה", calories: 280, protein: 22, carbs: 15, fat: 14, category: "חלבון" },
+  { id: 6, name: "המבורגר בקר", serving: "1 קציצה (100 גרם)", calories: 250, protein: 26, carbs: 0, fat: 17, category: "חלבון" },
+  { id: 7, name: "ביצת עין", serving: "1 ביצה", calories: 90, protein: 6, carbs: 0, fat: 7, category: "חלבון" },
+  { id: 8, name: "חביתה (2 ביצים)", serving: "1 מנה", calories: 180, protein: 12, carbs: 1, fat: 14, category: "חלבון" },
+  { id: 9, name: "שוורמה עוף", serving: "1 מנת פיתה", calories: 450, protein: 30, carbs: 35, fat: 20, category: "חלבון" },
+  { id: 10, name: "דג אמנון", serving: "1 פילה", calories: 128, protein: 26, carbs: 0, fat: 3, category: "חלבון" },
+  // חלבי
+  { id: 11, name: "גבינה לבנה 5%", serving: "100 גרם", calories: 84, protein: 10, carbs: 3.5, fat: 3.5, category: "חלבי", popular: true },
+  { id: 12, name: "יוגורט טבעי", serving: "1 כוס (200 גרם)", calories: 100, protein: 17, carbs: 6, fat: 0.7, category: "חלבי", popular: true },
+  { id: 13, name: "חלב 3%", serving: "1 כוס (250 מ״ל)", calories: 149, protein: 8, carbs: 12, fat: 8, category: "חלבי" },
+  { id: 14, name: "גבינה צהובה 28%", serving: "1 פרוסה (25 גרם)", calories: 90, protein: 6, carbs: 0.5, fat: 7, category: "חלבי" },
+  { id: 15, name: "קוטג׳ 5%", serving: "100 גרם", calories: 98, protein: 11, carbs: 3, fat: 5, category: "חלבי", popular: true },
+  { id: 16, name: "שמנת חמוצה 15%", serving: "2 כפות (30 גרם)", calories: 45, protein: 1, carbs: 1, fat: 4.5, category: "חלבי" },
+  { id: 17, name: "גבינת שמנת", serving: "2 כפות (30 גרם)", calories: 100, protein: 2, carbs: 1, fat: 10, category: "חלבי" },
+  { id: 18, name: "לבן", serving: "1 כוס (200 גרם)", calories: 120, protein: 6, carbs: 8, fat: 7, category: "חלבי" },
+  // פחמימות
+  { id: 19, name: "אורז לבן", serving: "1 כוס מבושל", calories: 206, protein: 4.3, carbs: 45, fat: 0.4, category: "פחמימה", popular: true },
+  { id: 20, name: "לחם מלא", serving: "1 פרוסה", calories: 81, protein: 4, carbs: 14, fat: 1.1, category: "פחמימה", popular: true },
+  { id: 21, name: "פסטה מלאה", serving: "1 כוס מבושלת", calories: 174, protein: 7, carbs: 37, fat: 0.8, category: "פחמימה" },
+  { id: 22, name: "בטטה", serving: "1 בינונית", calories: 103, protein: 2, carbs: 24, fat: 0.1, category: "פחמימה" },
+  { id: 23, name: "תפוח אדמה", serving: "1 בינוני", calories: 160, protein: 4, carbs: 37, fat: 0.2, category: "פחמימה" },
+  { id: 24, name: "קוסקוס", serving: "1 כוס מבושל", calories: 176, protein: 6, carbs: 36, fat: 0.3, category: "פחמימה" },
+  { id: 25, name: "פיתה", serving: "1 יחידה", calories: 165, protein: 5.5, carbs: 33, fat: 0.7, category: "פחמימה" },
+  { id: 26, name: "לחם לבן", serving: "1 פרוסה", calories: 75, protein: 2, carbs: 14, fat: 1, category: "פחמימה" },
+  { id: 27, name: "אורז מלא", serving: "1 כוס מבושל", calories: 215, protein: 5, carbs: 45, fat: 1.8, category: "פחמימה" },
+  { id: 28, name: "קינואה", serving: "1 כוס מבושלת", calories: 222, protein: 8, carbs: 39, fat: 3.5, category: "פחמימה" },
+  // פירות
+  { id: 29, name: "בננה", serving: "1 בינונית", calories: 105, protein: 1.3, carbs: 27, fat: 0.4, category: "פרי", popular: true },
+  { id: 30, name: "תפוח", serving: "1 בינוני", calories: 95, protein: 0.5, carbs: 25, fat: 0.3, category: "פרי", popular: true },
+  { id: 31, name: "תפוז", serving: "1 בינוני", calories: 62, protein: 1.2, carbs: 15, fat: 0.2, category: "פרי" },
+  { id: 32, name: "אבטיח", serving: "2 כוסות קוביות", calories: 90, protein: 1.8, carbs: 23, fat: 0.4, category: "פרי" },
+  { id: 33, name: "תותים", serving: "1 כוס", calories: 50, protein: 1, carbs: 12, fat: 0.5, category: "פרי" },
+  { id: 34, name: "ענבים", serving: "1 כוס", calories: 104, protein: 1, carbs: 27, fat: 0.2, category: "פרי" },
+  { id: 35, name: "מנגו", serving: "1 כוס קוביות", calories: 100, protein: 1.4, carbs: 25, fat: 0.6, category: "פרי" },
+  { id: 36, name: "תמר מג׳הול", serving: "1 יחידה", calories: 66, protein: 0.4, carbs: 18, fat: 0, category: "פרי" },
+  // ירקות

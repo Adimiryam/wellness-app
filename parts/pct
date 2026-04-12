@@ -1,0 +1,55 @@
+              <div style={{ fontSize: 11, color: "#6366f1", textAlign: "right", marginTop: 8, fontWeight: 600 }}>
+                💡 ככל שתזין/י יותר נתונים עם הזמן, נוכל לזהות דפוסים חוזרים ולהציע לך תובנות מדויקות יותר
+              </div>
+            </div>
+          );
+        })()}
+
+        <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", borderRadius: 16, padding: 20, color: "#fff", marginBottom: 16 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>📋 הצהרות להיום</div>
+          {latestData.hadRadish && (
+            <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>⚠️ שים/י לב!</div>
+              <div style={{ fontSize: 13, opacity: 0.9 }}>אתמול אכלת צנון. לפי הנתונים שלך, בסיכוי של <strong>~82%</strong> ייתכן שתראה/י פריחה היום.</div>
+            </div>
+          )}
+          {!latestData.tookIron && (
+            <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>💊 תזכורת ברזל</div>
+              <div style={{ fontSize: 13, opacity: 0.9 }}>לא לקחת אתמול ברזל. בימים בלי ברזל האנרגיה שלך נמוכה יותר. קח/י היום!</div>
+            </div>
+          )}
+          {latestData.periodDay && latestData.periodDay <= 3 && (
+            <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+              <div style={{ fontWeight: 700, marginBottom: 4 }}>🩸 מחזור — יום {latestData.periodDay}</div>
+              <div style={{ fontSize: 13, opacity: 0.9 }}>את בימי המחזור. סטטיסטית בימים האלה את עייפה יותר ונפוחה. כדאי: ברזל, הליכה קלה, מזונות עשירים בברזל.</div>
+            </div>
+          )}
+          <div style={{ background: "rgba(255,255,255,0.15)", borderRadius: 12, padding: 14 }}>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>🎯 יעד להיום</div>
+            <div style={{ fontSize: 13, opacity: 0.9 }}>
+              נשאר לך {Math.max(0, calorieGoal - todayTotals.calories)} קק״ל ו-{Math.max(0, Math.round(proteinGoal - todayTotals.protein))}g חלבון.
+              {todayTotals.protein < proteinGoal * 0.5 && " מומלץ להתמקד בחלבון בארוחות הבאות."}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>🌟 המלצות אישיות להיום</div>
+          {[
+            { icon: "🚶", text: "עשה/י הליכה של 30 דקות — בימים עם הליכה הדיווחים שלך מראים מצב רוח טוב יותר ב-40%", bg: "#f0fdf4", color: "#166534" },
+            { icon: "🥚", text: "נסה/י להוסיף ביצים או יוגורט — אלה מזונות שסטטיסטית נותנים לך אנרגיה טובה", bg: "#eff6ff", color: "#1e40af" },
+            { icon: "💧", text: "שתה/י לפחות 8 כוסות מים — בימים עם נפיחות, שתייה עוזרת", bg: "#f0f9ff", color: "#0c4a6e" },
+            { icon: "😴", text: "השתדל/י לישון לפני 23:00 — ב-7 ימים אחרונים ישנת ממוצע של " + (sampleData.slice(-7).reduce((s,d) => s + d.sleepHours, 0) / 7).toFixed(1) + " שעות", bg: "#f5f3ff", color: "#4c1d95" },
+          ].map((rec, i) => (
+            <div key={i} style={{ background: rec.bg, borderRadius: 12, padding: 14, marginBottom: 10, display: "flex", gap: 10, alignItems: "flex-start", direction: "rtl" }}>
+              <span style={{ fontSize: 20 }}>{rec.icon}</span>
+              <span style={{ fontSize: 13, color: rec.color, lineHeight: 1.6 }}>{rec.text}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right" }}>📅 תחזית שבועית</div>
+          <div style={{ fontSize: 13, color: "#475569", textAlign: "right", lineHeight: 1.8 }}>
+            <p>אם תמשיך/י בקצב הנוכחי:</p>

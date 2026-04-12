@@ -1,0 +1,55 @@
+                }}>
+                {tab.icon}
+                <span style={{ fontSize: 11, fontWeight: 600 }}>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tab content */}
+        {foodModalTab === "search" && renderSearchTab()}
+        {foodModalTab === "barcode" && renderBarcodeTab()}
+        {foodModalTab === "manual" && renderManualTab()}
+        {foodModalTab === "myfoods" && renderMyFoodsTab()}
+      </div>
+    );
+  };
+
+  // --- QUESTIONNAIRES TAB ---
+  const renderQuestionnaires = () => {
+    const toggleReportType = (id) => {
+      setNewReportTypes(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
+    };
+    const toggleBodyPart = (id) => {
+      setNewReportBodyParts(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
+    };
+
+    const needsBodyPartSelection = newReportTypes.some(t => SYMPTOM_TYPES.find(s => s.id === t)?.needsBodyPart);
+
+    const addHealthReport = () => {
+      if (newReportTypes.length === 0) return;
+      const labels = newReportTypes.map(t => SYMPTOM_TYPES.find(s => s.id === t)).filter(Boolean);
+      setHealthReports(prev => [...prev, {
+        id: Date.now(),
+        types: newReportTypes,
+        label: labels.map(l => l.label).join(", "),
+        icon: labels[0]?.icon || "📝",
+        icons: labels.map(l => l.icon),
+        severity: newReportSeverity,
+        note: newReportNote,
+        bodyParts: needsBodyPartSelection ? newReportBodyParts : [],
+        bodyPartsLabel: needsBodyPartSelection ? newReportBodyParts.map(bp => BODY_PARTS.find(b => b.id === bp)?.label).filter(Boolean).join(", ") : "",
+        time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }),
+        timestamp: Date.now(),
+      }]);
+      setNewReportTypes([]);
+      setNewReportSeverity(3);
+      setNewReportNote("");
+      setNewReportBodyParts([]);
+    };
+
+    return (
+      <div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>
+          📋 שאלונים ודיווחים
+        </div>

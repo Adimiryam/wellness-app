@@ -1,0 +1,55 @@
+    const avgProtein = trendData.length > 0 ? Math.round(trendData.reduce((s, d) => s + d.protein, 0) / trendData.length) : 0;
+    const avgCarbs = trendData.length > 0 ? Math.round(trendData.reduce((s, d) => s + d.carbs, 0) / trendData.length) : 0;
+    const avgFat = trendData.length > 0 ? Math.round(trendData.reduce((s, d) => s + d.fat, 0) / trendData.length) : 0;
+    const maxCal = trendData.length > 0 ? Math.max(...trendData.map(d => d.calories)) : 0;
+    const minCal = trendData.length > 0 ? Math.min(...trendData.map(d => d.calories)) : 0;
+
+    // SVG Calorie Trend Graph
+    const renderCalorieTrend = () => {
+      if (trendData.length < 2) return <div style={{ textAlign: "center", padding: 30, color: "#94a3b8", fontSize: 13 }}>אין מספיק נתונים לתקופה זו</div>;
+      const gW = 340, gH = 180, pL = 45, pR = 10, pT = 15, pB = 30;
+      const iW = gW - pL - pR, iH = gH - pT - pB;
+      const calMin = Math.floor(minCal * 0.85);
+      const calMax = Math.ceil(maxCal * 1.1);
+      const calRange = calMax - calMin || 1;
+      const pts = trendData.map((d, i) => ({
+        x: pL + (trendData.length > 1 ? (i / (trendData.length - 1)) * iW : iW / 2),
+        y: pT + iH - ((d.calories - calMin) / calRange) * iH,
+        ...d
+      }));
+      const polyline = pts.map(p => p.x + "," + p.y).join(" ");
+      // Goal line
+      const goalY = calorieGoal >= calMin && calorieGoal <= calMax ? pT + iH - ((calorieGoal - calMin) / calRange) * iH : null;
+
+      return (
+        <svg width={gW} height={gH} viewBox={"0 0 " + gW + " " + gH} style={{ width: "100%", height: "auto" }}>
+          <defs>
+            <linearGradient id="calGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+          {[0, 0.25, 0.5, 0.75, 1].map((frac, i) => {
+            const yPos = pT + iH * (1 - frac);
+            const val = Math.round(calMin + calRange * frac);
+            return (
+              <g key={i}>
+                <line x1={pL} y1={yPos} x2={gW - pR} y2={yPos} stroke="#e5e7eb" strokeWidth="1" />
+                <text x={pL - 4} y={yPos + 4} textAnchor="end" fontSize="9" fill="#94a3b8">{val}</text>
+              </g>
+            );
+          })}
+          <polygon points={pL + "," + (pT + iH) + " " + polyline + " " + (pL + iW) + "," + (pT + iH)} fill="url(#calGrad)" />
+          <polyline points={polyline} fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          {goalY !== null && <line x1={pL} y1={goalY} x2={gW - pR} y2={goalY} stroke="#ef4444" strokeWidth="1.5" strokeDasharray="6,4" />}
+          {pts.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r="2.5" fill="#f59e0b" stroke="#fff" strokeWidth="1" />)}
+          {pts.filter((_, i) => { const step = Math.max(1, Math.floor(pts.length / 6)); return i === 0 || i === pts.length - 1 || i % step === 0; }).map((p, i) => (
+            <text key={i} x={p.x} y={gH - 4} textAnchor="middle" fontSize="8" fill="#94a3b8">{p.date.slice(5)}</text>
+          ))}
+        </svg>
+      );
+    };
+
+    // SVG Macro breakdown pie
+    const renderMacroPie = (cals, carbs, fat, protein) => {
+      if (cals === 0) return null;

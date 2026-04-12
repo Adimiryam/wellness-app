@@ -1,0 +1,55 @@
+          {/* API results */}
+          {apiSearchResults.length > 0 && (
+            <div style={{ paddingTop: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#8b5cf6", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <Search size={14} /> תוצאות מהמאגר העולמי ({apiSearchResults.length})
+              </div>
+              {apiSearchResults.map(food => <FoodItem key={food.id} food={food} />)}
+              <div style={{ height: 1, background: "#e2e8f0", margin: "12px 0" }} />
+            </div>
+          )}
+
+          {/* Recent foods */}
+          {!foodSearch && foodCategoryFilter === "all" && recentFoodItems.length > 0 && (
+            <div style={{ paddingTop: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <Clock size={14} /> אחרונים
+              </div>
+              {recentFoodItems.map(food => <FoodItem key={`recent-${food.id}`} food={food} />)}
+            </div>
+          )}
+
+          {/* Popular foods */}
+          {!foodSearch && foodCategoryFilter === "all" && (
+            <div style={{ paddingTop: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <TrendingUp size={14} /> פופולריים
+              </div>
+              {popularFoods.map(food => <FoodItem key={`pop-${food.id}`} food={food} />)}
+            </div>
+          )}
+
+          {/* Search results or category browse */}
+          {(foodSearch || foodCategoryFilter !== "all") && (
+            <div style={{ paddingTop: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 8 }}>
+                {foodSearch ? `תוצאות מקומיות (${filteredFoods.length})` : `${FOOD_CATEGORIES.find(c => c.id === foodCategoryFilter)?.label} (${filteredFoods.length})`}
+              </div>
+              {filteredFoods.length > 0 ? (
+                filteredFoods.map(food => <FoodItem key={food.id} food={food} />)
+              ) : (
+                <div style={{ textAlign: "center", padding: 30, color: "#94a3b8" }}>
+                  <Search size={28} style={{ marginBottom: 8, opacity: 0.4 }} />
+                  <div style={{ fontSize: 14 }}>לא נמצאו תוצאות מקומיות</div>
+                  <div style={{ fontSize: 12, marginTop: 4 }}>לחצ/י על "חפש ב-Open Food Facts" למאגר עולמי</div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* All foods (default browse) */}
+          {!foodSearch && foodCategoryFilter === "all" && (
+            <div style={{ paddingTop: 16, paddingBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <UtensilsCrossed size={14} /> כל המאכלים ({FOOD_DATABASE.length})
+              </div>

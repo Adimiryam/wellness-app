@@ -1,132 +1,55 @@
-// ==================== MAIN APP ====================
-export default function NutriTrackApp() {
-  const [onboardingDone, setOnboardingDone] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
-  const [activeTab, setActiveTab] = useState("home");
-  const [sampleData] = useState(generateSampleData);
+      </div>
+    </div>
+  );
+};
 
-  // Today's data — MFP style food log
-  const [todayFoods, setTodayFoods] = useState([]);
-  const [showFoodSearch, setShowFoodSearch] = useState(false);
-  const [foodSearch, setFoodSearch] = useState("");
-  const [foodCategoryFilter, setFoodCategoryFilter] = useState("all");
-  const [recentFoods, setRecentFoods] = useState([3, 1, 11, 29, 53, 65, 15, 19]); // IDs of recent foods
-  const [editingFood, setEditingFood] = useState(null); // for editing servings
-  const [quickAddCals, setQuickAddCals] = useState("");
-  const [foodModalTab, setFoodModalTab] = useState("search"); // search | barcode | manual | myfoods
-  const [myFoods, setMyFoods] = useState([]); // personal food database
-  const [barcodeInput, setBarcodeInput] = useState("");
-  const [barcodeLoading, setBarcodeLoading] = useState(false);
-  const [barcodeResult, setBarcodeResult] = useState(null);
-  const [barcodeError, setBarcodeError] = useState("");
-  const [apiSearchResults, setApiSearchResults] = useState([]);
-  const [apiSearchLoading, setApiSearchLoading] = useState(false);
-  const [apiSearchQuery, setApiSearchQuery] = useState("");
-  const [manualFood, setManualFood] = useState({ name: "", serving: "", calories: "", protein: "", carbs: "", fat: "" });
+const MiniChart = ({ data, color, label, height = 100 }) => {
+  const max = Math.max(...data.map(d => d.value), 1);
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>{label}</div>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height, direction: "ltr" }}>
+        {data.slice(-14).map((d, i) => (
+          <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{
+              width: "100%", borderRadius: "3px 3px 0 0",
+              height: `${(d.value / max) * (height - 20)}px`,
+              background: color, opacity: 0.7 + (i / data.length) * 0.3,
+              minHeight: 2, transition: "height 0.3s"
+            }} />
+            {i % 2 === 0 && <span style={{ fontSize: 9, color: "#94a3b8", marginTop: 2 }}>{d.label}</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-  // Daily questionnaire — Morning
-  const [morningDone, setMorningDone] = useState(false);
-  const [sleepHours, setSleepHours] = useState(7);
-  const [sleepQuality, setSleepQuality] = useState(0);
-  const [wokeUpFeeling, setWokeUpFeeling] = useState(0);
-  const [morningBloated, setMorningBloated] = useState(false);
-  const [morningPain, setMorningPain] = useState("");
-  const [morningMood, setMorningMood] = useState(0);
-  const [morningWeight, setMorningWeight] = useState("");
-  const [morningStress, setMorningStress] = useState(0);
-  const [wentToBathroom, setWentToBathroom] = useState("");
-  const [dreamsQuality, setDreamsQuality] = useState("");
-  const [morningHunger, setMorningHunger] = useState(0);
+// ==================== ONBOARDING SCREEN ====================
+const OnboardingScreen = ({ onComplete }) => {
+  const [step, setStep] = useState(0);
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [height, setHeight] = useState("");
+  const [currentWeight, setCurrentWeight] = useState("");
+  const [dietType, setDietType] = useState("");
+  const [goalTypes, setGoalTypes] = useState([]);
+  const [conditions, setConditions] = useState([]);
+  const [conditionNotes, setConditionNotes] = useState("");
+  const [currentMeds, setCurrentMeds] = useState("");
+  const [currentSupplements, setCurrentSupplements] = useState([]);
+  const [customSupplement, setCustomSupplement] = useState("");
+  const [trackingChoices, setTrackingChoices] = useState(["calories", "protein", "water", "sleep", "mood"]);
+  const [painAreas, setPainAreas] = useState("");
+  const [allergies, setAllergies] = useState("");
+  const [weightGoalValue, setWeightGoalValue] = useState("");
+  const [calorieGoalValue, setCalorieGoalValue] = useState(1800);
+  const [proteinGoalValue, setProteinGoalValue] = useState(80);
+  const [stepsGoalValue, setStepsGoalValue] = useState(8000);
 
-  // Evening questionnaire
-  const [eveningDone, setEveningDone] = useState(false);
-  const [eveningMood, setEveningMood] = useState(0);
-  const [eveningEnergy, setEveningEnergy] = useState(0);
-  const [eveningFeelings, setEveningFeelings] = useState([]);
-  const [eveningNotes, setEveningNotes] = useState("");
+  const totalSteps = 6;
 
-  // Water
-  const [waterCups, setWaterCups] = useState(0);
-  const [showHomeCustomize, setShowHomeCustomize] = useState(false);
-  const [homeModules, setHomeModules] = useState({
-    calories: true, // always on (base)
-    protein: true,
-    macros: true,
-    quickStatus: true,
-    water: true,
-    questionnaires: true,
-    healthReport: true,
-    foodLog: true,
-    supplements: true,
-    symptoms: true,
-    period: true,
-    exercise: true,
-    sleep: true,
-    mood: true,
-    steps: true,
-  });
-
-  // Exercise
-  const [todayExercise, setTodayExercise] = useState(null);
-  const [todaySteps, setTodaySteps] = useState("");
-
-  // Supplements
-  const [todaySupplements, setTodaySupplements] = useState([]);
-  const [supplementLog, setSupplementLog] = useState([]); // timestamped entries
-  const [showSupplementPicker, setShowSupplementPicker] = useState(false);
-  const [supplementSearch, setSupplementSearch] = useState("");
-  const [customSupplementInput, setCustomSupplementInput] = useState("");
-
-  // Goals
-  const [selectedGoals, setSelectedGoals] = useState([]);
-  const [calorieGoal, setCalorieGoal] = useState(1800);
-  const [proteinGoal, setProteinGoal] = useState(80);
-  const [weightGoal, setWeightGoal] = useState("");
-  const [stepsGoal, setStepsGoal] = useState(8000);
-
-  // Weight tracking
-  const [weightHistory, setWeightHistory] = useState(() => {
-    // Generate 90 days of sample weight history
-    const hist = [];
-    const today = new Date();
-    for (let i = 90; i >= 0; i--) {
-      const d = new Date(today); d.setDate(d.getDate() - i);
-      hist.push({ date: d.toISOString().split("T")[0], weight: parseFloat((72 - (i * 0.04) + (Math.random() * 0.6 - 0.3)).toFixed(1)) });
-    }
-    return hist;
-  });
-  const [weightTimePeriod, setWeightTimePeriod] = useState("month");
-  const [newWeightValue, setNewWeightValue] = useState("");
-  const [newWeightDate, setNewWeightDate] = useState(new Date().toISOString().split("T")[0]);
-  const [showAddWeightForm, setShowAddWeightForm] = useState(false);
-  const [dietProject, setDietProject] = useState(null);
-  const [showDietProjectForm, setShowDietProjectForm] = useState(false);
-  const [dietProjectName, setDietProjectName] = useState("");
-  const [dietProjectTarget, setDietProjectTarget] = useState("");
-  const [dietProjectDeadline, setDietProjectDeadline] = useState("");
-
-  // Health symptoms
-  const [symptoms, setSymptoms] = useState([]);
-  const [newSymptom, setNewSymptom] = useState("");
-  const [showSymptomPicker, setShowSymptomPicker] = useState(false);
-  const [homeSymptomSearch, setHomeSymptomSearch] = useState("");
-
-  // Free-style health reports (with time, severity, description)
-  const [healthReports, setHealthReports] = useState([]);
-  const [newReportTypes, setNewReportTypes] = useState([]);
-  const [newReportSeverity, setNewReportSeverity] = useState(3);
-  const [newReportNote, setNewReportNote] = useState("");
-  const [newReportBodyParts, setNewReportBodyParts] = useState([]);
-
-  // Period
-  const [periodToday, setPeriodToday] = useState(false);
-  const [periodLog, setPeriodLog] = useState([]); // array of ISO date strings
-  const [periodDayLogs, setPeriodDayLogs] = useState({}); // { "2026-04-09": { intensity: "medium", symptoms: ["cramps","back"] } }
-
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-
-  // MFP Food Diary (imported history)
-  const [mfpFoodDiary, setMfpFoodDiary] = useState([]);
-  const [diarySelectedDate, setDiarySelectedDate] = useState(new Date().toISOString().split("T")[0]);
-  const [diaryViewMode, setDiaryViewMode] = useState("day"); // day | trends
-  const [diaryTrendPeriod, setDiaryTrendPeriod] = useState("month"); // week | month | 3months | all
+  const toggleCondition = (id) => {
+    if (id === "none") { setConditions(["none"]); return; }
+    setConditions(prev => {

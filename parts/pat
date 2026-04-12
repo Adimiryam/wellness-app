@@ -1,0 +1,55 @@
+  // Today's data — MFP style food log
+  const [todayFoods, setTodayFoods] = useState([]);
+  const [showFoodSearch, setShowFoodSearch] = useState(false);
+  const [foodSearch, setFoodSearch] = useState("");
+  const [foodCategoryFilter, setFoodCategoryFilter] = useState("all");
+  const [recentFoods, setRecentFoods] = useState([3, 1, 11, 29, 53, 65, 15, 19]); // IDs of recent foods
+  const [editingFood, setEditingFood] = useState(null); // for editing servings
+  const [quickAddCals, setQuickAddCals] = useState("");
+  const [foodModalTab, setFoodModalTab] = useState("search"); // search | barcode | manual | myfoods
+  const [myFoods, setMyFoods] = useState([]); // personal food database
+  const [barcodeInput, setBarcodeInput] = useState("");
+  const [barcodeLoading, setBarcodeLoading] = useState(false);
+  const [barcodeResult, setBarcodeResult] = useState(null);
+  const [barcodeError, setBarcodeError] = useState("");
+  const [apiSearchResults, setApiSearchResults] = useState([]);
+  const [apiSearchLoading, setApiSearchLoading] = useState(false);
+  const [apiSearchQuery, setApiSearchQuery] = useState("");
+  const [manualFood, setManualFood] = useState({ name: "", serving: "", calories: "", protein: "", carbs: "", fat: "" });
+
+  // Daily questionnaire — Morning
+  const [morningDone, setMorningDone] = useState(false);
+  const [sleepHours, setSleepHours] = useState(7);
+  const [sleepQuality, setSleepQuality] = useState(0);
+  const [wokeUpFeeling, setWokeUpFeeling] = useState(0);
+  const [morningBloated, setMorningBloated] = useState(false);
+  const [morningPain, setMorningPain] = useState("");
+  const [morningMood, setMorningMood] = useState(0);
+  const [morningWeight, setMorningWeight] = useState("");
+  const [morningStress, setMorningStress] = useState(0);
+  const [wentToBathroom, setWentToBathroom] = useState("");
+  const [dreamsQuality, setDreamsQuality] = useState("");
+  const [morningHunger, setMorningHunger] = useState(0);
+
+  // Evening questionnaire
+  const [eveningDone, setEveningDone] = useState(false);
+  const [eveningMood, setEveningMood] = useState(0);
+  const [eveningEnergy, setEveningEnergy] = useState(0);
+  const [eveningFeelings, setEveningFeelings] = useState([]);
+  const [eveningNotes, setEveningNotes] = useState("");
+
+  // Water
+  const [waterCups, setWaterCups] = useState(0);
+  const [showHomeCustomize, setShowHomeCustomize] = useState(false);
+  const [homeModules, setHomeModules] = useState({
+    calories: true, // always on (base)
+    protein: true,
+    macros: true,
+    quickStatus: true,
+    water: true,
+    questionnaires: true,
+    healthReport: true,
+    foodLog: true,
+    supplements: true,
+    symptoms: true,
+    period: true,

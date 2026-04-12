@@ -1,0 +1,55 @@
+                style={{ width: "100%", padding: "10px 40px 10px 10px", borderRadius: 12, border: "none", fontSize: 14, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+              <Search size={16} color="#94a3b8" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)" }} />
+            </div>
+          </div>
+
+          <div style={{ flex: 1, overflow: "auto", padding: "12px 16px", direction: "rtl" }}>
+            {/* Free text add */}
+            <div style={{ padding: "10px 0", borderBottom: "1px solid #e2e8f0", marginBottom: 12 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 6 }}>הוסף תסמין מותאם אישית:</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input type="text" placeholder="תאר/י את התסמין..." value={newSymptom} onChange={e => setNewSymptom(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter" && newSymptom.trim()) { setSymptoms(prev => [...prev, { id: Date.now(), text: newSymptom.trim(), icon: "📝", time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }), timestamp: Date.now() }]); setNewSymptom(""); }}}
+                  style={{ flex: 1, padding: 10, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 13, textAlign: "right" }} />
+                <button onClick={() => { if (newSymptom.trim()) { setSymptoms(prev => [...prev, { id: Date.now(), text: newSymptom.trim(), icon: "📝", time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }), timestamp: Date.now() }]); setNewSymptom(""); }}}
+                  style={{ padding: "10px 14px", borderRadius: 10, border: "none", background: "#ef4444", color: "#fff", cursor: "pointer", fontWeight: 600 }}>
+                  <Plus size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Grouped symptoms */}
+            {SYMPTOM_GROUPS.map(group => {
+              const groupItems = SYMPTOM_TYPES.filter(s => s.group === group);
+              const filtered = homeSymptomSearch ? groupItems.filter(s => s.label.includes(homeSymptomSearch)) : groupItems;
+              if (filtered.length === 0) return null;
+              return (
+                <div key={group} style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", marginBottom: 6 }}>{group}</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {filtered.map(s => {
+                      const active = symptoms.some(sym => sym.typeId === s.id);
+                      return (
+                        <button key={s.id} onClick={() => {
+                          if (!active) {
+                            setSymptoms(prev => [...prev, { id: Date.now(), typeId: s.id, text: s.label, icon: s.icon, time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }), timestamp: Date.now() }]);
+                          } else {
+                            setSymptoms(prev => prev.filter(sym => sym.typeId !== s.id));
+                          }
+                        }}
+                          style={{
+                            padding: "6px 10px", borderRadius: 20, border: "2px solid",
+                            borderColor: active ? "#ef4444" : "#e2e8f0",
+                            background: active ? "#fef2f2" : "#fff",
+                            color: active ? "#dc2626" : "#64748b",
+                            cursor: "pointer", fontSize: 11, fontWeight: 500,
+                            display: "flex", alignItems: "center", gap: 3
+                          }}>
+                          {active && <Check size={11} />}
+                          <span>{s.icon}</span>
+                          <span>{s.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>

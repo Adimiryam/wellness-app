@@ -1,0 +1,55 @@
+      </div>
+      )}
+
+      {/* Evening status is already shown in the compact cards above */}
+
+      {/* Home Customize Modal */}
+      {showHomeCustomize && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div style={{ background: "#fff", borderRadius: 20, maxWidth: 440, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: 20 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+              <button onClick={() => setShowHomeCustomize(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8" }}>
+                <X size={22} />
+              </button>
+              <div style={{ fontSize: 17, fontWeight: 700, color: "#1e293b" }}>התאם דף בית</div>
+            </div>
+            <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14, textAlign: "right" }}>
+              בחר/י אילו מודולים יופיעו בדף הבית. קלוריות הם הבסיס ותמיד מוצגים.
+            </div>
+            {[
+              { id: "calories", label: "קלוריות (בסיס)", icon: "🔥", locked: true },
+              { id: "protein", label: "מעקב חלבון", icon: "💪" },
+              { id: "macros", label: "פחמימות ושומנים", icon: "🥑" },
+              { id: "quickStatus", label: "סטטוס מהיר (שינה/צעדים/מים/ויטמינים)", icon: "📊" },
+              { id: "water", label: "מעקב מים", icon: "💧" },
+              { id: "questionnaires", label: "שאלוני בוקר/ערב", icon: "📋" },
+              { id: "healthReport", label: "דיווח בריאות חופשי", icon: "🩺" },
+              { id: "foodLog", label: "יומן מזון מפורט", icon: "🍽️" },
+              { id: "supplements", label: "ויטמינים ותוספים", icon: "💊" },
+              { id: "exercise", label: "פעילות גופנית", icon: "🏃" },
+              { id: "steps", label: "ספירת צעדים", icon: "👟" },
+              { id: "period", label: "סימון מחזור יומי", icon: "🩸" },
+              { id: "symptoms", label: "תסמינים ומיחושים", icon: "⚠️" },
+            ].map(mod => {
+              const on = homeModules[mod.id];
+              return (
+                <div key={mod.id} style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center", direction: "rtl",
+                  padding: "12px 10px", marginBottom: 6, borderRadius: 10,
+                  background: on ? "#f0fdf4" : "#f8fafc",
+                  border: on ? "1px solid #86efac" : "1px solid #e2e8f0",
+                  opacity: mod.locked ? 0.7 : 1,
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 18 }}>{mod.icon}</span>
+                    <span style={{ fontSize: 13, color: "#1e293b", fontWeight: 500 }}>{mod.label}</span>
+                  </div>
+                  <label style={{ position: "relative", display: "inline-block", width: 44, height: 24, cursor: mod.locked ? "not-allowed" : "pointer" }}>
+                    <input type="checkbox" checked={on} disabled={mod.locked}
+                      onChange={() => !mod.locked && setHomeModules(prev => ({ ...prev, [mod.id]: !prev[mod.id] }))}
+                      style={{ opacity: 0, width: 0, height: 0 }} />
+                    <span style={{
+                      position: "absolute", inset: 0, borderRadius: 12,
+                      background: on ? "#22c55e" : "#cbd5e1", transition: "0.2s",
+                    }}>
+                      <span style={{

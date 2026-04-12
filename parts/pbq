@@ -1,0 +1,55 @@
+              {FOOD_DATABASE.map(food => <FoodItem key={`all-${food.id}`} food={food} />)}
+            </div>
+          )}
+        </div>
+      </>
+    );
+
+    // --- Tab: Barcode ---
+    const renderBarcodeTab = () => (
+      <div style={{ flex: 1, overflow: "auto", padding: "20px 16px", direction: "rtl" }}>
+        {/* Barcode illustration */}
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div style={{ fontSize: 48, marginBottom: 8 }}>📷</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>סרוק ברקוד של מוצר</div>
+          <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>הזן/י את מספר הברקוד שמופיע על המוצר</div>
+          <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>נתונים מ-Open Food Facts — מאגר מזון עולמי ופתוח</div>
+        </div>
+
+        {/* Barcode input */}
+        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          <input type="text" inputMode="numeric" placeholder="הזן מספר ברקוד..." value={barcodeInput}
+            onChange={e => { setBarcodeInput(e.target.value.replace(/\D/g, "")); setBarcodeError(""); setBarcodeResult(null); }}
+            onKeyDown={e => { if (e.key === "Enter") searchByBarcode(barcodeInput); }}
+            style={{ flex: 1, padding: 14, borderRadius: 12, border: "2px solid #e2e8f0", fontSize: 16, textAlign: "center", letterSpacing: 2, fontWeight: 600 }} />
+          <button onClick={() => searchByBarcode(barcodeInput)} disabled={barcodeLoading || !barcodeInput}
+            style={{ padding: "14px 20px", borderRadius: 12, border: "none", background: barcodeInput ? "#6366f1" : "#e2e8f0", color: barcodeInput ? "#fff" : "#94a3b8", cursor: barcodeInput ? "pointer" : "default", fontWeight: 600, fontSize: 14 }}>
+            {barcodeLoading ? <span style={{ display: "inline-block", animation: "spin 1s linear infinite" }}>⏳</span> : <Search size={18} />}
+          </button>
+        </div>
+
+        {/* Common barcodes quick access */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#94a3b8", marginBottom: 8 }}>דוגמאות ברקוד לנסיון:</div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {[
+              { code: "7290000066318", label: "חלב תנובה" },
+              { code: "7290000810126", label: "קוטג׳ תנובה" },
+              { code: "8901058856507", label: "Coca Cola" },
+            ].map(ex => (
+              <button key={ex.code} onClick={() => { setBarcodeInput(ex.code); searchByBarcode(ex.code); }}
+                style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", fontSize: 12, color: "#475569" }}>
+                {ex.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Error */}
+        {barcodeError && (
+          <div style={{ padding: 16, borderRadius: 12, background: "#fef2f2", border: "1px solid #fecaca", textAlign: "center", marginBottom: 16 }}>
+            <div style={{ fontSize: 14, color: "#dc2626", fontWeight: 600 }}>{barcodeError}</div>
+          </div>
+        )}
+
+        {/* Result */}

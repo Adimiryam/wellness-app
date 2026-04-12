@@ -1,0 +1,55 @@
+            <span>{morningDone ? "✅" : "☀️"}</span>
+          </div>
+          <div style={{ fontSize: 12, color: morningDone ? "#166534" : "#b45309" }}>
+            {morningDone ? `הושלם — ${sleepHours} שעות שינה` : "ממתין למילוי →"}
+          </div>
+        </button>
+        <button onClick={() => { if (!eveningDone) setActiveTab("questionnaires"); }}
+          style={{ background: eveningDone ? "#f5f3ff" : "#fff", borderRadius: 14, padding: 14, border: eveningDone ? "2px solid #c4b5fd" : "2px solid #e2e8f0", cursor: eveningDone ? "default" : "pointer", textAlign: "right", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", marginBottom: 6 }}>
+            <span style={{ fontWeight: 700, fontSize: 14, color: eveningDone ? "#4c1d95" : "#475569" }}>שאלון ערב</span>
+            <span>{eveningDone ? "✅" : "🌙"}</span>
+          </div>
+          <div style={{ fontSize: 12, color: eveningDone ? "#4c1d95" : "#64748b" }}>
+            {eveningDone ? "הושלם" : "ימולא בערב →"}
+          </div>
+        </button>
+      </div>
+      )}
+
+      {/* Quick health report button */}
+      {homeModules.healthReport && (
+      <button onClick={() => setActiveTab("questionnaires")}
+        style={{ width: "100%", padding: 14, borderRadius: 14, border: "2px solid #fecaca", background: "#fff", color: "#dc2626", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+        <Stethoscope size={18} /> דיווח בריאות חופשי
+        {healthReports.length > 0 && <span style={{ background: "#dc2626", color: "#fff", borderRadius: 10, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{healthReports.length}</span>}
+      </button>
+      )}
+
+      {/* Food Log — MFP Style */}
+      {homeModules.foodLog && (
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        {/* Calorie ring + macros summary */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ display: "flex", gap: 16 }}>
+            {[
+              { label: "חלבון", value: todayTotals.protein, goal: proteinGoal, color: "#ef4444", unit: "g" },
+              { label: "פחמימות", value: todayTotals.carbs, goal: Math.round(calorieGoal * 0.45 / 4), color: "#3b82f6", unit: "g" },
+              { label: "שומן", value: todayTotals.fat, goal: Math.round(calorieGoal * 0.3 / 9), color: "#f59e0b", unit: "g" },
+            ].map((m, i) => (
+              <div key={i} style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: m.color }}>{m.value}</div>
+                <div style={{ fontSize: 10, color: "#94a3b8" }}>/{m.goal}{m.unit}</div>
+                <div style={{ fontSize: 10, color: "#64748b" }}>{m.label}</div>
+              </div>
+            ))}
+          </div>
+          {/* Calorie circle */}
+          <div style={{ position: "relative", width: 80, height: 80 }}>
+            <svg width="80" height="80" viewBox="0 0 80 80" style={{ transform: "rotate(-90deg)" }}>
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#f1f5f9" strokeWidth="6" />
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#6366f1" strokeWidth="6"
+                strokeDasharray={`${Math.min((todayTotals.calories / calorieGoal) * 213.6, 213.6)} 213.6`}
+                strokeLinecap="round" />
+            </svg>
+            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>

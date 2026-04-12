@@ -1,0 +1,55 @@
+          <>
+            {/* Date Navigator */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff", borderRadius: 12, padding: "10px 14px", marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              <button onClick={() => changeDate(1)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
+                <ChevronRight size={22} color="#6366f1" />
+              </button>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{formatDate(diarySelectedDate)}</div>
+                {dayData && <div style={{ fontSize: 12, color: "#6366f1", fontWeight: 700 }}>{dayData.totals.calories} קלוריות</div>}
+              </div>
+              <button onClick={() => changeDate(-1)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
+                <ChevronLeft size={22} color="#6366f1" />
+              </button>
+            </div>
+
+            {!dayEntry ? (
+              <div style={{ background: "#fff", borderRadius: 16, padding: 30, textAlign: "center", color: "#94a3b8", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>📝</div>
+                <div style={{ fontSize: 14 }}>אין נתונים ליום הזה</div>
+              </div>
+            ) : (
+              <>
+                {/* Daily Summary Card */}
+                <div style={{ background: "linear-gradient(135deg, #f59e0b, #f97316)", borderRadius: 16, padding: 16, marginBottom: 14, color: "#fff", textAlign: "center" }}>
+                  <div style={{ fontSize: 13, opacity: 0.85 }}>סה"כ קלוריות</div>
+                  <div style={{ fontSize: 36, fontWeight: 800 }}>{dayData.totals.calories}</div>
+                  <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 8 }}>
+                    <div><div style={{ fontSize: 11, opacity: 0.8 }}>חלבון</div><div style={{ fontSize: 16, fontWeight: 700 }}>{dayData.totals.protein}g</div></div>
+                    <div><div style={{ fontSize: 11, opacity: 0.8 }}>פחמימות</div><div style={{ fontSize: 16, fontWeight: 700 }}>{dayData.totals.carbs}g</div></div>
+                    <div><div style={{ fontSize: 11, opacity: 0.8 }}>שומן</div><div style={{ fontSize: 16, fontWeight: 700 }}>{dayData.totals.fat}g</div></div>
+                  </div>
+                </div>
+
+                {/* Macro Pie */}
+                <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#374151", marginBottom: 10, textAlign: "right" }}>פילוח מאקרו</div>
+                  {renderMacroPie(dayData.totals.calories, dayData.totals.carbs, dayData.totals.fat, dayData.totals.protein)}
+                </div>
+
+                {/* Meals */}
+                {["B", "L", "D", "S"].map(meal => {
+                  if (!dayEntry[meal] || dayEntry[meal].length === 0) return null;
+                  const mealFoods = dayEntry[meal].map(parseFood);
+                  const mealCal = mealFoods.reduce((s, f) => s + f.calories, 0);
+                  return (
+                    <div key={meal} style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 10, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: MEAL_COLORS[meal] }}>{mealCal} קל׳</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>{MEAL_NAMES[meal]}</span>
+                          <span style={{ fontSize: 18 }}>{MEAL_ICONS[meal]}</span>
+                        </div>
+                      </div>
+                      {/* Calorie bar for meal share */}
+                      <div style={{ height: 4, background: "#f1f5f9", borderRadius: 2, marginBottom: 10 }}>

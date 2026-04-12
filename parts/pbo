@@ -1,0 +1,54 @@
+    );
+
+    // --- Tab: Search (local + API) ---
+    const renderSearchTab = () => (
+      <>
+        {/* Search bar */}
+        <div style={{ padding: "12px 16px", background: "#f8fafc", direction: "rtl" }}>
+          <div style={{ position: "relative", marginBottom: 8 }}>
+            <input type="text" placeholder="חפש מאכל... (למשל: חזה עוף, בננה, שקשוקה)" value={foodSearch} onChange={e => { setFoodSearch(e.target.value); }}
+              autoFocus style={{ width: "100%", padding: "12px 40px 12px 12px", borderRadius: 12, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+            <Search size={18} color="#94a3b8" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)" }} />
+          </div>
+          {/* API search button */}
+          {foodSearch.length >= 2 && (
+            <button onClick={() => searchFoodDatabase(foodSearch)}
+              style={{ width: "100%", padding: "8px", borderRadius: 10, border: "2px solid #6366f1", background: apiSearchLoading ? "#f1f5f9" : "#fff", color: "#6366f1", cursor: "pointer", fontWeight: 600, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              {apiSearchLoading ? <><span style={{ display: "inline-block", animation: "spin 1s linear infinite" }}>⏳</span> מחפש ב-USDA + מאגר עולמי...</> : <><Search size={14} /> חפש ב-USDA + Open Food Facts (מאגרים עולמיים)</>
+            </button>
+          )}
+        </div>
+
+        {/* Category filter chips */}
+        <div style={{ padding: "8px 16px", overflowX: "auto", display: "flex", gap: 6, background: "#f8fafc", borderBottom: "1px solid #e2e8f0", direction: "rtl" }}>
+          {FOOD_CATEGORIES.map(cat => (
+            <button key={cat.id} onClick={() => setFoodCategoryFilter(cat.id)}
+              style={{
+                padding: "5px 10px", borderRadius: 20, border: "none", whiteSpace: "nowrap",
+                background: foodCategoryFilter === cat.id ? "#6366f1" : "#fff",
+                color: foodCategoryFilter === cat.id ? "#fff" : "#64748b",
+                fontSize: 11, fontWeight: 600, cursor: "pointer",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.06)"
+              }}>
+              {cat.icon} {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Food list area */}
+        <div style={{ flex: 1, overflow: "auto", padding: "0 16px", direction: "rtl" }}>
+          {/* Quick add calories */}
+          {!foodSearch && foodCategoryFilter === "all" && (
+            <div style={{ padding: "14px 0", borderBottom: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#64748b", marginBottom: 8 }}>⚡ הוספה מהירה — רק קלוריות</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input type="number" placeholder="הזן קלוריות..." value={quickAddCals} onChange={e => setQuickAddCals(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") quickAddCalories(); }}
+                  style={{ flex: 1, padding: 10, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right" }} />
+                <button onClick={quickAddCalories}
+                  style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
+                  הוסף
+                </button>
+              </div>
+            </div>
+          )}

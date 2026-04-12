@@ -1,0 +1,55 @@
+  };
+
+  const toggleSupplement = (name) => {
+    setTodaySupplements(prev => {
+      if (prev.includes(name)) {
+        setSupplementLog(log => log.filter(l => l.name !== name));
+        return prev.filter(s => s !== name);
+      } else {
+        const now = new Date();
+        setSupplementLog(log => [...log, {
+          id: Date.now(),
+          name,
+          time: now.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }),
+          timestamp: now.getTime()
+        }]);
+        return [...prev, name];
+      }
+    });
+  };
+
+  // ==================== RENDER SECTIONS ====================
+
+  // --- HOME ---
+  const renderHome = () => (
+    <div>
+      {/* Welcome */}
+      {userProfile && (
+        <div style={{ marginBottom: 12, textAlign: "right" }}>
+          <button onClick={() => setShowProfileMenu(true)} style={{
+            background: "none", border: "none", padding: 0, cursor: "pointer",
+            fontSize: 15, color: "#64748b", fontWeight: 500,
+            display: "inline-flex", alignItems: "center", gap: 6,
+          }}>
+            שלום {userProfile.name}! 👋
+            <ChevronDown size={14} />
+          </button>
+        </div>
+      )}
+
+      {showProfileMenu && (
+        <div onClick={() => setShowProfileMenu(false)} style={{
+          position: "fixed", inset: 0, background: "rgba(15,23,42,0.55)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 1000, padding: 20,
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: "#fff", borderRadius: 20, padding: 24, width: "100%",
+            maxWidth: 360, boxShadow: "0 20px 50px rgba(0,0,0,0.3)", textAlign: "right",
+          }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>
+              שלום {userProfile.name}
+            </div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 20 }}>
+              ניהול הפרופיל שלך
+            </div>

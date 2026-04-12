@@ -1,0 +1,55 @@
+                  <span style={{ fontSize: 11, color: "#94a3b8" }}>{report.time}</span>
+                </div>
+                <div style={{ flex: 1, textAlign: "right", paddingRight: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{report.label}</span>
+                    <span>{report.icons ? report.icons.join("") : report.icon}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", marginTop: 2, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 11, color: report.severity <= 2 ? "#f59e0b" : report.severity <= 3 ? "#f97316" : "#dc2626", fontWeight: 600 }}>
+                      חומרה: {report.severity}/5
+                    </span>
+                    {report.bodyPartsLabel && <span style={{ fontSize: 11, color: "#7c3aed" }}>📍 {report.bodyPartsLabel}</span>}
+                    {report.note && <span style={{ fontSize: 11, color: "#64748b" }}> • {report.note}</span>}
+                  </div>
+                </div>
+                {/* Severity indicator */}
+                <div style={{ display: "flex", gap: 2, marginLeft: 8 }}>
+                  {[1,2,3,4,5].map(i => (
+                    <div key={i} style={{ width: 6, height: 16, borderRadius: 3, background: i <= report.severity ? (report.severity <= 2 ? "#fbbf24" : report.severity <= 3 ? "#f97316" : "#dc2626") : "#f1f5f9" }} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Smart insights from health reports */}
+        <div style={{ background: "linear-gradient(135deg, #fef3c7, #fef9c3)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#92400e", marginBottom: 10, textAlign: "right" }}>
+            🧠 תובנות ממערכת הדיווחים
+          </div>
+          <div style={{ fontSize: 13, color: "#78350f", textAlign: "right", lineHeight: 1.9 }}>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>🤕 כאב ראש ↔ חלב:</strong> מתוך 30 הימים האחרונים, ב-<strong>92%</strong> מהפעמים שדיווחת על כאב ראש, זה היה בימים שאכלת חלב עד שעתיים לפני הדיווח.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>💊 כאב ראש ↔ ברזל:</strong> ב-<strong>89%</strong> מהפעמים שדיווחת על כאב ראש, לא לקחת ברזל ביומיים שלפני.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>🫧 נפיחות ↔ גלוטן:</strong> ב-<strong>78%</strong> מהדיווחים על נפיחות, אכלת לחם או פסטה באותו יום.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12, marginBottom: 8 }}>
+              <strong>😴 עייפות ↔ שינה:</strong> כשישנת פחות מ-6 שעות, דיווחת על עייפות חמורה (4-5) ב-<strong>95%</strong> מהמקרים.
+            </div>
+            <div style={{ background: "#fff", borderRadius: 10, padding: 12 }}>
+              <strong>🔴 פריחה ↔ צנון:</strong> מתוך כל הפעמים שדיווחת על פריחה, <strong>85%</strong> היו תוך 24 שעות מאכילת צנון.
+            </div>
+          </div>
+        </div>
+
+        <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#0369a1", marginBottom: 4, textAlign: "right" }}>
+            💡 ככל שתדווח/י יותר, התובנות יהיו מדויקות יותר!
+          </div>
+          <div style={{ fontSize: 12, color: "#0c4a6e", textAlign: "right" }}>

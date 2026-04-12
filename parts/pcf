@@ -1,0 +1,55 @@
+        </div>
+
+        {/* Current Phase */}
+        {currentPhase && (
+          <div style={{ background: phaseInfo[currentPhase].bg, borderRadius: 16, padding: 16, marginBottom: 14, border: "2px solid " + phaseInfo[currentPhase].color + "33" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", direction: "rtl", marginBottom: 8 }}>
+              <div style={{ fontSize: 11, color: phaseInfo[currentPhase].color, fontWeight: 600 }}>יום {dayInCycle} במחזור</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: phaseInfo[currentPhase].color }}>
+                {phaseInfo[currentPhase].emoji} {phaseInfo[currentPhase].label}
+              </div>
+            </div>
+            <div style={{ fontSize: 12, color: "#475569", textAlign: "right", lineHeight: 1.6 }}>
+              {phaseInfo[currentPhase].desc}
+            </div>
+            {daysToNext !== null && daysToNext > 0 && (
+              <div style={{ fontSize: 12, color: phaseInfo[currentPhase].color, fontWeight: 600, textAlign: "right", marginTop: 8 }}>
+                מחזור הבא בעוד {daysToNext} ימים
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Daily Log — bleeding intensity + period symptoms */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>
+            🩸 דיווח יומי - {todayStr}
+          </div>
+          {/* Bleeding intensity */}
+          <div style={{ fontSize: 12, color: "#64748b", marginBottom: 6, textAlign: "right" }}>עוצמת דימום:</div>
+          <div style={{ display: "flex", gap: 6, marginBottom: 12, flexDirection: "row-reverse" }}>
+            {[
+              { id: "none", label: "אין", color: "#e2e8f0", dotColor: "#94a3b8" },
+              { id: "spotting", label: "טפטוף", color: "#fce7f3", dotColor: "#f9a8d4" },
+              { id: "light", label: "קל", color: "#fbcfe8", dotColor: "#ec4899" },
+              { id: "medium", label: "בינוני", color: "#f472b6", dotColor: "#be185d" },
+              { id: "heavy", label: "חזק", color: "#be185d", dotColor: "#fff" },
+            ].map(lvl => {
+              const active = periodDayLogs[todayStr]?.intensity === lvl.id;
+              return (
+                <button key={lvl.id} onClick={() => setPeriodDayLogs(prev => ({
+                  ...prev,
+                  [todayStr]: { ...(prev[todayStr] || { symptoms: [] }), intensity: lvl.id }
+                }))} style={{
+                  flex: 1, padding: "8px 4px", borderRadius: 10, border: active ? "2px solid #1e293b" : "2px solid transparent",
+                  background: lvl.color, color: lvl.id === "heavy" ? "#fff" : "#1e293b",
+                  fontSize: 11, fontWeight: 600, cursor: "pointer",
+                }}>
+                  <div style={{ width: 8, height: 8, borderRadius: 4, background: lvl.dotColor, margin: "0 auto 4px" }} />
+                  {lvl.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Period symptoms */}
