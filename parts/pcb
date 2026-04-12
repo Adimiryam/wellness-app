@@ -1,0 +1,55 @@
+
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>הגדרת יעדים</div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>🔥 יעד קלוריות יומי</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>קק״ל</span>
+              <input type="number" min="1000" max="5000" value={calorieGoal === 0 ? "" : calorieGoal} onChange={e => { const s = e.target.value; if (s === "") { setCalorieGoal(""); return; } const v = parseInt(s); if (!isNaN(v)) setCalorieGoal(Math.min(5000, Math.max(0, v))); }}
+                onBlur={e => { const v = parseInt(e.target.value) || 1800; setCalorieGoal(Math.min(5000, Math.max(1000, v))); }}
+                style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 20, fontWeight: 700, textAlign: "center", color: "#6366f1", boxSizing: "border-box" }} />
+            </div>
+            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 1,000 ל-5,000 קק״ל</div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>🥩 יעד חלבון יומי (גרם)</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "#94a3b8", whiteSpace: "nowrap" }}>גרם</span>
+              <input type="number" min="0" max="700" value={proteinGoal === 0 ? "" : proteinGoal} onChange={e => { const s = e.target.value; if (s === "") { setProteinGoal(""); return; } const v = parseInt(s); if (!isNaN(v)) setProteinGoal(Math.min(700, Math.max(0, v))); }}
+                onBlur={e => { const v = parseInt(e.target.value) || 80; setProteinGoal(Math.min(700, Math.max(0, v))); }}
+                style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 20, fontWeight: 700, textAlign: "center", color: "#f59e0b", boxSizing: "border-box" }} />
+            </div>
+            <div style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginTop: 4 }}>בין 0 ל-700 גרם</div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>משקל יעד (ק״ג)</label>
+            <input type="number" placeholder="למשל: 65" value={weightGoal} onChange={e => setWeightGoal(e.target.value)}
+              style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 15, textAlign: "right", boxSizing: "border-box" }} />
+          </div>
+        </div>
+      )}
+
+      {/* Per-goal tips */}
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#f0f9ff", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#0369a1", marginBottom: 12, textAlign: "right" }}>💡 מה כדאי לך להזין כל יום לפי המטרות שלך:</div>
+          {selectedGoals.map(goalId => {
+            const goal = DIET_GOALS.find(g => g.id === goalId);
+            const Icon = goal?.icon;
+            return (
+              <div key={goalId} style={{ background: "#fff", borderRadius: 12, padding: 14, marginBottom: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", marginBottom: 6 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: goal?.color }}>{goal?.label}</span>
+                  {Icon && <Icon size={18} color={goal?.color} />}
+                </div>
+                <div style={{ fontSize: 12, color: "#0c4a6e", textAlign: "right", lineHeight: 1.7 }}>
+                  {GOAL_TIPS[goalId] || ""}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );

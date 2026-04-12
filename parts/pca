@@ -1,0 +1,55 @@
+            המערכת מחפשת קשרים בין מה שאכלת, מה לקחת, כמה ישנת, ומה הרגשת — ומזהה דפוסים חוזרים.
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // --- GOALS ---
+  const toggleGoal = (id) => {
+    setSelectedGoals(prev => prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]);
+  };
+
+  const GOAL_TIPS = {
+    weight_loss: "✓ כל ארוחה שאכלת  ✓ כמות חלבון  ✓ רגשות ורעב  ✓ משקל בוקר  ✓ פעילות גופנית  ✓ שעות שינה",
+    keto: "✓ כל ארוחה (חשוב: פחמימות!)  ✓ רמת אנרגיה  ✓ תחושות גופניות  ✓ משקל  ✓ קיטונים (אם מודד/ת)",
+    sensitivity: "✓ כל מה שאכלת (בפירוט!)  ✓ תופעות בריאותיות  ✓ תחושות אחרי כל ארוחה  ✓ עור, עיכול, אנרגיה",
+    health: "✓ ארוחות  ✓ ויטמינים  ✓ שינה  ✓ פעילות גופנית  ✓ מצב רוח  ✓ מחזור",
+    weight_gain: "✓ כל ארוחה  ✓ חלבון  ✓ אימונים  ✓ משקל בוקר  ✓ שינה ומנוחה",
+    energy: "✓ ארוחות + שעות  ✓ רמת אנרגיה (כל כמה שעות)  ✓ שינה  ✓ קפאין  ✓ פעילות גופנית",
+  };
+
+  const renderGoals = () => (
+    <div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>🎯 היעדים שלי</div>
+      <div style={{ fontSize: 13, color: "#64748b", marginBottom: 16, textAlign: "right" }}>ניתן לבחור כמה מטרות במקביל</div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+        {DIET_GOALS.map(goal => {
+          const Icon = goal.icon;
+          const isSelected = selectedGoals.includes(goal.id);
+          return (
+            <button key={goal.id} onClick={() => toggleGoal(goal.id)}
+              style={{
+                padding: 16, borderRadius: 14, border: "2px solid",
+                borderColor: isSelected ? goal.color : "#e2e8f0",
+                background: isSelected ? `${goal.color}10` : "#fff",
+                cursor: "pointer", textAlign: "right", position: "relative",
+                boxShadow: isSelected ? `0 4px 12px ${goal.color}30` : "0 2px 8px rgba(0,0,0,0.04)"
+              }}>
+              {isSelected && <div style={{ position: "absolute", top: 8, left: 8, width: 22, height: 22, borderRadius: 11, background: goal.color, display: "flex", alignItems: "center", justifyContent: "center" }}><Check size={14} color="#fff" /></div>}
+              <Icon size={24} color={goal.color} style={{ marginBottom: 8 }} />
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>{goal.label}</div>
+              <div style={{ fontSize: 11, color: "#64748b" }}>{goal.desc}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {selectedGoals.length > 0 && (
+        <div style={{ background: "#f0fdf4", borderRadius: 12, padding: 12, marginBottom: 16, textAlign: "right" }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#166534" }}>
+            {selectedGoals.length} מטרות פעילות: {selectedGoals.map(g => DIET_GOALS.find(d => d.id === g)?.label).join(", ")}
+          </span>
+        </div>
+      )}

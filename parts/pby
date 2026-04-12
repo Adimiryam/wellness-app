@@ -1,0 +1,55 @@
+          {newReportTypes.length > 0 && (
+            <div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>
+                  דרגת חומרה (1=קל, 5=חמור)
+                </div>
+                <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", direction: "ltr" }}>
+                  {[1, 2, 3, 4, 5].map(level => (
+                    <button key={level} onClick={() => setNewReportSeverity(level)}
+                      style={{
+                        width: 44, height: 44, borderRadius: 10, border: "none", cursor: "pointer",
+                        background: newReportSeverity >= level
+                          ? level <= 2 ? "#fbbf24" : level <= 3 ? "#f97316" : "#dc2626"
+                          : "#f1f5f9",
+                        color: newReportSeverity >= level ? "#fff" : "#94a3b8",
+                        fontWeight: 700, fontSize: 16, transition: "all 0.2s"
+                      }}>
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 12 }}>
+                <input type="text" placeholder="פרטים נוספים... (אופציונלי)" value={newReportNote} onChange={e => setNewReportNote(e.target.value)}
+                  style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+              </div>
+
+              {/* Summary before submit */}
+              <div style={{ background: "#fef2f2", borderRadius: 10, padding: 12, marginBottom: 12, textAlign: "right", fontSize: 12, color: "#991b1b" }}>
+                <strong>סיכום:</strong> {newReportTypes.map(t => SYMPTOM_TYPES.find(s => s.id === t)?.label).join(" + ")}
+                {needsBodyPartSelection && newReportBodyParts.length > 0 && <span> • מיקום: {newReportBodyParts.map(bp => BODY_PARTS.find(b => b.id === bp)?.label).join(", ")}</span>}
+                <span> • חומרה: {newReportSeverity}/5</span>
+              </div>
+
+              <button onClick={addHealthReport}
+                style={{ width: "100%", padding: 14, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #dc2626, #ef4444)", color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>
+                שמור דיווח 🩺
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Today's health reports log */}
+        {healthReports.length > 0 && (
+          <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right" }}>
+              🩺 דיווחים מהיום ({healthReports.length})
+            </div>
+            {healthReports.sort((a, b) => b.timestamp - a.timestamp).map(report => (
+              <div key={report.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #f1f5f9" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <button onClick={() => setHealthReports(prev => prev.filter(r => r.id !== report.id))} style={{ background: "none", border: "none", cursor: "pointer", color: "#cbd5e1", padding: 2 }}>
+                    <X size={14} />
+                  </button>

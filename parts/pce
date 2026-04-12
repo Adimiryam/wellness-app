@@ -1,0 +1,55 @@
+    if (lastStart) {
+      for (let i = 1; i <= 3; i++) {
+        const next = new Date(lastStart);
+        next.setDate(next.getDate() + avgCycle * i);
+        const pmsStart = new Date(next);
+        pmsStart.setDate(pmsStart.getDate() - PMS_DAYS);
+        const periodEnd = new Date(next);
+        periodEnd.setDate(periodEnd.getDate() + PERIOD_LEN - 1);
+        predictions.push({
+          start: next.toISOString().split("T")[0],
+          end: periodEnd.toISOString().split("T")[0],
+          pmsStart: pmsStart.toISOString().split("T")[0],
+        });
+      }
+    }
+
+    // Current cycle info
+    const now = new Date();
+    const todayStr = now.toISOString().split("T")[0];
+    let currentPhase = null;
+    let dayInCycle = null;
+    let daysToNext = null;
+    if (lastStart) {
+      const diffDays = Math.floor((now - lastStart) / 86400000);
+      dayInCycle = diffDays + 1;
+      daysToNext = avgCycle - diffDays;
+      if (diffDays < PERIOD_LEN) currentPhase = "period";
+      else if (daysToNext <= PMS_DAYS && daysToNext > 0) currentPhase = "pms";
+      else if (diffDays >= 12 && diffDays <= 16) currentPhase = "ovulation";
+      else currentPhase = "follicular_luteal";
+    }
+
+    const phaseInfo = {
+      period: { label: "וסת", color: "#ec4899", bg: "#fdf2f8", emoji: "🩸", desc: "את במחזור. הגוף שלך עובד קשה — תני לו מנוחה, ברזל, ומזון מזין." },
+      pms: { label: "תסמונת קדם וסתית", color: "#f97316", bg: "#fff7ed", emoji: "⚠️", desc: "את בחלון ה-PMS. ייתכנו מיחושים, נפיחות, שינויי מצב רוח." },
+      ovulation: { label: "ביוץ", color: "#22c55e", bg: "#f0fdf4", emoji: "🥚", desc: "זמן ביוץ — אנרגיה גבוהה, פוריות מקסימלית." },
+      follicular_luteal: { label: "שלב בין-מחזורי", color: "#6366f1", bg: "#eef2ff", emoji: "🌸", desc: "שלב רגיל במחזור. הגוף שלך בשיווי משקל." },
+    };
+
+    const addPeriodDate = (dateStr) => {
+      if (!dateStr) return;
+      setPeriodLog(prev => prev.includes(dateStr) ? prev : [...prev, dateStr].sort());
+    };
+    const removePeriodDate = (dateStr) => {
+      setPeriodLog(prev => prev.filter(d => d !== dateStr));
+    };
+
+    return (
+      <div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 6, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
+          <span>מעקב מחזור</span>
+          <Droplets size={22} color="#ec4899" />
+        </div>
+        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14, textAlign: "right" }}>
+          אורך מחזור ממוצע: {avgCycle} ימים • {sortedStarts.length} מחזורים בהיסטוריה

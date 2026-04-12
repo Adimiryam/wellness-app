@@ -1,0 +1,55 @@
+          <div style={{ fontSize: 13, color: "#831843", textAlign: "right", lineHeight: 1.8 }}>
+            מתוך {radishDays.length} ימים שאכלת צנון — הופיעה פריחה ב-{radishDays.length > 0 ? Math.round((radishRash / radishDays.length) * 100) : 0}% מהמקרים.<br />
+            מתוך {noRadishDays.length} ימים בלי צנון — הופיעה פריחה רק ב-{noRadishDays.length > 0 ? Math.round((noRadishRash / noRadishDays.length) * 100) : 0}% מהמקרים.<br />
+            <strong>⚠️ שים/י לב: </strong>ייתכן שיש לך רגישות לצנון! שווה לבדוק עם רופא/ה.
+          </div>
+        </div>
+        <div style={{ background: "linear-gradient(135deg, #dbeafe, #eff6ff)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#1e40af", marginBottom: 8, textAlign: "right" }}>💊 קשר ברזל ↔ אנרגיה</div>
+          <div style={{ fontSize: 13, color: "#1e3a5f", textAlign: "right", lineHeight: 1.8 }}>
+            בימים שלקחת ברזל — ציון אנרגיה ממוצע: <strong>{ironEnergy}/5</strong><br />
+            בימים שלא לקחת — ציון אנרגיה ממוצע: <strong>{noIronEnergy}/5</strong><br />
+            <strong>💡 המלצה: </strong>ברזל עושה לך הבדל! אל תשכח/י לקחת כל יום.
+          </div>
+        </div>
+        <div style={{ background: "linear-gradient(135deg, #d1fae5, #ecfdf5)", borderRadius: 16, padding: 18, marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#065f46", marginBottom: 8, textAlign: "right" }}>⚖️ מגמת משקל</div>
+          <div style={{ fontSize: 13, color: "#064e3b", textAlign: "right", lineHeight: 1.8 }}>
+            משקל התחלתי: <strong>{(sampleData[0]?.weight ?? userProfile?.currentWeight ?? 0).toFixed(1)} ק״ג</strong><br />
+            משקל נוכחי: <strong>{(sampleData[sampleData.length - 1]?.weight ?? userProfile?.currentWeight ?? 0).toFixed(1)} ק״ג</strong><br />
+            שינוי: <strong>{((sampleData[sampleData.length - 1]?.weight ?? userProfile?.currentWeight ?? 0) - (sampleData[0]?.weight ?? userProfile?.currentWeight ?? 0)).toFixed(1)} ק״ג</strong> ב-30 ימים<br />
+            <strong>📈 קצב: </strong>{Math.abs(((sampleData[sampleData.length - 1]?.weight ?? userProfile?.currentWeight ?? 0) - (sampleData[0]?.weight ?? userProfile?.currentWeight ?? 0)) / 4).toFixed(2)} ק״ג בשבוע
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // --- WEIGHT TRACKING ---
+  // --- CYCLE / PERIOD TRACKING ---
+  const renderCycle = () => {
+    const CYCLE_LEN = 28;
+    const PERIOD_LEN = 5;
+    const PMS_DAYS = 3;
+
+    // Combine reported periods + sample data
+    const allStarts = new Set();
+    sampleData.forEach(d => { if (d.isPeriodStart) allStarts.add(d.date); });
+    periodLog.forEach(d => allStarts.add(d));
+    const sortedStarts = Array.from(allStarts).sort();
+    const recentStarts = sortedStarts.slice(-6).reverse();
+
+    // Compute average cycle length from history
+    let avgCycle = CYCLE_LEN;
+    if (sortedStarts.length >= 2) {
+      const gaps = [];
+      for (let i = 1; i < sortedStarts.length; i++) {
+        const diff = Math.round((new Date(sortedStarts[i]) - new Date(sortedStarts[i - 1])) / 86400000);
+        if (diff > 15 && diff < 45) gaps.push(diff);
+      }
+      if (gaps.length > 0) avgCycle = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+    }
+
+    // Predict next 3 periods
+    const lastStart = sortedStarts.length > 0 ? new Date(sortedStarts[sortedStarts.length - 1]) : null;
+    const predictions = [];
