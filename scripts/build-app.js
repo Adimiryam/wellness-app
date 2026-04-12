@@ -1,16 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
-const partsDir = "parts";
-const files = fs.readdirSync(partsDir).filter(f => /^p[a-z]{2,3}$/.test(f)).sort();
-const buffers = files.map(f => {
-  const buf = fs.readFileSync(path.join(partsDir, f));
-  // Ensure each part ends with a newline (fixes truncation from GitHub push)
-  if (buf.length === 0 || buf[buf.length - 1] !== 10) {
-    return Buffer.concat([buf, Buffer.from("\n")]);
-  }
-  return buf;
-});
-const combined = buffers.reduce((a, b) => Buffer.concat([a, b]));
+import { gunzipSync } from "node:zlib";
+
+const encodedDir = "encoded";
+const chunks = fs.readdirSync(encodedDir)
+  .filter(f => f.startsWith("chunk_"))
+  .sort();
+
+const b64 = chunks.map(f => fs.readFileSync(path.join(encodedDir, f), "utf8").trim()).join("");
+const gzipped = Buffer.from(b64, "base64");
+const source = gunzipSync(gzipped);
+
 fs.mkdirSync("src", { recursive: true });
-fs.writeFileSync("src/App.jsx", combined);
-console.log("Wrote src/App.jsx (" + combined.length + " bytes from " + files.length + " parts)");
+fs.writeFileSync("src/App.jsx", source);
+console.log("Wrote src/App.jsx (" + source.length + " bytes from " + chunks.length + " encoded chunks)");
