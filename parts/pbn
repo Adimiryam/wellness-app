@@ -1,0 +1,55 @@
+                        position: "absolute", top: 2, left: on ? 22 : 2, width: 20, height: 20,
+                        borderRadius: 10, background: "#fff", transition: "0.2s",
+                      }} />
+                    </span>
+                  </label>
+                </div>
+              );
+            })}
+            <button onClick={() => setShowHomeCustomize(false)} style={{
+              width: "100%", padding: 12, marginTop: 10, borderRadius: 12, border: "none",
+              background: "#6366f1", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}>סיימתי</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // --- MFP-STYLE FOOD SEARCH SCREEN (4 TABS) ---
+  const renderFoodSearchModal = () => {
+    if (!showFoodSearch) return null;
+
+    const FOOD_TABS = [
+      { id: "search", label: "חיפוש", icon: <Search size={16} /> },
+      { id: "barcode", label: "ברקוד", icon: <Camera size={16} /> },
+      { id: "manual", label: "ידני", icon: <Edit3 size={16} /> },
+      { id: "myfoods", label: "המאכלים שלי", icon: <Bookmark size={16} /> },
+    ];
+
+    const FoodItem = ({ food, showServing = true, showSaveBtn = true }) => (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "12px 4px", borderBottom: "1px solid #f1f5f9" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={() => addFood(food)} title="הוסף"
+            style={{ background: "#6366f1", border: "none", cursor: "pointer", color: "#fff", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Plus size={16} />
+          </button>
+          {showSaveBtn && (
+            <button onClick={() => isInMyFoods(food.name) ? null : saveToMyFoods(food)} title={isInMyFoods(food.name) ? "כבר נשמר" : "שמור למאכלים שלי"}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
+              <Star size={16} color={isInMyFoods(food.name) ? "#f59e0b" : "#cbd5e1"} fill={isInMyFoods(food.name) ? "#f59e0b" : "none"} />
+            </button>
+          )}
+          <div style={{ textAlign: "left", minWidth: 45 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{food.calories}</div>
+            <div style={{ fontSize: 9, color: "#94a3b8" }}>קק״ל</div>
+          </div>
+        </div>
+        <div style={{ flex: 1, paddingRight: 8, textAlign: "right" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{food.name}</div>
+          <div style={{ fontSize: 11, color: "#94a3b8" }}>
+            {showServing && food.serving && <span>{food.serving} • </span>}
+            ח׳{food.protein}g  פ׳{food.carbs}g  ש׳{food.fat}g
+          </div>
+        </div>
+      </div>

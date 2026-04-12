@@ -1,0 +1,55 @@
+      {homeModules.symptoms && (
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 12, textAlign: "right", display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+          <span>תופעות בריאותיות ומיחושים</span>
+          <AlertTriangle size={20} color="#ef4444" />
+        </div>
+          {/* Quick common symptoms */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "flex-end", marginBottom: 10, direction: "rtl" }}>
+            {SYMPTOM_TYPES.filter(s => ["headache","stomach","back_pain","fatigue","bloating","nausea","dizziness","heartburn","anxiety","insomnia","joint_pain","muscle_pain"].includes(s.id)).map(s => {
+              const active = symptoms.some(sym => sym.typeId === s.id);
+              return (
+                <button key={s.id} onClick={() => {
+                  if (!active) {
+                    setSymptoms(prev => [...prev, { id: Date.now(), typeId: s.id, text: s.label, icon: s.icon, time: new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" }), timestamp: Date.now() }]);
+                  } else {
+                    setSymptoms(prev => prev.filter(sym => sym.typeId !== s.id));
+                  }
+                }}
+                  style={{
+                    padding: "6px 10px", borderRadius: 20, border: "2px solid",
+                    borderColor: active ? "#ef4444" : "#e2e8f0",
+                    background: active ? "#fef2f2" : "#fff",
+                    color: active ? "#dc2626" : "#64748b",
+                    cursor: "pointer", fontSize: 11, fontWeight: 500,
+                    display: "flex", alignItems: "center", gap: 3
+                  }}>
+                  {active && <Check size={11} />}
+                  <span>{s.icon}</span>
+                  <span>{s.label}</span>
+                </button>
+              );
+            })}
+            <button onClick={() => setShowSymptomPicker(true)}
+              style={{
+                padding: "6px 10px", borderRadius: 20, border: "2px dashed #ef4444",
+                background: "#fff0f0", color: "#dc2626",
+                cursor: "pointer", fontSize: 11, fontWeight: 600,
+                display: "flex", alignItems: "center", gap: 3
+              }}>
+              <Plus size={12} />
+              <span>עוד תסמינים...</span>
+            </button>
+          </div>
+          {/* Listed symptoms */}
+          {symptoms.map(s => (
+            <div key={s.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#fef2f2", borderRadius: 8, marginBottom: 6 }}>
+              <button onClick={() => setSymptoms(prev => prev.filter(x => x.id !== s.id))} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}>
+                <X size={14} />
+              </button>
+              <div style={{ textAlign: "right" }}>
+                <span style={{ fontSize: 14, color: "#991b1b" }}>{s.icon && <span style={{ marginLeft: 4 }}>{s.icon}</span>}{s.text}</span>
+                <span style={{ fontSize: 11, color: "#f87171", marginRight: 8 }}>{s.time}</span>
+              </div>
+            </div>
+          ))}

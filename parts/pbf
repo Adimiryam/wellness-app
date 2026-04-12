@@ -1,0 +1,55 @@
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#1e293b" }}>{Math.max(0, calorieGoal - todayTotals.calories)}</div>
+              <div style={{ fontSize: 8, color: "#94a3b8" }}>נותרו קק״ל</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Add food button */}
+        <button onClick={() => setShowFoodSearch(true)}
+          style={{ width: "100%", padding: 14, borderRadius: 12, border: "2px dashed #c7d2fe", background: "#eef2ff", color: "#6366f1", fontSize: 15, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16, transition: "all 0.2s" }}>
+          <Plus size={20} /> הוסף מאכל
+        </button>
+
+        {/* Today's food list */}
+        {todayFoods.length > 0 && (
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#64748b", marginBottom: 8, textAlign: "right" }}>
+              מה אכלתי היום ({todayFoods.length} מאכלים)
+            </div>
+            {todayFoods.map(entry => (
+              <div key={entry.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #f1f5f9" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <button onClick={() => removeFood(entry.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#cbd5e1", padding: 2 }}>
+                    <X size={16} />
+                  </button>
+                  <div style={{ textAlign: "left", minWidth: 50 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{Math.round(entry.food.calories * entry.servings)}</div>
+                    <div style={{ fontSize: 9, color: "#94a3b8" }}>קק״ל</div>
+                  </div>
+                </div>
+                <div style={{ flex: 1, textAlign: "right", paddingRight: 8 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", display: "flex", justifyContent: "flex-end", gap: 6, alignItems: "center" }}>
+                    <span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 500, background: "#f1f5f9", padding: "2px 6px", borderRadius: 10 }}>🕐 {entry.time}</span>
+                    <span>{entry.food.name}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", display: "flex", gap: 4, justifyContent: "flex-end", alignItems: "center" }}>
+                    <span>{entry.food.serving || ""}</span>
+                    {entry.servings !== 1 && <span style={{ color: "#6366f1", fontWeight: 600 }}>×{entry.servings}</span>}
+                    <span style={{ marginRight: 6 }}>•</span>
+                    <span>ח׳{Math.round(entry.food.protein * entry.servings)}  פ׳{Math.round(entry.food.carbs * entry.servings)}  ש׳{Math.round(entry.food.fat * entry.servings)}</span>
+                  </div>
+                </div>
+                {/* Serving adjuster */}
+                <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
+                  <button onClick={() => updateServings(entry.id, Math.max(0.5, entry.servings - 0.5))}
+                    style={{ width: 24, height: 24, borderRadius: 6, border: "1px solid #e2e8f0", background: "#fff", cursor: "pointer", fontSize: 14, color: "#64748b", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#475569", minWidth: 20, textAlign: "center" }}>{entry.servings}</span>
+                  <button onClick={() => updateServings(entry.id, entry.servings + 0.5)}
+                    style={{ width: 24, height: 24, borderRadius: 6, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                </div>
+              </div>
+            ))}
+            {/* Daily total bar */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12, padding: "10px 0", borderTop: "2px solid #e2e8f0" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{todayTotals.calories} קק״ל</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>סה״כ היום</div>
