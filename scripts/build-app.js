@@ -81,6 +81,12 @@ source = source.replace(
   '{proteinGoal > 0 && <div style={{ fontSize: 11, color: "#64748b", textAlign: "center", marginTop: 6 }}>\u05D9\u05E2\u05D3: {proteinGoal}g | \u05D9\u05E8\u05D5\u05E7 = \u05E2\u05DE\u05D9\u05D3\u05D4 \u05D1\u05D9\u05E2\u05D3</div>}\n            </div>' + MOST_USED_SECTION + '\n          </>'
 );
 
+// Patch 4: Remove "Macro Average Pie" section from trends view
+source = source.replace(
+  '\n            {/* Macro Average Pie */}\n            <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>\n              <div style={{ fontSize: 14, fontWeight: 600, color: "#374151", marginBottom: 10, textAlign: "right" }}>\u05DE\u05DE\u05D5\u05E6\u05E2 \u05DE\u05D0\u05E7\u05E8\u05D5</div>\n              {renderMacroPie(avgCalories, avgCarbs, avgFat, avgProtein)}\n            </div>',
+  ''
+);
+
 fs.mkdirSync("src", { recursive: true });
 fs.writeFileSync("src/App.jsx", source);
 console.log("Wrote src/App.jsx (" + source.length + " bytes from " + chunks.length + " encoded chunks)");
