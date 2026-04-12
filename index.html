@@ -10,15 +10,40 @@
     <script>
       // Auto-load MFP food diary data if not present in localStorage
       (function() {
+        var needsReload = false;
+        var pending = 0;
+        function done() { pending--; if (pending === 0 && needsReload && document.readyState === 'complete') location.reload(); }
+
         if (!localStorage.getItem('mfp-food-diary')) {
+          pending++;
           var url = 'https://gist.githubusercontent.com/Adimiryam/09752ff68b127561d21a212e17c4962e/raw/mfp-food-diary.json';
           fetch(url).then(function(r) { return r.text(); }).then(function(data) {
             if (data && data.length > 10) {
               localStorage.setItem('mfp-food-diary', data);
               console.log('Loaded MFP food diary data (' + data.length + ' chars)');
-              if (document.readyState === 'complete') location.reload();
+              needsReload = true;
             }
-          }).catch(function(e) { console.warn('Could not load MFP data:', e); });
+            done();
+          }).catch(function(e) { console.warn('Could not load MFP data:', e); done(); });
+        }
+
+        // Auto-load weight history into wellness-app-v1 if missing
+        var appData = null;
+        try { appData = JSON.parse(localStorage.getItem('wellness-app-v1')); } catch(e) {}
+        if (!appData || !appData.weightHistory || appData.weightHistory.length < 10) {
+          pending++;
+          var wUrl = 'https://gist.githubusercontent.com/Adimiryam/09752ff68b127561d21a212e17c4962e/raw/weight-history.json';
+          fetch(wUrl).then(function(r) { return r.json(); }).then(function(weights) {
+            if (weights && weights.length > 10) {
+              var existing = {};
+              try { existing = JSON.parse(localStorage.getItem('wellness-app-v1')) || {}; } catch(e) {}
+              existing.weightHistory = weights;
+              localStorage.setItem('wellness-app-v1', JSON.stringify(existing));
+              console.log('Loaded weight history (' + weights.length + ' entries)');
+              needsReload = true;
+            }
+            done();
+          }).catch(function(e) { console.warn('Could not load weight data:', e); done(); });
         }
       })();
     </script>
