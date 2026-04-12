@@ -87,6 +87,37 @@ source = source.replace(
   ''
 );
 
+// Patch 5: Replace stats grid with small protein average indicator
+source = source.replace(
+  `{/* Stats Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
+              <div style={{ background: "#fffbeb", borderRadius: 12, padding: 12, textAlign: "center" }}>
+                <div style={{ fontSize: 11, color: "#64748b" }}>\u05D4\u05DB\u05D9 \u05D2\u05D1\u05D5\u05D4</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#f59e0b" }}>{maxCal}</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>\u05E7\u05DC\u05D5\u05E8\u05D9\u05D5\u05EA</div>
+              </div>
+              <div style={{ background: "#f0fdf4", borderRadius: 12, padding: 12, textAlign: "center" }}>
+                <div style={{ fontSize: 11, color: "#64748b" }}>\u05D4\u05DB\u05D9 \u05E0\u05DE\u05D5\u05DA</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#22c55e" }}>{minCal}</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>\u05E7\u05DC\u05D5\u05E8\u05D9\u05D5\u05EA</div>
+              </div>
+              <div style={{ background: "#faf5ff", borderRadius: 12, padding: 12, textAlign: "center" }}>
+                <div style={{ fontSize: 11, color: "#64748b" }}>\u05DE\u05DE\u05D5\u05E6\u05E2 \u05D7\u05DC\u05D1\u05D5\u05DF</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#7c3aed" }}>{avgProtein}g</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>\u05DC\u05D9\u05D5\u05DD</div>
+              </div>
+              <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 12, textAlign: "center" }}>
+                <div style={{ fontSize: 11, color: "#64748b" }}>\u05D9\u05DE\u05D9\u05DD \u05E2\u05DD \u05E0\u05EA\u05D5\u05E0\u05D9\u05DD</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#0369a1" }}>{trendData.length}</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>\u05DE\u05EA\u05D5\u05DA {trendDays === 9999 ? "\u05D4\u05DB\u05DC" : trendDays}</div>
+              </div>
+            </div>`,
+  `<div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 6, marginBottom: 10 }}>
+              <span style={{ fontSize: 12, color: "#7c3aed", fontWeight: 600 }}>{avgProtein}g</span>
+              <span style={{ fontSize: 11, color: "#94a3b8" }}>\u05DE\u05DE\u05D5\u05E6\u05E2 \u05D7\u05DC\u05D1\u05D5\u05DF \u05DC\u05D9\u05D5\u05DD</span>
+            </div>`
+);
+
 fs.mkdirSync("src", { recursive: true });
 fs.writeFileSync("src/App.jsx", source);
 console.log("Wrote src/App.jsx (" + source.length + " bytes from " + chunks.length + " encoded chunks)");
