@@ -29,10 +29,12 @@ source = source.replace(
 );
 
 // Patch 3: Add "Most Used Products" section after protein trend chart in trends view
+// NOTE: todayExcludeStr is injected by Patch 6 before trendData definition
 const MOST_USED_SECTION = `
             {/* Most Used Products */}
             {(() => {
-              const periodEntries = mfpFoodDiary.filter(e => e.date >= trendCutoffStr);
+              const todayStr = new Date().toISOString().split("T")[0];
+              const periodEntries = mfpFoodDiary.filter(e => e.date >= trendCutoffStr && e.date < todayStr);
               const foodCounts = {};
               periodEntries.forEach(entry => {
                 ["B", "L", "D", "S"].forEach(meal => {
@@ -116,6 +118,12 @@ source = source.replace(
               <span style={{ fontSize: 12, color: "#7c3aed", fontWeight: 600 }}>{avgProtein}g</span>
               <span style={{ fontSize: 11, color: "#94a3b8" }}>\u05DE\u05DE\u05D5\u05E6\u05E2 \u05D7\u05DC\u05D1\u05D5\u05DF \u05DC\u05D9\u05D5\u05DD</span>
             </div>`
+);
+
+// Patch 6: Exclude today from trend calculations (incomplete day skews averages)
+source = source.replace(
+  'const trendData = allDayTotals.filter(d => d.date >= trendCutoffStr && d.calories > 0);',
+  'const trendTodayStr = new Date().toISOString().split("T")[0];\n    const trendData = allDayTotals.filter(d => d.date >= trendCutoffStr && d.date < trendTodayStr && d.calories > 0);'
 );
 
 fs.mkdirSync("src", { recursive: true });
