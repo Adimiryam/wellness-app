@@ -210,6 +210,114 @@ source = source.replace(
       })()}`
 );
 
+// Patch 9a: Add weightSearchDate state
+source = source.replace(
+  'const [showAddWeightForm, setShowAddWeightForm] = useState(false);',
+  'const [showAddWeightForm, setShowAddWeightForm] = useState(false);\n  const [weightSearchDate, setWeightSearchDate] = useState("");'
+);
+
+// Patch 9b: Replace weight "Recent Entries" list with full searchable list + period/PMS markers
+source = source.replace(
+  `{/* Recent Entries */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", marginBottom: 10, textAlign: "right" }}>\u05E9\u05E7\u05D9\u05DC\u05D5\u05EA \u05D0\u05D7\u05E8\u05D5\u05E0\u05D5\u05EA</div>
+          {allSorted.slice(-10).reverse().map((entry, i) => (
+            <div key={i} style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "8px 0", borderBottom: i < 9 ? "1px solid #f1f5f9" : "none", direction: "rtl",
+            }}>
+              <span style={{ fontSize: 13, color: "#64748b" }}>{entry.date}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: "#1e293b" }}>{entry.weight} \u05E7"\u05D2</span>
+                {i < allSorted.slice(-10).reverse().length - 1 && (() => {
+                  const prev = allSorted.slice(-10).reverse()[i + 1];
+                  const diff = entry.weight - prev.weight;
+                  if (Math.abs(diff) < 0.05) return null;
+                  return (
+                    <span style={{ fontSize: 11, color: diff < 0 ? "#16a34a" : "#dc2626" }}>
+                      {diff < 0 ? <TrendingDown size={12} /> : <TrendingUp size={12} />}
+                      {Math.abs(diff).toFixed(1)}
+                    </span>
+                  );
+                })()}
+              </div>
+            </div>
+          ))}
+        </div>`,
+  `{/* All Weighings with search & period markers */}
+        {(() => {
+          const allPeriodDates = new Set([...periodLog]);
+          sampleData.forEach(d => { if (d.isPeriodStart) allPeriodDates.add(d.date); });
+          const periodStarts = [...allPeriodDates].sort();
+          const pmsDates = new Set();
+          periodStarts.forEach(ps => {
+            const d = new Date(ps);
+            for (let i = 1; i <= 3; i++) {
+              const pd = new Date(d); pd.setDate(pd.getDate() - i);
+              pmsDates.add(pd.toISOString().split("T")[0]);
+            }
+          });
+          const periodDaysSet = new Set();
+          periodStarts.forEach(ps => {
+            const d = new Date(ps);
+            for (let i = 0; i < 5; i++) {
+              const pd = new Date(d); pd.setDate(pd.getDate() + i);
+              periodDaysSet.add(pd.toISOString().split("T")[0]);
+            }
+          });
+          Object.keys(periodDayLogs).forEach(d => periodDaysSet.add(d));
+
+          const filtered = weightSearchDate
+            ? allSorted.filter(e => e.date.includes(weightSearchDate)).reverse()
+            : allSorted.slice().reverse();
+          return (
+            <div style={{ background: "#fff", borderRadius: 16, padding: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <div style={{ fontSize: 11, color: "#94a3b8" }}>{filtered.length} \u05E9\u05E7\u05D9\u05DC\u05D5\u05EA</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", textAlign: "right" }}>\u05DB\u05DC \u05D4\u05E9\u05E7\u05D9\u05DC\u05D5\u05EA</div>
+              </div>
+              <input type="text" placeholder="\u05D7\u05D9\u05E4\u05D5\u05E9 \u05DC\u05E4\u05D9 \u05EA\u05D0\u05E8\u05D9\u05DA (2026-03)" value={weightSearchDate} onChange={e => setWeightSearchDate(e.target.value)}
+                style={{ width: "100%", padding: 8, borderRadius: 8, border: "1.5px solid #e2e8f0", fontSize: 13, textAlign: "right", marginBottom: 10, boxSizing: "border-box" }} />
+              <div style={{ display: "flex", gap: 8, marginBottom: 10, fontSize: 10, color: "#94a3b8", justifyContent: "flex-end" }}>
+                <span>\uD83D\uDD34 \u05DE\u05D7\u05D6\u05D5\u05E8</span>
+                <span>\uD83D\uDFE3 PMS</span>
+              </div>
+              <div style={{ maxHeight: 400, overflowY: "auto" }}>
+                {filtered.map((entry, i) => {
+                  const isPeriod = periodDaysSet.has(entry.date);
+                  const isPms = pmsDates.has(entry.date) && !isPeriod;
+                  const prevEntry = i < filtered.length - 1 ? filtered[i + 1] : null;
+                  const diff = prevEntry ? entry.weight - prevEntry.weight : 0;
+                  return (
+                    <div key={i} style={{
+                      display: "flex", justifyContent: "space-between", alignItems: "center",
+                      padding: "7px 4px", borderBottom: "1px solid #f1f5f9", direction: "rtl",
+                      background: isPeriod ? "#fef2f2" : isPms ? "#faf5ff" : "transparent",
+                      borderRadius: 6, marginBottom: 1,
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ fontSize: 13, color: "#64748b" }}>{entry.date}</span>
+                        {isPeriod && <span style={{ fontSize: 10 }}>\uD83D\uDD34</span>}
+                        {isPms && <span style={{ fontSize: 10 }}>\uD83D\uDFE3</span>}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{entry.weight} \u05E7"\u05D2</span>
+                        {prevEntry && Math.abs(diff) >= 0.05 && (
+                          <span style={{ fontSize: 11, color: diff < 0 ? "#16a34a" : "#dc2626" }}>
+                            {diff < 0 ? <TrendingDown size={11} /> : <TrendingUp size={11} />}
+                            {Math.abs(diff).toFixed(1)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}`
+);
+
 fs.mkdirSync("src", { recursive: true });
 fs.writeFileSync("src/App.jsx", source);
 console.log("Wrote src/App.jsx (" + source.length + " bytes from " + chunks.length + " encoded chunks)");
