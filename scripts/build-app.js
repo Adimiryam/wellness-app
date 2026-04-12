@@ -354,6 +354,12 @@ source = source.replace(
   WEIGHT_STATS_SECTION + '{/* All Weighings with search & period markers */'
 );
 
+// Patch 11: Remove Macro Pie from food diary day view
+source = source.replace(
+  '\n                {/* Macro Pie */}\n                <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>\n                  <div style={{ fontSize: 14, fontWeight: 600, color: "#374151", marginBottom: 10, textAlign: "right" }}>\u05E4\u05D9\u05DC\u05D5\u05D7 \u05DE\u05D0\u05E7\u05E8\u05D5</div>\n                  {renderMacroPie(dayData.totals.calories, dayData.totals.carbs, dayData.totals.fat, dayData.totals.protein)}\n                </div>',
+  ''
+);
+
 fs.mkdirSync("src", { recursive: true });
 fs.writeFileSync("src/App.jsx", source);
 console.log("Wrote src/App.jsx (" + source.length + " bytes from " + chunks.length + " encoded chunks)");
