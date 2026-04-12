@@ -29,7 +29,6 @@ source = source.replace(
 );
 
 // Patch 3: Add "Most Used Products" section after protein trend chart in trends view
-// NOTE: todayExcludeStr is injected by Patch 6 before trendData definition
 const MOST_USED_SECTION = `
             {/* Most Used Products */}
             {(() => {
@@ -124,6 +123,43 @@ source = source.replace(
 source = source.replace(
   'const trendData = allDayTotals.filter(d => d.date >= trendCutoffStr && d.calories > 0);',
   'const trendTodayStr = new Date().toISOString().split("T")[0];\n    const trendData = allDayTotals.filter(d => d.date >= trendCutoffStr && d.date < trendTodayStr && d.calories > 0);'
+);
+
+// Patch 7: Add profile editing section at top of goals tab
+const PROFILE_SECTION = `
+      {/* Profile Section */}
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 20, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 16, textAlign: "right" }}>\u05E4\u05E8\u05D5\u05E4\u05D9\u05DC - \u05E0\u05EA\u05D5\u05E0\u05D9 \u05D1\u05E1\u05D9\u05E1</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 4, textAlign: "right" }}>\u05D2\u05D5\u05D1\u05D4 (\u05E1\u05F4\u05DE)</label>
+            <input type="number" value={userProfile?.height || ""} onChange={e => setUserProfile(p => ({...p, height: e.target.value}))}
+              style={{ width: "100%", padding: 10, borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 15, textAlign: "center", boxSizing: "border-box", fontWeight: 600 }} />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 4, textAlign: "right" }}>\u05D2\u05D9\u05DC</label>
+            <input type="number" value={userProfile?.age || ""} onChange={e => setUserProfile(p => ({...p, age: e.target.value}))}
+              style={{ width: "100%", padding: 10, borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 15, textAlign: "center", boxSizing: "border-box", fontWeight: 600 }} />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 4, textAlign: "right" }}>\u05DE\u05D9\u05DF</label>
+            <select value={userProfile?.gender || "female"} onChange={e => setUserProfile(p => ({...p, gender: e.target.value}))}
+              style={{ width: "100%", padding: 10, borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 15, textAlign: "center", boxSizing: "border-box", fontWeight: 600, background: "#fff" }}>
+              <option value="female">\u05E0\u05E7\u05D1\u05D4</option>
+              <option value="male">\u05D6\u05DB\u05E8</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 4, textAlign: "right" }}>\u05E9\u05DD</label>
+            <input type="text" value={userProfile?.name || ""} onChange={e => setUserProfile(p => ({...p, name: e.target.value}))}
+              style={{ width: "100%", padding: 10, borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 15, textAlign: "right", boxSizing: "border-box", fontWeight: 600 }} />
+          </div>
+        </div>
+      </div>`;
+
+source = source.replace(
+  '<div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>\uD83C\uDFAF \u05D4\u05D9\u05E2\u05D3\u05D9\u05DD \u05E9\u05DC\u05D9</div>',
+  '<div style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", marginBottom: 4, textAlign: "right" }}>\uD83C\uDFAF \u05D4\u05D9\u05E2\u05D3\u05D9\u05DD \u05E9\u05DC\u05D9</div>' + PROFILE_SECTION
 );
 
 fs.mkdirSync("src", { recursive: true });
