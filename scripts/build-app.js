@@ -360,6 +360,16 @@ source = source.replace(
   ''
 );
 
+// Patch 12: Show only protein value next to food items in diary (remove carbs & fat)
+source = source.replace(
+  `<div style={{ display: "flex", gap: 8, fontSize: 11, color: "#94a3b8" }}>
+                            <span>\u05D7:{f.protein}</span>
+                            <span>\u05E4:{f.carbs}</span>
+                            <span>\u05E9:{f.fat}</span>
+                          </div>`,
+  `<div style={{ fontSize: 11, color: "#7c3aed", fontWeight: 600 }}>\u05D7\u05DC\u05D1\u05D5\u05DF: {f.protein}g</div>`
+);
+
 fs.mkdirSync("src", { recursive: true });
 fs.writeFileSync("src/App.jsx", source);
 console.log("Wrote src/App.jsx (" + source.length + " bytes from " + chunks.length + " encoded chunks)");
