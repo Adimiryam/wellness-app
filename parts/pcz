@@ -1,0 +1,55 @@
+                        <div style={{ height: 4, background: MEAL_COLORS[meal], borderRadius: 2, width: Math.min(100, (mealCal / (dayData.totals.calories || 1)) * 100) + "%", opacity: 0.7 }} />
+                      </div>
+                      {mealFoods.map((f, i) => (
+                        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: i < mealFoods.length - 1 ? "1px solid #f1f5f9" : "none" }}>
+                          <div style={{ display: "flex", gap: 8, fontSize: 11, color: "#94a3b8" }}>
+                            <span>ח:{f.protein}</span>
+                            <span>פ:{f.carbs}</span>
+                            <span>ש:{f.fat}</span>
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: 12, color: "#1e293b", textAlign: "right", maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: MEAL_COLORS[meal], minWidth: 35, textAlign: "left" }}>{f.calories}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </>
+            )}
+          </>
+        ) : (
+          /* TRENDS VIEW */
+          <>
+            {/* Period selector */}
+            <div style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap", justifyContent: "center" }}>
+              {[{ id: "week", label: "שבוע" }, { id: "month", label: "חודש" }, { id: "3months", label: "3 חודשים" }, { id: "all", label: "הכל" }].map(p => (
+                <button key={p.id} onClick={() => setDiaryTrendPeriod(p.id)} style={{
+                  padding: "6px 12px", borderRadius: 20, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer",
+                  background: diaryTrendPeriod === p.id ? "#f59e0b" : "#f1f5f9",
+                  color: diaryTrendPeriod === p.id ? "#fff" : "#64748b",
+                }}>{p.label}</button>
+              ))}
+            </div>
+
+            {/* Average Stats */}
+            <div style={{ background: "linear-gradient(135deg, #f59e0b, #f97316)", borderRadius: 16, padding: 16, marginBottom: 14, color: "#fff", textAlign: "center" }}>
+              <div style={{ fontSize: 13, opacity: 0.85 }}>ממוצע קלוריות יומי ({trendData.length} ימים)</div>
+              <div style={{ fontSize: 36, fontWeight: 800 }}>{avgCalories}</div>
+              <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 8 }}>
+                <div><div style={{ fontSize: 11, opacity: 0.8 }}>חלבון</div><div style={{ fontSize: 16, fontWeight: 700 }}>{avgProtein}g</div></div>
+                <div><div style={{ fontSize: 11, opacity: 0.8 }}>פחמימות</div><div style={{ fontSize: 16, fontWeight: 700 }}>{avgCarbs}g</div></div>
+                <div><div style={{ fontSize: 11, opacity: 0.8 }}>שומן</div><div style={{ fontSize: 16, fontWeight: 700 }}>{avgFat}g</div></div>
+              </div>
+            </div>
+
+            {/* Calorie Trend Graph */}
+            <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#374151", marginBottom: 8, textAlign: "right" }}>
+                מגמת קלוריות
+                {calorieGoal > 0 && <span style={{ fontSize: 11, color: "#ef4444", marginRight: 8 }}>(יעד: {calorieGoal})</span>}
+              </div>
+              {renderCalorieTrend()}
+            </div>
+

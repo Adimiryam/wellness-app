@@ -1,0 +1,55 @@
+            {/* Macro Average Pie */}
+            <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#374151", marginBottom: 10, textAlign: "right" }}>ממוצע מאקרו</div>
+              {renderMacroPie(avgCalories, avgCarbs, avgFat, avgProtein)}
+            </div>
+
+            {/* Stats Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
+              <div style={{ background: "#fffbeb", borderRadius: 12, padding: 12, textAlign: "center" }}>
+                <div style={{ fontSize: 11, color: "#64748b" }}>הכי גבוה</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#f59e0b" }}>{maxCal}</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>קלוריות</div>
+              </div>
+              <div style={{ background: "#f0fdf4", borderRadius: 12, padding: 12, textAlign: "center" }}>
+                <div style={{ fontSize: 11, color: "#64748b" }}>הכי נמוך</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#22c55e" }}>{minCal}</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>קלוריות</div>
+              </div>
+              <div style={{ background: "#faf5ff", borderRadius: 12, padding: 12, textAlign: "center" }}>
+                <div style={{ fontSize: 11, color: "#64748b" }}>ממוצע חלבון</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#7c3aed" }}>{avgProtein}g</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>ליום</div>
+              </div>
+              <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 12, textAlign: "center" }}>
+                <div style={{ fontSize: 11, color: "#64748b" }}>ימים עם נתונים</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#0369a1" }}>{trendData.length}</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>מתוך {trendDays === 9999 ? "הכל" : trendDays}</div>
+              </div>
+            </div>
+
+            {/* Protein Trend (mini bar chart) */}
+            <div style={{ background: "#fff", borderRadius: 16, padding: 14, marginBottom: 14, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#374151", marginBottom: 10, textAlign: "right" }}>חלבון יומי</div>
+              {trendData.length > 0 ? (
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 80, direction: "ltr" }}>
+                  {trendData.slice(-30).map((d, i) => {
+                    const maxP = Math.max(...trendData.slice(-30).map(x => x.protein), 1);
+                    const h = (d.protein / maxP) * 70;
+                    const isGood = d.protein >= proteinGoal;
+                    return (
+                      <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <div style={{ width: "100%", height: h, background: isGood ? "#22c55e" : "#fbbf24", borderRadius: "2px 2px 0 0", minWidth: 3, maxWidth: 12 }} />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : <div style={{ textAlign: "center", color: "#94a3b8", fontSize: 13, padding: 20 }}>אין נתונים</div>}
+              {proteinGoal > 0 && <div style={{ fontSize: 11, color: "#64748b", textAlign: "center", marginTop: 6 }}>יעד: {proteinGoal}g | ירוק = עמידה ביעד</div>}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
