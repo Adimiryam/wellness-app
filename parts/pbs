@@ -1,0 +1,55 @@
+            <div key={f.key} style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 13, fontWeight: 600, color: "#475569", marginBottom: 4, display: "block" }}>
+                {f.icon && <span style={{ marginLeft: 4 }}>{f.icon}</span>}
+                {f.label} {f.required && <span style={{ color: "#ef4444" }}>*</span>}
+              </label>
+              <input type={f.type} placeholder={f.placeholder} value={manualFood[f.key]}
+                onChange={e => setManualFood(prev => ({ ...prev, [f.key]: e.target.value }))}
+                style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", boxSizing: "border-box",
+                  ...(f.type === "number" ? { textAlign: "center", fontSize: 16, fontWeight: 600 } : {})
+                }} />
+            </div>
+          ))}
+
+          {/* Preview */}
+          {manualFood.name && manualFood.calories && (
+            <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 16, marginBottom: 16, border: "1px solid #bae6fd" }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#0284c7", marginBottom: 8 }}>תצוגה מקדימה:</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#1e293b" }}>{manualFood.name}</div>
+              <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>
+                {manualFood.serving || "1 מנה"} • {manualFood.calories} קק״ל • ח׳{manualFood.protein || 0}g פ׳{manualFood.carbs || 0}g ש׳{manualFood.fat || 0}g
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={addManualFood} disabled={!manualFood.name || !manualFood.calories}
+              style={{ flex: 1, padding: 14, borderRadius: 12, border: "none", background: (manualFood.name && manualFood.calories) ? "#6366f1" : "#e2e8f0", color: (manualFood.name && manualFood.calories) ? "#fff" : "#94a3b8", cursor: (manualFood.name && manualFood.calories) ? "pointer" : "default", fontWeight: 700, fontSize: 15 }}>
+              <Plus size={18} style={{ verticalAlign: "middle", marginLeft: 4 }} /> הוסף ליומן
+            </button>
+            <button onClick={() => { if (manualFood.name && manualFood.calories) { saveToMyFoods({ ...manualFood, id: `manual-${Date.now()}`, calories: parseInt(manualFood.calories)||0, protein: parseFloat(manualFood.protein)||0, carbs: parseFloat(manualFood.carbs)||0, fat: parseFloat(manualFood.fat)||0, serving: manualFood.serving || "1 מנה", category: "ידני" }); }}}
+              disabled={!manualFood.name || !manualFood.calories}
+              style={{ padding: 14, borderRadius: 12, border: "2px solid #f59e0b", background: "#fff", color: "#f59e0b", cursor: (manualFood.name && manualFood.calories) ? "pointer" : "default", opacity: (manualFood.name && manualFood.calories) ? 1 : 0.4 }}>
+              <Star size={18} />
+            </button>
+          </div>
+          <div style={{ height: 40 }} />
+        </div>
+      );
+    };
+
+    // --- Tab: My Foods ---
+    const renderMyFoodsTab = () => (
+      <div style={{ flex: 1, overflow: "auto", padding: "16px", direction: "rtl" }}>
+        {myFoods.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "#94a3b8" }}>
+            <Bookmark size={48} style={{ marginBottom: 12, opacity: 0.3 }} />
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#64748b" }}>עדיין אין מאכלים שמורים</div>
+            <div style={{ fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
+              לחצ/י על הכוכב ⭐ ליד כל מאכל כדי לשמור אותו כאן.
+              <br />זה יעזור לך להוסיף מאכלים קבועים בקלות!
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>

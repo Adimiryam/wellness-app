@@ -1,0 +1,55 @@
+        {barcodeResult && (
+          <div style={{ background: "#f0fdf4", borderRadius: 16, padding: 20, border: "2px solid #bbf7d0" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#16a34a", marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+              <Check size={16} /> נמצא!
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", marginBottom: 4 }}>{barcodeResult.name}</div>
+            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 12 }}>{barcodeResult.serving}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 16 }}>
+              {[
+                { label: "קלוריות", val: barcodeResult.calories, unit: "קק״ל", color: "#f59e0b" },
+                { label: "חלבון", val: barcodeResult.protein, unit: "g", color: "#ef4444" },
+                { label: "פחמימות", val: barcodeResult.carbs, unit: "g", color: "#3b82f6" },
+                { label: "שומן", val: barcodeResult.fat, unit: "g", color: "#8b5cf6" },
+              ].map(n => (
+                <div key={n.label} style={{ textAlign: "center", padding: 8, background: "#fff", borderRadius: 10 }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: n.color }}>{n.val}</div>
+                  <div style={{ fontSize: 10, color: "#64748b" }}>{n.unit}</div>
+                  <div style={{ fontSize: 10, color: "#94a3b8" }}>{n.label}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => addFood(barcodeResult)}
+                style={{ flex: 1, padding: 14, borderRadius: 12, border: "none", background: "#6366f1", color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 15 }}>
+                <Plus size={18} style={{ verticalAlign: "middle", marginLeft: 4 }} /> הוסף ליומן
+              </button>
+              <button onClick={() => saveToMyFoods(barcodeResult)}
+                style={{ padding: 14, borderRadius: 12, border: "2px solid #f59e0b", background: isInMyFoods(barcodeResult.name) ? "#fef3c7" : "#fff", color: "#f59e0b", cursor: "pointer" }}>
+                <Star size={18} fill={isInMyFoods(barcodeResult.name) ? "#f59e0b" : "none"} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+
+    // --- Tab: Manual Entry ---
+    const renderManualTab = () => {
+      const fields = [
+        { key: "name", label: "שם המאכל", placeholder: "למשל: עוגת שוקולד ביתית", type: "text", required: true },
+        { key: "serving", label: "גודל מנה", placeholder: "למשל: 1 פרוסה, 100 גרם", type: "text" },
+        { key: "calories", label: "קלוריות", placeholder: "0", type: "number", required: true, icon: "🔥" },
+        { key: "protein", label: "חלבון (g)", placeholder: "0", type: "number", icon: "🥩" },
+        { key: "carbs", label: "פחמימות (g)", placeholder: "0", type: "number", icon: "🍞" },
+        { key: "fat", label: "שומן (g)", placeholder: "0", type: "number", icon: "🧈" },
+      ];
+      return (
+        <div style={{ flex: 1, overflow: "auto", padding: "20px 16px", direction: "rtl" }}>
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <div style={{ fontSize: 40, marginBottom: 4 }}>✍️</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>הזנה ידנית</div>
+            <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>הוסף/י מאכל עם הערכים התזונתיים שלו</div>
+          </div>
+
+          {fields.map(f => (

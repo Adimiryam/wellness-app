@@ -1,0 +1,55 @@
+              <Star size={14} color="#f59e0b" fill="#f59e0b" /> המאכלים שלי ({myFoods.length})
+            </div>
+            {myFoods.map(food => (
+              <div key={food.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 4px", borderBottom: "1px solid #f1f5f9" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <button onClick={() => addFood(food)} title="הוסף ליומן"
+                    style={{ background: "#6366f1", border: "none", cursor: "pointer", color: "#fff", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Plus size={16} />
+                  </button>
+                  <button onClick={() => removeFromMyFoods(food.id)} title="הסר מהמאכלים שלי"
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#ef4444" }}>
+                    <Trash2 size={14} />
+                  </button>
+                  <div style={{ textAlign: "left", minWidth: 45 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#6366f1" }}>{food.calories}</div>
+                    <div style={{ fontSize: 9, color: "#94a3b8" }}>קק״ל</div>
+                  </div>
+                </div>
+                <div style={{ flex: 1, paddingRight: 8, textAlign: "right" }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{food.name}</div>
+                  <div style={{ fontSize: 11, color: "#94a3b8" }}>
+                    {food.serving} • ח׳{food.protein}g  פ׳{food.carbs}g  ש׳{food.fat}g
+                  </div>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    );
+
+    return (
+      <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 1000, display: "flex", flexDirection: "column", maxWidth: 480, margin: "0 auto" }}>
+        {/* CSS for spinner animation */}
+        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+
+        {/* Top bar */}
+        <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", padding: "14px 16px 0 16px", color: "#fff" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <button onClick={() => { setShowFoodSearch(false); setFoodSearch(""); setFoodCategoryFilter("all"); setFoodModalTab("search"); setApiSearchResults([]); setBarcodeResult(null); setBarcodeInput(""); }}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 14, fontWeight: 600 }}>
+              ✕ סגור
+            </button>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>הוסף מאכל</span>
+          </div>
+
+          {/* 4-tab selector */}
+          <div style={{ display: "flex", gap: 0, direction: "rtl" }}>
+            {FOOD_TABS.map(tab => (
+              <button key={tab.id} onClick={() => setFoodModalTab(tab.id)}
+                style={{
+                  flex: 1, padding: "10px 4px 12px", background: "none", border: "none", cursor: "pointer",
+                  color: foodModalTab === tab.id ? "#fff" : "rgba(255,255,255,0.6)",
+                  borderBottom: foodModalTab === tab.id ? "3px solid #fff" : "3px solid transparent",
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 3, transition: "all 0.2s",

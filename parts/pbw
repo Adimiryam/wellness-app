@@ -1,0 +1,55 @@
+                  )}
+                </div>
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>💢 כאבים או מיחושים בבוקר? (אופציונלי)</label>
+                <input type="text" placeholder="למשל: כאב ראש קל, כאב גב..." value={morningPain} onChange={e => setMorningPain(e.target.value)} style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", direction: "rtl", boxSizing: "border-box" }} />
+              </div>
+              <button onClick={() => setMorningDone(true)} style={{ width: "100%", padding: 14, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff", fontSize: 16, fontWeight: 700, cursor: "pointer" }}>
+                שמור דיווח בוקר ✓
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ===== EVENING QUESTIONNAIRE ===== */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: eveningDone ? "2px solid #c4b5fd" : "2px solid #8b5cf6" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: eveningDone ? 0 : 16 }}>
+            {eveningDone && <button onClick={() => setEveningDone(false)} style={{ background: "none", border: "none", color: "#6366f1", cursor: "pointer", fontSize: 13 }}>ערוך</button>}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>שאלון ערב</span>
+              <span>🌙</span>
+            </div>
+          </div>
+
+          {eveningDone ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+              <Check size={16} color="#8b5cf6" />
+              <span style={{ fontSize: 13, color: "#4c1d95" }}>הושלם — מצב רוח {eveningMood}/5, אנרגיה {eveningEnergy}/5</span>
+            </div>
+          ) : (
+            <div>
+              <RatingInput value={eveningMood} onChange={setEveningMood} label="מצב רוח כללי" icon={Heart} color="#ec4899" />
+              <RatingInput value={eveningEnergy} onChange={setEveningEnergy} label="רמת אנרגיה" icon={Sparkles} color="#f59e0b" />
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#475569", marginBottom: 8, textAlign: "right" }}>איך הרגשת היום? (בחר/י כמה שרוצה)</div>
+                <PillToggle items={FEELINGS} selected={eveningFeelings} onToggle={toggleFeeling} />
+              </div>
+              <textarea placeholder="הערות נוספות... (אופציונלי)" value={eveningNotes} onChange={e => setEveningNotes(e.target.value)} rows={3} style={{ width: "100%", padding: 12, borderRadius: 10, border: "2px solid #e2e8f0", fontSize: 14, textAlign: "right", direction: "rtl", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
+              <button onClick={() => setEveningDone(true)} style={{ width: "100%", padding: 14, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #8b5cf6, #6366f1)", color: "#fff", fontSize: 16, fontWeight: 700, cursor: "pointer", marginTop: 12 }}>
+                שמור דיווח ערב ✓
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ===== FREE-STYLE HEALTH REPORT ===== */}
+        <div style={{ background: "#fff", borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", border: "2px solid #fecaca" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, justifyContent: "flex-end" }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#1e293b" }}>דיווח בריאות חופשי</span>
+            <Stethoscope size={20} color="#dc2626" />
+          </div>
+          <div style={{ fontSize: 13, color: "#64748b", marginBottom: 16, textAlign: "right" }}>
+            דווח/י על כל תחושה, כאב או תופעה ברגע שמרגיש/ה. המערכת תנתח דפוסים ותמצא קשרים!
+          </div>
+
