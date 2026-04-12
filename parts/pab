@@ -1,5 +1,4 @@
-
-const FOOD_CATEGORIES = [
+export const FOOD_CATEGORIES = [
   { id: "all", label: "הכל", icon: "🍽️" },
   { id: "חלבון", label: "חלבון", icon: "🍗" },
   { id: "חלבי", label: "חלבי", icon: "🥛" },
@@ -51,81 +50,3 @@ const SUPPLEMENTS = [
   "ברזל", "ויטמין D", "ויטמין B12", "מגנזיום", "אומגה 3",
   "חומצה פולית", "ויטמין C", "אבץ", "פרוביוטיקה", "סידן"
 ];
-
-const ALL_SUPPLEMENTS = [
-  { group: "ויטמינים", items: [
-    "ויטמין A", "ויטמין B1 (תיאמין)", "ויטמין B2 (ריבופלבין)", "ויטמין B3 (ניאצין)",
-    "ויטמין B5 (פנטותנית)", "ויטמין B6", "ויטמין B7 (ביוטין)", "ויטמין B9 (חומצה פולית)",
-    "ויטמין B12", "ויטמין C", "ויטמין D", "ויטמין D3", "ויטמין E", "ויטמין K", "ויטמין K2",
-    "מולטי ויטמין", "B Complex",
-  ]},
-  { group: "מינרלים", items: [
-    "ברזל", "מגנזיום", "סידן", "אבץ", "סלניום", "יוד", "נחושת", "מנגן", "כרום", "אשלגן", "זרחן",
-  ]},
-  { group: "שומנים ואומגה", items: [
-    "אומגה 3", "אומגה 3-6-9", "שמן דגים", "שמן קריל", "DHA", "EPA",
-  ]},
-  { group: "פרוביוטיקה ועיכול", items: [
-    "פרוביוטיקה", "פרה-ביוטיקה", "אנזימי עיכול", "סיבים תזונתיים", "גלוטמין",
-  ]},
-  { group: "חלבון וספורט", items: [
-    "אבקת חלבון מי גבינה", "חלבון קזאין", "חלבון צמחי", "BCAA", "קריאטין", "גלוטמין",
-    "בטא-אלנין", "L-קרניטין", "קפאין", "פרה-וורקאאוט",
-  ]},
-  { group: "צמחים וסופרפוד", items: [
-    "כורכומין", "ג׳ינג׳ר", "שום", "ספירולינה", "כלורלה", "מאקה",
-    "אשוואגנדה", "ג׳ינסנג", "מורינגה", "אלוורה", "חילבה", "ערער",
-  ]},
-  { group: "בריאות כללית", items: [
-    "קולגן", "חומצה היאלורונית", "קו-אנזים Q10", "מלטונין", "L-תאנין",
-    "גלוקוזאמין", "כונדרואיטין", "MSM", "NAC", "אלפא ליפואית",
-  ]},
-  { group: "תרופות נפוצות", items: [
-    "אקמול", "נורופן", "אופטלגין", "אספירין", "אנטיביוטיקה", "אנטי-היסטמין",
-    "תרופת לחץ דם", "סטטין (כולסטרול)", "מטפורמין", "אלטרוקסין (תריס)",
-    "גלולות למניעת הריון", "אנטי-דפרסנט", "תרופה לחרדה",
-  ]},
-];
-
-const SYMPTOM_TYPES = [
-  // כאבים
-  { id: "headache", label: "כאב ראש", icon: "🤕", group: "כאבים" },
-  { id: "migraine", label: "מיגרנה", icon: "🤯", group: "כאבים" },
-  { id: "stomach", label: "כאב בטן", icon: "🤢", group: "כאבים" },
-  { id: "back_pain", label: "כאב גב תחתון", icon: "💢", group: "כאבים" },
-  { id: "upper_back", label: "כאב גב עליון", icon: "🔙", group: "כאבים" },
-  { id: "neck_pain", label: "כאב צוואר", icon: "😣", group: "כאבים" },
-  { id: "shoulder_pain", label: "כאב כתפיים", icon: "🤷", group: "כאבים" },
-  { id: "chest_pain", label: "כאב חזה", icon: "💗", group: "כאבים" },
-  { id: "joint_pain", label: "כאבי מפרקים", icon: "🦴", group: "כאבים" },
-  { id: "knee_pain", label: "כאב ברכיים", icon: "🦵", group: "כאבים" },
-  { id: "hip_pain", label: "כאב ירכיים/אגן", icon: "🦿", group: "כאבים" },
-  { id: "muscle_pain", label: "כאבי שרירים", icon: "💪", group: "כאבים" },
-  { id: "muscle_cramps", label: "התכווצויות שרירים", icon: "⚡", group: "כאבים" },
-  { id: "menstrual_pain", label: "כאבי מחזור", icon: "🩸", group: "כאבים" },
-  { id: "tooth_pain", label: "כאב שיניים", icon: "🦷", group: "כאבים" },
-  { id: "jaw_pain", label: "כאב לסת", icon: "😬", group: "כאבים" },
-  { id: "ear_pain", label: "כאב אוזניים", icon: "👂", group: "כאבים" },
-  { id: "eye_pain", label: "כאב עיניים", icon: "👁️", group: "כאבים" },
-  { id: "pelvic_pain", label: "כאב אגן", icon: "🩻", group: "כאבים" },
-  { id: "rib_pain", label: "כאב צלעות", icon: "🫁", group: "כאבים" },
-  { id: "nerve_pain", label: "כאב עצבי/נוירופתי", icon: "⚡", group: "כאבים" },
-  // עיכול
-  { id: "nausea", label: "בחילה", icon: "🤮", group: "עיכול" },
-  { id: "vomiting", label: "הקאה", icon: "🤮", group: "עיכול" },
-  { id: "bloating", label: "נפיחות בטן", icon: "🫧", group: "עיכול" },
-  { id: "heartburn", label: "צרבת", icon: "🔥", group: "עיכול" },
-  { id: "acid_reflux", label: "ריפלוקס", icon: "🌋", group: "עיכול" },
-  { id: "gas", label: "גזים", icon: "💨", group: "עיכול" },
-  { id: "constipation", label: "עצירות", icon: "🚫", group: "עיכול" },
-  { id: "diarrhea", label: "שלשול", icon: "🚽", group: "עיכול" },
-  { id: "appetite_loss", label: "חוסר תיאבון", icon: "🍽️", group: "עיכול" },
-  { id: "excessive_hunger", label: "רעב מוגזם", icon: "🍔", group: "עיכול" },
-  { id: "stomach_cramps", label: "התכווצויות בטן", icon: "😖", group: "עיכול" },
-  { id: "mouth_sores", label: "אפטות/פצעים בפה", icon: "👄", group: "עיכול" },
-  { id: "dry_mouth", label: "יובש בפה", icon: "🏜️", group: "עיכול" },
-  { id: "bad_breath", label: "ריח רע מהפה", icon: "😮", group: "עיכול" },
-  // עייפות ואנרגיה
-  { id: "fatigue", label: "עייפות קשה", icon: "😴", group: "עייפות ואנרגיה" },
-  { id: "weakness", label: "חולשה כללית", icon: "🥀", group: "עייפות ואנרגיה" },
-  { id: "dizziness", label: "סחרחורת", icon: "💫", group: "עייפות ואנרגיה" },
